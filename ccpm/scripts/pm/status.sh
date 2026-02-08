@@ -20,8 +20,10 @@ fi
 echo ""
 echo "📚 Epics:"
 if [ -d ".claude/epics" ]; then
-  total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
-  echo "  Total: $total"
+  active=$(find .claude/epics -maxdepth 2 -name "epic.md" -not -path "*/archived/*" -not -path "*/.archived/*" 2>/dev/null | wc -l)
+  archived=$(find .claude/epics -path "*/archived/*/epic.md" -o -path "*/.archived/*/epic.md" 2>/dev/null | wc -l)
+  echo "  Active: $active"
+  echo "  Archived: $archived"
 else
   echo "  No epics found"
 fi
@@ -29,9 +31,9 @@ fi
 echo ""
 echo "📝 Tasks:"
 if [ -d ".claude/epics" ]; then
-  total=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
-  open=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
-  closed=$(find .claude/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
+  total=$(find .claude/epics -name "[0-9]*.md" -not -path "*/archived/*" -not -path "*/.archived/*" 2>/dev/null | wc -l)
+  open=$(find .claude/epics -name "[0-9]*.md" -not -path "*/archived/*" -not -path "*/.archived/*" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
+  closed=$(find .claude/epics -name "[0-9]*.md" -not -path "*/archived/*" -not -path "*/.archived/*" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
   echo "  Open: $open"
   echo "  Closed: $closed"
   echo "  Total: $total"

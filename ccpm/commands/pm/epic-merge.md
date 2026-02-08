@@ -167,6 +167,12 @@ echo "✅ Worktree removed: ../epic-$ARGUMENTS"
 git branch -d epic/$ARGUMENTS
 git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 
+# Mark all task files as closed before archiving
+for task_file in .claude/epics/$ARGUMENTS/[0-9]*.md; do
+  [ -f "$task_file" ] || continue
+  sed -i '' 's/^status: *open/status: closed/' "$task_file"
+done
+
 # Archive epic locally
 mkdir -p .claude/epics/archived/
 mv .claude/epics/$ARGUMENTS .claude/epics/archived/
