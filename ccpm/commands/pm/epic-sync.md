@@ -123,7 +123,7 @@ epic_number=$(gh issue create \
   --title "Epic: $ARGUMENTS" \
   --body-file /tmp/epic-body.md \
   --label "epic,epic:$ARGUMENTS,$epic_type" \
-  --json number -q .number)
+  | grep -oE '[0-9]+$')
 ```
 
 Store the returned issue number for epic frontmatter update.
@@ -166,14 +166,14 @@ if [ "$task_count" -lt 5 ]; then
         --title "$task_name" \
         --body-file /tmp/task-body.md \
         --label "task,epic:$ARGUMENTS" \
-        --json number -q .number)
+        | grep -oE '[0-9]+$')
     else
       task_number=$(gh issue create \
         --repo "$REPO" \
         --title "$task_name" \
         --body-file /tmp/task-body.md \
         --label "task,epic:$ARGUMENTS" \
-        --json number -q .number)
+        | grep -oE '[0-9]+$')
     fi
 
     # Record mapping for renaming
