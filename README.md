@@ -160,7 +160,7 @@ No shortcuts. No assumptions. No regrets.
 ```
 Launches comprehensive brainstorming to create a Product Requirements Document capturing vision, user stories, success criteria, and constraints.
 
-**Output:** `.claude/prds/feature-name.md`
+**Output:** `.pm/prds/feature-name.md`
 
 ### 2. Implementation Planning Phase
 
@@ -169,7 +169,7 @@ Launches comprehensive brainstorming to create a Product Requirements Document c
 ```
 Transforms PRD into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
 
-**Output:** `.claude/epics/feature-name/epic.md`
+**Output:** `.pm/epics/feature-name/epic.md`
 
 ### 3. Task Decomposition Phase
 
@@ -178,7 +178,7 @@ Transforms PRD into a technical implementation plan with architectural decisions
 ```
 Breaks epic into concrete, actionable tasks with acceptance criteria, effort estimates, and parallelization flags.
 
-**Output:** `.claude/epics/feature-name/[task].md`
+**Output:** `.pm/epics/feature-name/[task].md`
 
 ### 4. GitHub Synchronization
 

@@ -156,7 +156,7 @@ graph LR
 ```
 启动全面的头脑风暴，创建产品需求文档，捕捉愿景、用户故事、成功标准和约束条件。
 
-**输出：** `.claude/prds/feature-name.md`
+**输出：** `.pm/prds/feature-name.md`
 
 ### 2. 实现规划阶段
 
@@ -165,7 +165,7 @@ graph LR
 ```
 将PRD转化为技术实现计划，包含架构决策、技术方法和依赖映射。
 
-**输出：** `.claude/epics/feature-name/epic.md`
+**输出：** `.pm/epics/feature-name/epic.md`
 
 ### 3. 任务分解阶段
 
@@ -174,7 +174,7 @@ graph LR
 ```
 将史诗任务分解为具体的、可操作的任务，包含验收标准、工作量估算和并行化标志。
 
-**输出：** `.claude/epics/feature-name/[task].md`
+**输出：** `.pm/epics/feature-name/[task].md`
 
 ### 4. GitHub同步
 
