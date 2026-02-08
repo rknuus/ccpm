@@ -15,10 +15,10 @@ Push epic and tasks to GitHub as issues.
 
 ```bash
 # Verify epic exists
-test -f .claude/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /pm:prd-parse $ARGUMENTS"
+test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /pm:prd-parse $ARGUMENTS"
 
 # Count task files
-ls .claude/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
+ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
 ```
 
 If no tasks found: "❌ No tasks to sync. Run: /pm:epic-decompose $ARGUMENTS"
@@ -67,7 +67,7 @@ echo "Creating issues in repository: $REPO"
 Strip frontmatter and prepare GitHub issue body:
 ```bash
 # Extract content without frontmatter
-sed '1,/^---$/d; 1,/^---$/d' .claude/epics/$ARGUMENTS/epic.md > /tmp/epic-body-raw.md
+sed '1,/^---$/d; 1,/^---$/d' .pm/epics/$ARGUMENTS/epic.md > /tmp/epic-body-raw.md
 
 # Remove "## Tasks Created" section and replace with Stats
 awk '
@@ -123,7 +123,7 @@ epic_number=$(gh issue create \
   --title "Epic: $ARGUMENTS" \
   --body-file /tmp/epic-body.md \
   --label "epic,epic:$ARGUMENTS,$epic_type" \
-  --json number -q .number)
+  | grep -oE '[0-9]+$')
 ```
 
 Store the returned issue number for epic frontmatter update.
@@ -142,7 +142,7 @@ fi
 
 Count task files to determine strategy:
 ```bash
-task_count=$(ls .claude/epics/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+task_count=$(ls .pm/epics/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
 ```
 
 ### For Small Batches (< 5 tasks): Sequential Creation
@@ -150,7 +150,7 @@ task_count=$(ls .claude/epics/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
 ```bash
 if [ "$task_count" -lt 5 ]; then
   # Create sequentially for small batches
-  for task_file in .claude/epics/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  for task_file in .pm/epics/$ARGUMENTS/[0-9][0-9][0-9].md; do
     [ -f "$task_file" ] || continue
 
     # Extract task name from frontmatter
@@ -166,14 +166,14 @@ if [ "$task_count" -lt 5 ]; then
         --title "$task_name" \
         --body-file /tmp/task-body.md \
         --label "task,epic:$ARGUMENTS" \
-        --json number -q .number)
+        | grep -oE '[0-9]+$')
     else
       task_number=$(gh issue create \
         --repo "$REPO" \
         --title "$task_name" \
         --body-file /tmp/task-body.md \
         --label "task,epic:$ARGUMENTS" \
-        --json number -q .number)
+        | grep -oE '[0-9]+$')
     fi
 
     # Record mapping for renaming
@@ -330,9 +330,9 @@ epic_url="https://github.com/$repo/issues/$epic_number"
 current_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Update epic frontmatter
-sed -i.bak "/^github:/c\github: $epic_url" .claude/epics/$ARGUMENTS/epic.md
-sed -i.bak "/^updated:/c\updated: $current_date" .claude/epics/$ARGUMENTS/epic.md
-rm .claude/epics/$ARGUMENTS/epic.md.bak
+sed -i.bak "/^github:/c\github: $epic_url" .pm/epics/$ARGUMENTS/epic.md
+sed -i.bak "/^updated:/c\updated: $current_date" .pm/epics/$ARGUMENTS/epic.md
+rm .pm/epics/$ARGUMENTS/epic.md.bak
 ```
 
 #### 5b. Update Tasks Created Section
@@ -343,7 +343,7 @@ cat > /tmp/tasks-section.md << 'EOF'
 EOF
 
 # Add each task with its real issue number
-for task_file in .claude/epics/$ARGUMENTS/[0-9]*.md; do
+for task_file in .pm/epics/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
   # Get issue number (filename without .md)
@@ -360,8 +360,8 @@ for task_file in .claude/epics/$ARGUMENTS/[0-9]*.md; do
 done
 
 # Add summary statistics
-total_count=$(ls .claude/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
-parallel_count=$(grep -l '^parallel: true' .claude/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+total_count=$(ls .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
+parallel_count=$(grep -l '^parallel: true' .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
 sequential_count=$((total_count - parallel_count))
 
 cat >> /tmp/tasks-section.md << EOF
@@ -373,7 +373,7 @@ EOF
 
 # Replace the Tasks Created section in epic.md
 # First, create a backup
-cp .claude/epics/$ARGUMENTS/epic.md .claude/epics/$ARGUMENTS/epic.md.backup
+cp .pm/epics/$ARGUMENTS/epic.md .pm/epics/$ARGUMENTS/epic.md.backup
 
 # Use awk to replace the section
 awk '
@@ -384,19 +384,19 @@ awk '
   }
   /^## / && !/^## Tasks Created/ { skip=0 }
   !skip && !/^## Tasks Created/ { print }
-' .claude/epics/$ARGUMENTS/epic.md.backup > .claude/epics/$ARGUMENTS/epic.md
+' .pm/epics/$ARGUMENTS/epic.md.backup > .pm/epics/$ARGUMENTS/epic.md
 
 # Clean up
-rm .claude/epics/$ARGUMENTS/epic.md.backup
+rm .pm/epics/$ARGUMENTS/epic.md.backup
 rm /tmp/tasks-section.md
 ```
 
 ### 6. Create Mapping File
 
-Create `.claude/epics/$ARGUMENTS/github-mapping.md`:
+Create `.pm/epics/$ARGUMENTS/github-mapping.md`:
 ```bash
 # Create mapping file
-cat > .claude/epics/$ARGUMENTS/github-mapping.md << EOF
+cat > .pm/epics/$ARGUMENTS/github-mapping.md << EOF
 # GitHub Issue Mapping
 
 Epic: #${epic_number} - https://github.com/${repo}/issues/${epic_number}
@@ -405,18 +405,18 @@ Tasks:
 EOF
 
 # Add each task mapping
-for task_file in .claude/epics/$ARGUMENTS/[0-9]*.md; do
+for task_file in .pm/epics/$ARGUMENTS/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
   issue_num=$(basename "$task_file" .md)
   task_name=$(grep '^name:' "$task_file" | sed 's/^name: *//')
 
-  echo "- #${issue_num}: ${task_name} - https://github.com/${repo}/issues/${issue_num}" >> .claude/epics/$ARGUMENTS/github-mapping.md
+  echo "- #${issue_num}: ${task_name} - https://github.com/${repo}/issues/${issue_num}" >> .pm/epics/$ARGUMENTS/github-mapping.md
 done
 
 # Add sync timestamp
-echo "" >> .claude/epics/$ARGUMENTS/github-mapping.md
-echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .claude/epics/$ARGUMENTS/github-mapping.md
+echo "" >> .pm/epics/$ARGUMENTS/github-mapping.md
+echo "Synced: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> .pm/epics/$ARGUMENTS/github-mapping.md
 ```
 
 ### 7. Create Worktree

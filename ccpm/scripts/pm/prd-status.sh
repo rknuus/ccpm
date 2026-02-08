@@ -4,12 +4,12 @@ echo "📄 PRD Status Report"
 echo "===================="
 echo ""
 
-if [ ! -d ".claude/prds" ]; then
+if [ ! -d ".pm/prds" ]; then
   echo "No PRD directory found."
   exit 0
 fi
 
-total=$(ls .claude/prds/*.md 2>/dev/null | wc -l)
+total=$(ls .pm/prds/*.md 2>/dev/null | wc -l)
 [ $total -eq 0 ] && echo "No PRDs found." && exit 0
 
 # Count by status
@@ -17,7 +17,7 @@ backlog=0
 in_progress=0
 implemented=0
 
-for file in .claude/prds/*.md; do
+for file in .pm/prds/*.md; do
   [ -f "$file" ] || continue
   status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
 
@@ -47,7 +47,7 @@ echo "  Total PRDs: $total"
 # Recent activity
 echo ""
 echo "📅 Recent PRDs (last 5 modified):"
-ls -t .claude/prds/*.md 2>/dev/null | head -5 | while read file; do
+ls -t .pm/prds/*.md 2>/dev/null | head -5 | while read file; do
   name=$(grep "^name:" "$file" | head -1 | sed 's/^name: *//')
   [ -z "$name" ] && name=$(basename "$file" .md)
   echo "  • $name"
