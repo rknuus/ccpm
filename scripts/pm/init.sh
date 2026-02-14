@@ -73,6 +73,14 @@ mkdir -p .claude/agents
 mkdir -p .claude/scripts/pm
 echo "  ✅ Directories created"
 
+# Initialize global task ID counter
+if [ ! -f .pm/next-id ]; then
+  echo "1" > .pm/next-id
+  echo "  ✅ Task ID counter initialized"
+else
+  echo "  ✅ Task ID counter already exists"
+fi
+
 # Copy scripts if in main repo
 if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
   echo ""

@@ -144,7 +144,7 @@ fi
 
 Count task files to determine strategy:
 ```bash
-task_count=$(ls .pm/epics/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
+task_count=$(ls .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l)
 ```
 
 ### For Small Batches (< 5 tasks): Sequential Creation
@@ -152,7 +152,7 @@ task_count=$(ls .pm/epics/$ARGUMENTS/[0-9][0-9][0-9].md 2>/dev/null | wc -l)
 ```bash
 if [ "$task_count" -lt 5 ]; then
   # Create sequentially for small batches
-  for task_file in .pm/epics/$ARGUMENTS/[0-9][0-9][0-9].md; do
+  for task_file in .pm/epics/$ARGUMENTS/[0-9]*.md; do
     [ -f "$task_file" ] || continue
 
     # Extract task name from frontmatter
@@ -443,7 +443,7 @@ echo "✅ Created worktree: ../epic-$ARGUMENTS"
   - Epic: #{epic_number} - {epic_title}
   - Tasks: {count} sub-issues created
   - Labels applied: epic, task, epic:{name}
-  - Files renamed: 001.md → {issue_id}.md
+  - Files renamed: {local_id}.md → {issue_id}.md
   - References updated: depends_on/conflicts_with now use issue IDs
   - Worktree: ../epic-$ARGUMENTS
 
