@@ -29,14 +29,29 @@ status: closed
 updated: {current_datetime}
 ```
 
-### 3. Update Progress File
+### 3. Architect Review (Optional)
+
+Find the epic name from the task file path and check if architect review is enabled:
+```bash
+epic_name={extracted_from_path}
+architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
+```
+
+If `architect_mode` is `gate` or `advisory`:
+- Run: `/pm:architect-review $epic_name --checkpoint code --task $ARGUMENTS`
+- If gate mode and review returns "Needs Changes": report issues and do not close the issue
+- If advisory mode: log findings and continue with closing
+
+If `architect_mode` is empty or `off`: skip silently.
+
+### 4. Update Progress File
 
 If progress file exists at `.pm/epics/{epic}/updates/$ARGUMENTS/progress.md`:
 - Set completion: 100%
 - Add completion note with timestamp
 - Update last_sync with current datetime
 
-### 4. Close on GitHub
+### 5. Close on GitHub
 
 Add completion comment and close:
 ```bash
@@ -52,7 +67,7 @@ Closed at: {timestamp}" | gh issue comment $ARGUMENTS --body-file -
 gh issue close $ARGUMENTS
 ```
 
-### 5. Update Epic Task List on GitHub
+### 6. Update Epic Task List on GitHub
 
 Check the task checkbox in the epic issue:
 
@@ -77,14 +92,14 @@ if [ ! -z "$epic_issue" ]; then
 fi
 ```
 
-### 6. Update Epic Progress
+### 7. Update Epic Progress
 
 - Count total tasks in epic
 - Count closed tasks
 - Calculate new progress percentage
 - Update epic.md frontmatter progress field
 
-### 7. Output
+### 8. Output
 
 ```
 ✅ Closed issue #$ARGUMENTS

@@ -56,7 +56,21 @@ Read `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
 - Identify which can start immediately
 - Note dependencies between streams
 
-### 3. Setup Progress Tracking
+### 3. Architect Review (Optional)
+
+Check if architect review is enabled for this epic:
+```bash
+architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
+```
+
+If `architect_mode` is `gate` or `advisory`:
+- Run: `/pm:architect-review $epic_name --checkpoint plan --task $ARGUMENTS`
+- If gate mode and review returns "Needs Changes": report issues and stop (do not launch agents)
+- If advisory mode: log findings and continue
+
+If `architect_mode` is empty or `off`: skip silently.
+
+### 4. Setup Progress Tracking
 
 Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
 
@@ -67,7 +81,7 @@ mkdir -p .pm/epics/{epic_name}/updates/$ARGUMENTS
 
 Update task file frontmatter `updated` field with current datetime.
 
-### 4. Launch Parallel Agents
+### 5. Launch Parallel Agents
 
 For each stream that can start immediately:
 
@@ -123,14 +137,14 @@ Task:
     Complete your stream's work and mark as completed when done.
 ```
 
-### 5. GitHub Assignment
+### 6. GitHub Assignment
 
 ```bash
 # Assign to self and mark in-progress
 gh issue edit $ARGUMENTS --add-assignee @me --add-label "in-progress"
 ```
 
-### 6. Output
+### 7. Output
 
 ```
 ✅ Started parallel work on issue #$ARGUMENTS

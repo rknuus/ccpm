@@ -213,7 +213,21 @@ Before finalizing tasks, verify:
 - [ ] Parallel tasks don't conflict with each other
 - [ ] Combined tasks cover all epic requirements
 
-### 10. Post-Decomposition
+### 10. Architect Review (Optional)
+
+Check if architect review is enabled for this epic:
+```bash
+architect_mode=$(grep '^architect:' .pm/epics/$ARGUMENTS/epic.md | sed 's/^architect: *//')
+```
+
+If `architect_mode` is `gate` or `advisory`:
+- Run: `/pm:architect-review $ARGUMENTS --checkpoint design`
+- If gate mode and review returns "Needs Changes": report issues and ask user to address them before proceeding
+- If advisory mode: log findings and continue
+
+If `architect_mode` is empty or `off`: skip silently.
+
+### 11. Post-Decomposition
 
 After successfully creating tasks:
 1. Confirm: "✅ Created {count} tasks for epic: $ARGUMENTS"
