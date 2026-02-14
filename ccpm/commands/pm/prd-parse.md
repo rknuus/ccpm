@@ -73,6 +73,7 @@ created: [Current ISO date/time]
 progress: 0%
 prd: .pm/prds/$ARGUMENTS.md
 github: [Will be updated when synced to GitHub]
+architect: off  # Set to 'advisory' or 'gate' to enable architect reviews
 ---
 
 # Epic: $ARGUMENTS
@@ -135,6 +136,7 @@ High-level task categories that will be created:
 - **progress**: Always start with "0%" for new epics
 - **prd**: Reference the source PRD file path
 - **github**: Leave placeholder text - will be updated during sync
+- **architect**: Default to "off". Set to "advisory" or "gate" to enable architect reviews at workflow checkpoints
 
 ### 5. Output Location
 Create the directory structure if it doesn't exist:
