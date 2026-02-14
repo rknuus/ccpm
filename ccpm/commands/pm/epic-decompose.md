@@ -232,7 +232,11 @@ After successfully creating tasks:
    - Total tasks created
    - Parallel vs sequential breakdown
    - Total estimated effort
-3. Suggest next step: "Ready to sync to GitHub? Run: /pm:epic-sync $ARGUMENTS"
+3. Suggest next steps:
+   - ➡️ `/pm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
+   - `/pm:epic-start $ARGUMENTS` — Start working on tasks
+   - `/pm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
+   - `/pm:epic-show $ARGUMENTS` — Review the tasks
 
 ## Error Recovery
 

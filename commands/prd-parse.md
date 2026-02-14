@@ -162,7 +162,10 @@ After successfully creating the epic:
    - Number of task categories identified
    - Key architecture decisions
    - Estimated effort
-3. Suggest next step: "Ready to break down into tasks? Run: /pm:epic-decompose $ARGUMENTS"
+3. Suggest next steps:
+   - ➡️ `/pm:epic-decompose $ARGUMENTS` — Break epic into tasks
+   - `/pm:epic-edit $ARGUMENTS` — Edit the epic
+   - `/pm:prd-edit $ARGUMENTS` — Edit the source PRD
 
 ## Error Recovery
 

@@ -138,7 +138,10 @@ Before saving the PRD, verify:
 After successfully creating the PRD:
 1. Confirm: "✅ PRD created: .pm/prds/$ARGUMENTS.md"
 2. Show brief summary of what was captured
-3. Suggest next step: "Ready to create implementation epic? Run: /pm:prd-parse $ARGUMENTS"
+3. Suggest next steps:
+   - ➡️ `/pm:prd-parse $ARGUMENTS` — Convert PRD to epic
+   - `/pm:prd-edit $ARGUMENTS` — Edit the PRD
+   - `/pm:prd-new <name>` — Create another PRD
 
 ## Error Recovery
 
