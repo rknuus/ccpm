@@ -3,40 +3,47 @@
 ## Unix/Linux/macOS
 
 ```bash
-curl -sSL https://automaze.io/ccpm/install | bash
+# Install latest release
+curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
+
+# Install a specific version
+curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --version v1.0.0
+
+# Install into a third-party project (uses .git/info/exclude instead of .gitignore)
+curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --third-party
 ```
 
 Or with wget:
 
 ```bash
-wget -qO- https://automaze.io/ccpm/install | bash
+wget -qO- https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
 ```
 
-## Windows (PowerShell)
+### Options
 
-```powershell
-iwr -useb https://automaze.io/ccpm/install | iex
-```
+| Flag | Description |
+|------|-------------|
+| `--version <tag>` | Install a specific GitHub Release (e.g. `v1.0.0`). Without this, the latest release is used. |
+| `--third-party` | Use `.git/info/exclude` instead of `.gitignore`. Use when installing into a project you do not own. |
+| `--help` | Show usage information. |
 
-Or download and execute:
+## Windows (cmd)
 
-```powershell
-curl -o ccpm.bat https://automaze.io/ccpm/install && ccpm.bat
-```
-
-## One-liner alternatives
-
-### Unix/Linux/macOS (direct commands)
-```bash
-git clone https://github.com/automazeio/ccpm.git . && rm -rf .git
-```
-
-### Windows (cmd)
 ```cmd
-git clone https://github.com/automazeio/ccpm.git . && rmdir /s /q .git
+curl -o ccpm.bat https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.bat && ccpm.bat
 ```
 
-### Windows (PowerShell)
-```powershell
-git clone https://github.com/automazeio/ccpm.git .; Remove-Item -Recurse -Force .git
+With options:
+
+```cmd
+ccpm.bat --version v1.0.0
+ccpm.bat --third-party
 ```
+
+> Note: The Windows script requires PowerShell for version resolution and downloads.
+> `tar` is required for release extraction (available on Windows 10+).
+
+## Upgrade Detection
+
+If CCPM is already installed, the script detects the current version
+(stored in `.claude/ccpm/.version`) and offers to upgrade, skip, or overwrite.

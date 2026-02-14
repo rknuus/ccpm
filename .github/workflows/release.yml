@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create release tarball
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          ARCHIVE="ccpm-${TAG}.tar.gz"
+          # Bundle only the installable files
+          tar -czf "$ARCHIVE" \
+            ccpm/ \
+            install/ \
+            LICENSE \
+            README.md
+          echo "ARCHIVE=$ARCHIVE" >> "$GITHUB_ENV"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ARCHIVE }}
+          generate_release_notes: true

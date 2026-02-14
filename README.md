@@ -36,6 +36,7 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tes
 - [Proven Results](#proven-results)
 - [Example Flow](#example-flow)
 - [Get Started Now](#get-started-now)
+- [Upgrading](#upgrading)
 - [Local vs Remote](#local-vs-remote)
 - [Technical Notes](#technical-notes)
 - [Support This Project](#support-this-project)
@@ -64,15 +65,18 @@ graph LR
 
 ```bash
 # Create a comprehensive PRD through guided brainstorming
-/pm:prd-new memory-system
+/ccpm:prd-new memory-system
 
 # Transform PRD into a technical epic with task breakdown
-/pm:prd-parse memory-system
+/ccpm:prd-parse memory-system
 
 # Push to GitHub and start parallel execution
-/pm:epic-oneshot memory-system
-/pm:issue-start 1235
+/ccpm:epic-oneshot memory-system
+/ccpm:issue-start 1235
 ```
+
+> **Command namespace:** When installed as a plugin the namespace is `/ccpm:*` (e.g. `/ccpm:prd-new`).
+> Legacy install-script installations use `/pm:*` (e.g. `/pm:prd-new`).
 
 ## What Makes This Different?
 
@@ -132,24 +136,45 @@ No shortcuts. No assumptions. No regrets.
 
 ## System Architecture
 
+When installed as a **plugin** (recommended), CCPM lives at the repository root:
+
+```
+<project-root>/
+├── .claude-plugin/
+│   ├── plugin.json       # Plugin manifest (name, version, entry points)
+│   └── marketplace.json  # Marketplace registry config
+├── agents/               # Task-oriented agents (for context preservation)
+├── commands/             # Command definitions (flat layout)
+│   ├── prd-new.md        # /ccpm:prd-new
+│   ├── epic-decompose.md # /ccpm:epic-decompose
+│   ├── context-create.md # Context commands (prefixed)
+│   ├── testing-run.md    # Testing commands (prefixed)
+│   └── ...
+├── hooks/                # Git hook helpers
+├── scripts/              # Utility scripts
+└── .pm/                  # PM workspace (gitignored)
+    ├── epics/
+    │   └── [epic-name]/  # Epic and related tasks
+    │       ├── epic.md
+    │       ├── [#].md    # Individual task files
+    │       └── updates/  # Work-in-progress updates
+    └── prds/             # PRD files
+```
+
+When installed via the **install script** (legacy), files are placed under `.claude/`:
+
 ```
 .claude/
-├── CLAUDE.md          # Always-on instructions (copy content to your project's CLAUDE.md file)
-├── agents/            # Task-oriented agents (for context preservation)
-├── commands/          # Command definitions
-│   ├── context/       # Create, update, and prime context
-│   ├── pm/            # ← Project management commands (this system)
-│   └── testing/       # Prime and execute tests (edit this)
-├── context/           # Project-wide context files
-├── epics/             # ← PM's local workspace (place in .gitignore)
-│   └── [epic-name]/   # Epic and related tasks
-│       ├── epic.md    # Implementation plan
-│       ├── [#].md     # Individual task files
-│       └── updates/   # Work-in-progress updates
-├── prds/              # ← PM's PRD files
-├── rules/             # Place any rule files you'd like to reference here
-└── scripts/           # Place any script files you'd like to use here
+├── commands/
+│   ├── pm/            # Project management commands
+│   ├── context/       # Context commands
+│   └── testing/       # Testing commands
+├── ccpm/              # CCPM internals (agents, scripts, rules, etc.)
+└── settings.local.json
 ```
+
+> **Note:** The plugin layout uses a flat `commands/` directory with prefixed filenames
+> (e.g. `context-create.md`, `testing-run.md`) instead of subdirectories.
 
 ## Workflow Phases
 
@@ -201,7 +226,8 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 ## Command Reference
 
 > [!TIP]
-> Type `/pm:help` for a concise command summary
+> Type `/ccpm:help` (plugin) or `/pm:help` (legacy) for a concise command summary.
+> Commands below use the `/pm:` prefix. Plugin users should substitute `/ccpm:` instead.
 
 ### Initial Setup
 - `/pm:init` - Install dependencies and configure GitHub
@@ -384,31 +410,18 @@ Teams using this system report:
 
 ## Get Started Now
 
-### Quick Setup (2 minutes)
+### Option A: Plugin Install (Recommended)
 
-1. **Install this repository into your project**:
+1. **Add the CCPM marketplace and install the plugin** in Claude Code:
 
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -sSL https://automaze.io/ccpm/install | bash
-   # or: wget -qO- https://automaze.io/ccpm/install | bash
    ```
-
-   #### Windows (PowerShell)
-   ```bash
-   cd path/to/your/project/
-   iwr -useb https://automaze.io/ccpm/install | iex
+   /plugin marketplace add rknuus/ccpm
+   /plugin install ccpm@ccpm-marketplace
    ```
-   > ⚠️ **IMPORTANT**: If you already have a `.claude` directory, clone this repository to a different directory and copy the contents of the cloned `.claude` directory to your project's `.claude` directory.
-
-   See full/other installation options in the [installation guide ›](https://github.com/automazeio/ccpm/tree/main/install)
-
 
 2. **Initialize the PM system**:
    ```bash
-   /pm:init
+   /ccpm:init
    ```
    This command will:
    - Install GitHub CLI (if needed)
@@ -417,26 +430,112 @@ Teams using this system report:
    - Create required directories
    - Update .gitignore
 
-3. **Create `CLAUDE.md`** with your repository information
+3. **Start your first feature**:
+   ```bash
+   /ccpm:prd-new your-feature-name
+   ```
+
+### Option B: Install Script (Fallback)
+
+Use the install script if plugin installation is not available or if you need to install into a third-party project.
+
+1. **Install into your project**:
+
+   #### Unix/Linux/macOS
+
+   ```bash
+   cd path/to/your/project/
+   curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
+   ```
+
+   #### Windows (cmd)
+   ```cmd
+   curl -o ccpm.bat https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh && ccpm.bat
+   ```
+
+   #### Third-Party Projects
+
+   When installing into a project you do not own, use `--third-party` mode.
+   This writes exclusions to `.git/info/exclude` instead of `.gitignore`,
+   keeping the host project's tracked files unchanged:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --third-party
+   ```
+
+   See all options (`--version`, `--third-party`, `--help`) in the [installation guide](install/README.md).
+
+2. **Initialize the PM system**:
+   ```bash
+   /pm:init
+   ```
+
+3. **Create `CLAUDE.md`** with your repository information:
    ```bash
    /init include rules from .claude/CLAUDE.md
    ```
-   > If you already have a `CLAUDE.md` file, run: `/re-init` to update it with important rules from `.claude/CLAUDE.md`.
+   > If you already have a `CLAUDE.md` file, run `/re-init` to update it with important rules from `.claude/CLAUDE.md`.
 
 4. **Prime the system**:
    ```bash
    /context:create
    ```
 
-
-
-### Start Your First Feature
-
-```bash
-/pm:prd-new your-feature-name
-```
+5. **Start your first feature**:
+   ```bash
+   /pm:prd-new your-feature-name
+   ```
 
 Watch as structured planning transforms into shipped code.
+
+## Upgrading
+
+### From Install Script to Plugin
+
+If you previously installed CCPM via `curl | bash`, follow these steps to migrate to the plugin system:
+
+1. **Install the plugin** (your existing `.pm/` data is preserved automatically):
+   ```
+   /plugin marketplace add rknuus/ccpm
+   /plugin install ccpm@ccpm-marketplace
+   ```
+
+2. **Remove the old installation** once you have confirmed the plugin works:
+   ```bash
+   rm -rf .claude/ccpm .claude/commands
+   ```
+
+3. **Update your command usage** -- the namespace changes from `/pm:*` to `/ccpm:*`:
+   - `/pm:prd-new` becomes `/ccpm:prd-new`
+   - `/pm:epic-oneshot` becomes `/ccpm:epic-oneshot`
+   - `/pm:issue-start` becomes `/ccpm:issue-start`
+   - (all other commands follow the same pattern)
+
+Your `.pm/` directory (PRDs, epics, task files) remains untouched during migration.
+
+### Plugin Updates
+
+To update to the latest version of the plugin:
+
+```
+/plugin update ccpm
+```
+
+### Install Script Upgrades
+
+If using the install script, re-run it to upgrade. The script detects the
+current version (stored in `.claude/ccpm/.version`) and offers to upgrade,
+skip, or overwrite.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
+```
+
+To pin a specific version:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --version v1.0.0
+```
 
 ## Local vs Remote
 

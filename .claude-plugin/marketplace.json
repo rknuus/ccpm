@@ -1,0 +1,17 @@
+{
+  "name": "ccpm-marketplace",
+  "owner": {
+    "name": "rknuus",
+    "url": "https://github.com/rknuus"
+  },
+  "plugins": [
+    {
+      "name": "ccpm",
+      "description": "Claude Code Project Manager — spec-driven development with GitHub issues and parallel AI agents",
+      "source": {
+        "source": "github",
+        "repo": "rknuus/ccpm"
+      }
+    }
+  ]
+}
