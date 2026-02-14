@@ -124,11 +124,128 @@ Expected output:
 - 43.md should have depends_on: [42] and conflicts_with: [44]
 - 44.md should have depends_on: [42, 43]
 
-### 5. Cleanup
+### 5. Cleanup Padded Test
 
 ```bash
 cd -
 rm -rf /tmp/test-refs
 rm -f /tmp/task-mapping.txt /tmp/id-mapping.txt
-echo "✅ Test complete and cleaned up"
+echo "✅ Padded ID test complete and cleaned up"
+```
+
+### 6. Test Non-Padded IDs
+
+Create test files with non-padded IDs (as used by the global counter):
+```bash
+mkdir -p /tmp/test-refs-v2
+cd /tmp/test-refs-v2
+
+# Create task 1
+cat > 1.md << 'EOF'
+---
+name: Task One
+status: open
+depends_on: []
+parallel: true
+conflicts_with: [2, 3]
+---
+# Task One
+This is task 1.
+EOF
+
+# Create task 2
+cat > 2.md << 'EOF'
+---
+name: Task Two
+status: open
+depends_on: [1]
+parallel: false
+conflicts_with: [3]
+---
+# Task Two
+This is task 2, depends on 1.
+EOF
+
+# Create task 3
+cat > 3.md << 'EOF'
+---
+name: Task Three
+status: open
+depends_on: [1, 2]
+parallel: false
+conflicts_with: []
+---
+# Task Three
+This is task 3, depends on 1 and 2.
+EOF
+```
+
+### 7. Create Non-Padded Mappings
+
+```bash
+# Simulate task -> issue number mapping for non-padded IDs
+cat > /tmp/task-mapping.txt << 'EOF'
+1.md:101
+2.md:102
+3.md:103
+EOF
+
+# Create old -> new ID mapping
+> /tmp/id-mapping.txt
+while IFS=: read -r task_file task_number; do
+  old_num=$(basename "$task_file" .md)
+  echo "$old_num:$task_number" >> /tmp/id-mapping.txt
+done < /tmp/task-mapping.txt
+
+echo "ID Mapping:"
+cat /tmp/id-mapping.txt
+```
+
+### 8. Update Non-Padded References
+
+```bash
+while IFS=: read -r task_file task_number; do
+  echo "Processing: $task_file -> $task_number.md"
+
+  # Read the file content
+  content=$(cat "$task_file")
+
+  # Update references
+  while IFS=: read -r old_num new_num; do
+    content=$(echo "$content" | sed "s/\b$old_num\b/$new_num/g")
+  done < /tmp/id-mapping.txt
+
+  # Write to new file
+  new_name="${task_number}.md"
+  echo "$content" > "$new_name"
+
+  echo "Updated content preview:"
+  grep -E "depends_on:|conflicts_with:" "$new_name"
+  echo "---"
+done < /tmp/task-mapping.txt
+```
+
+### 9. Verify Non-Padded Results
+
+```bash
+echo "=== Non-Padded ID Results ==="
+for file in 101.md 102.md 103.md; do
+  echo "File: $file"
+  grep -E "name:|depends_on:|conflicts_with:" "$file"
+  echo ""
+done
+```
+
+Expected output:
+- 101.md should have conflicts_with: [102, 103]
+- 102.md should have depends_on: [101] and conflicts_with: [103]
+- 103.md should have depends_on: [101, 102]
+
+### 10. Final Cleanup
+
+```bash
+cd -
+rm -rf /tmp/test-refs-v2
+rm -f /tmp/task-mapping.txt /tmp/id-mapping.txt
+echo "✅ All tests complete and cleaned up"
 ```
