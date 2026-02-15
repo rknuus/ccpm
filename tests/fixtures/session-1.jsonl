@@ -1,0 +1,7 @@
+{"type":"user","timestamp":"2026-02-15T10:00:00.000Z","message":{"role":"user","content":"Implement the login feature"},"sessionId":"session-1","uuid":"u1"}
+{"type":"assistant","timestamp":"2026-02-15T10:00:05.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":100,"output_tokens":200,"cache_creation_input_tokens":50,"cache_read_input_tokens":30}},"sessionId":"session-1","uuid":"a1","parentUuid":"u1"}
+{"type":"user","timestamp":"2026-02-15T10:00:15.000Z","message":{"role":"user","content":"Add error handling too"},"sessionId":"session-1","uuid":"u2","parentUuid":"a1"}
+{"type":"assistant","timestamp":"2026-02-15T10:00:22.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":150,"output_tokens":300,"cache_creation_input_tokens":60,"cache_read_input_tokens":40}},"sessionId":"session-1","uuid":"a2","parentUuid":"u2"}
+{"type":"user","timestamp":"2026-02-15T10:00:22.500Z","message":{"role":"user","content":[{"tool_use_id":"tool1","type":"tool_result","content":"file written"}]},"sessionId":"session-1","uuid":"u3","parentUuid":"a2"}
+{"type":"assistant","timestamp":"2026-02-15T10:00:25.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":80,"output_tokens":50,"cache_creation_input_tokens":0,"cache_read_input_tokens":100}},"sessionId":"session-1","uuid":"a3","parentUuid":"u3"}
+{"type":"user","timestamp":"2026-02-15T10:00:35.000Z","message":{"role":"user","content":"Looks good, thanks!"},"sessionId":"session-1","uuid":"u4","parentUuid":"a3"}
