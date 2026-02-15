@@ -135,22 +135,12 @@ No shortcuts. No assumptions. No regrets.
 
 ## System Architecture
 
-CCPM is installed as a **plugin** and lives at the repository root:
+CCPM is installed as a Claude **plugin**. After running `/ccpm:init`, the following directories are created in your project:
 
 ```
-<project-root>/
-├── .claude-plugin/
-│   ├── plugin.json       # Plugin manifest (name, version, entry points)
-│   └── marketplace.json  # Marketplace registry config
-├── agents/               # Task-oriented agents (for context preservation)
-├── commands/             # Command definitions (flat layout)
-│   ├── prd-new.md        # /ccpm:prd-new
-│   ├── epic-decompose.md # /ccpm:epic-decompose
-│   ├── context-create.md # Context commands (prefixed)
-│   ├── testing-run.md    # Testing commands (prefixed)
-│   └── ...
-├── hooks/                # Git hook helpers
-├── scripts/              # Utility scripts
+<your-project>/
+├── .claude/
+│   └── rules/            # CCPM rules (copied from the plugin)
 └── .pm/                  # PM workspace (gitignored)
     ├── epics/
     │   └── [epic-name]/  # Epic and related tasks
@@ -159,6 +149,8 @@ CCPM is installed as a **plugin** and lives at the repository root:
     │       └── updates/  # Work-in-progress updates
     └── prds/             # PRD files
 ```
+
+The plugin itself (commands, agents, scripts) lives in its own repository and is loaded by Claude Code's plugin system.
 
 ## Workflow Phases
 
@@ -399,6 +391,15 @@ Teams using this system report:
    /plugin marketplace add rknuus/ccpm
    /plugin install ccpm@ccpm-marketplace
    ```
+
+   **Or test locally without installing** (e.g. to try a fork or a branch):
+
+   ```bash
+   # From your project directory, point to the local clone
+   claude --plugin-dir /path/to/ccpm
+   ```
+
+   This loads the plugin for the current session only. Commands are available under the same `/ccpm:*` namespace.
 
 2. **Initialize the PM system**:
    ```bash

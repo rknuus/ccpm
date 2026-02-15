@@ -128,24 +128,22 @@ graph LR
 
 ## 系统架构
 
+CCPM作为Claude **插件**安装。运行`/ccpm:init`后，以下目录会在你的项目中创建：
+
 ```
-.claude/
-├── CLAUDE.md          # 始终在线的指令（将内容复制到项目的CLAUDE.md文件中）
-├── agents/            # 面向任务的代理（用于上下文保存）
-├── commands/          # 命令定义
-│   ├── context/       # 创建、更新和准备上下文
-│   ├── pm/            # ← 项目管理命令（此系统）
-│   └── testing/       # 准备和执行测试（编辑此部分）
-├── context/           # 项目范围的上下文文件
-├── epics/             # ← PM的本地工作区（放入.gitignore中）
-│   └── [epic-name]/   # 史诗任务和相关任务
-│       ├── epic.md    # 实现计划
-│       ├── [#].md     # 单个任务文件
-│       └── updates/   # 进行中的更新
-├── prds/              # ← PM的PRD文件
-├── rules/             # 将任何规则文件放在此处以供引用
-└── scripts/           # 将任何脚本文件放在此处以供使用
+<your-project>/
+├── .claude/
+│   └── rules/            # CCPM规则（从插件复制）
+└── .pm/                  # PM工作区（放入.gitignore中）
+    ├── epics/
+    │   └── [epic-name]/  # 史诗任务和相关任务
+    │       ├── epic.md
+    │       ├── [#].md    # 单个任务文件
+    │       └── updates/  # 进行中的更新
+    └── prds/             # PRD文件
 ```
+
+插件本身（命令、代理、脚本）存储在自己的仓库中，由Claude Code的插件系统加载。
 
 ## 工作流程阶段
 
@@ -389,6 +387,14 @@ GitHub无需知道工作是如何完成的——只需知道工作已完成。
    /plugin install ccpm@ccpm-marketplace
    ```
 
+   **或本地测试而不安装**（例如测试fork或分支）：
+
+   ```bash
+   # 从你的项目目录，指向本地克隆
+   claude --plugin-dir /path/to/ccpm
+   ```
+
+   这仅为当前会话加载插件。命令在相同的 `/ccpm:*` 命名空间下可用。
 
 2. **初始化PM系统**：
    ```bash

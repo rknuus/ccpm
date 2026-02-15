@@ -68,7 +68,19 @@ echo ""
 echo "📁 Creating directory structure..."
 mkdir -p .pm/prds
 mkdir -p .pm/epics
+mkdir -p .claude/rules
 echo "  ✅ Directories created"
+
+# Copy rules from plugin
+echo ""
+echo "📋 Installing rules..."
+PLUGIN_RULES="${CLAUDE_PLUGIN_ROOT}/rules"
+if [ -d "$PLUGIN_RULES" ]; then
+  cp -n "$PLUGIN_RULES"/*.md .claude/rules/ 2>/dev/null
+  echo "  ✅ Rules installed to .claude/rules/"
+else
+  echo "  ⚠️ Plugin rules directory not found — skipping"
+fi
 
 # Initialize global task ID counter
 if [ ! -f .pm/next-id ]; then
