@@ -382,24 +382,12 @@ GitHub无需知道工作是如何完成的——只需知道工作已完成。
 
 ### 快速设置（2分钟）
 
-1. **将此仓库安装到你的项目中**：
+1. **在Claude Code中添加CCPM marketplace并安装插件**：
 
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -sSL https://automaze.io/ccpm/install | bash
-   # 或：wget -qO- https://automaze.io/ccpm/install | bash
    ```
-
-   #### Windows（PowerShell）
-   ```bash
-   cd path/to/your/project/
-   iwr -useb https://automaze.io/ccpm/install | iex
+   /plugin marketplace add rknuus/ccpm
+   /plugin install ccpm@ccpm-marketplace
    ```
-   > ⚠️ **重要**：如果你已有`.claude`目录，请将此仓库克隆到不同目录，然后将克隆的`.claude`目录内容复制到你项目的`.claude`目录中。
-
-   查看完整的/其他安装选项在[安装指南 ›](https://github.com/automazeio/ccpm/tree/main/install)中
 
 
 2. **初始化PM系统**：
