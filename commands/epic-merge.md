@@ -10,7 +10,7 @@ Merge completed epic from worktree back to main branch.
 
 ## Usage
 ```
-/pm:epic-merge <epic_name>
+/ccpm:epic-merge <epic_name>
 ```
 
 ## Quick Check
@@ -22,7 +22,7 @@ Merge completed epic from worktree back to main branch.
 
 2. **Check for active agents:**
    Read `.pm/epics/$ARGUMENTS/execution-status.md`
-   If active agents exist: "⚠️ Active agents detected. Stop them first with: /pm:epic-stop $ARGUMENTS"
+   If active agents exist: "⚠️ Active agents detected. Stop them first with: /ccpm:epic-stop $ARGUMENTS"
 
 ## Instructions
 
@@ -147,7 +147,7 @@ Options:
    git merge --abort
 
 3. Get help:
-   /pm:epic-resolve $ARGUMENTS
+   /ccpm:epic-resolve $ARGUMENTS
 
 Worktree preserved at: ../epic-$ARGUMENTS
 "
@@ -232,7 +232,7 @@ Cleanup completed:
 
 Next steps:
   - Deploy changes if needed
-  - Start new epic: /pm:prd-new {feature}
+  - Start new epic: /ccpm:prd-new {feature}
   - View completed work: git log --oneline -20
 ```
 

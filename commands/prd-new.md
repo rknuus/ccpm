@@ -10,7 +10,7 @@ Launch brainstorming for new product requirement document.
 
 ## Usage
 ```
-/pm:prd-new <feature_name>
+/ccpm:prd-new <feature_name>
 ```
 
 ## Required Rules
@@ -34,7 +34,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Check if `.pm/prds/$ARGUMENTS.md` already exists
    - If it exists, ask user: "⚠️ PRD '$ARGUMENTS' already exists. Do you want to overwrite it? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "Use a different name or run: /pm:prd-parse $ARGUMENTS to create an epic from the existing PRD"
+   - If user says no, suggest: "Use a different name or run: /ccpm:prd-parse $ARGUMENTS to create an epic from the existing PRD"
 
 3. **Verify directory structure:**
    - Check if `.pm/prds/` directory exists
@@ -139,9 +139,9 @@ After successfully creating the PRD:
 1. Confirm: "✅ PRD created: .pm/prds/$ARGUMENTS.md"
 2. Show brief summary of what was captured
 3. Suggest next steps:
-   - ➡️ `/pm:prd-parse $ARGUMENTS` — Convert PRD to epic
-   - `/pm:prd-edit $ARGUMENTS` — Edit the PRD
-   - `/pm:prd-new <name>` — Create another PRD
+   - ➡️ `/ccpm:prd-parse $ARGUMENTS` — Convert PRD to epic
+   - `/ccpm:prd-edit $ARGUMENTS` — Edit the PRD
+   - `/ccpm:prd-new <name>` — Create another PRD
 
 ## Error Recovery
 

@@ -10,7 +10,7 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
 
 ## Usage
 ```
-/pm:issue-start <issue_number>
+/ccpm:issue-start <issue_number>
 ```
 
 ## Quick Check
@@ -30,8 +30,8 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    ```bash
    test -f .pm/epics/*/$ARGUMENTS-analysis.md || echo "❌ No analysis found for issue #$ARGUMENTS
 
-   Run: /pm:issue-analyze $ARGUMENTS first
-   Or: /pm:issue-start $ARGUMENTS --analyze to do both"
+   Run: /ccpm:issue-analyze $ARGUMENTS first
+   Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
    ```
    If no analysis exists and no --analyze flag, stop execution.
 
@@ -46,7 +46,7 @@ epic_name={extracted_from_path}
 
 # Check worktree
 if ! git worktree list | grep -q "epic-$epic_name"; then
-  echo "❌ No worktree for epic. Run: /pm:epic-start $epic_name"
+  echo "❌ No worktree for epic. Run: /ccpm:epic-start $epic_name"
   exit 1
 fi
 ```
@@ -66,7 +66,7 @@ architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^archi
 ```
 
 If `architect_mode` is `gate` or `advisory`:
-- Run: `/pm:architect-review $epic_name --checkpoint plan --task $ARGUMENTS`
+- Run: `/ccpm:architect-review $epic_name --checkpoint plan --task $ARGUMENTS`
 - If gate mode and review returns "Needs Changes": report issues and stop (do not launch agents)
 - If advisory mode: log findings and continue
 
@@ -162,8 +162,8 @@ Launching {count} parallel agents:
 Progress tracking:
   .pm/epics/{epic_name}/updates/$ARGUMENTS/
 
-Monitor with: /pm:epic-status {epic_name}
-Sync updates: /pm:issue-sync $ARGUMENTS
+Monitor with: /ccpm:epic-status {epic_name}
+Sync updates: /ccpm:issue-sync $ARGUMENTS
 ```
 
 ## Error Handling

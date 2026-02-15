@@ -10,7 +10,7 @@ Check issue status (open/closed) and current state.
 
 ## Usage
 ```
-/pm:issue-status <issue_number>
+/ccpm:issue-status <issue_number>
 ```
 
 ## Instructions
@@ -65,8 +65,8 @@ Use clear visual indicators:
 Based on status, suggest actions:
 ```
 🚀 Suggested Actions:
-   - Start work: /pm:issue-start $ARGUMENTS
-   - Sync updates: /pm:issue-sync $ARGUMENTS
+   - Start work: /ccpm:issue-start $ARGUMENTS
+   - Sync updates: /ccpm:issue-sync $ARGUMENTS
    - Close issue: gh issue close #$ARGUMENTS
    - Reopen issue: gh issue reopen #$ARGUMENTS
 ```
@@ -74,7 +74,7 @@ Based on status, suggest actions:
 ### 7. Batch Status
 If checking multiple issues, support comma-separated list:
 ```
-/pm:issue-status 123,124,125
+/ccpm:issue-status 123,124,125
 ```
 
 Keep the output concise but informative, perfect for quick status checks during development of Issue #$ARGUMENTS.

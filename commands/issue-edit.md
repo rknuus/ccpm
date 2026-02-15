@@ -10,7 +10,7 @@ Edit issue details locally and on GitHub.
 
 ## Usage
 ```
-/pm:issue-edit <issue_number>
+/ccpm:issue-edit <issue_number>
 ```
 
 ## Instructions

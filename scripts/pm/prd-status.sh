@@ -56,8 +56,8 @@ done
 # Suggestions
 echo ""
 echo "💡 Next Actions:"
-[ $backlog -gt 0 ] && echo "  • Parse backlog PRDs to epics: /pm:prd-parse <name>"
-[ $in_progress -gt 0 ] && echo "  • Check progress on active PRDs: /pm:epic-status <name>"
-[ $total -eq 0 ] && echo "  • Create your first PRD: /pm:prd-new <name>"
+[ $backlog -gt 0 ] && echo "  • Parse backlog PRDs to epics: /ccpm:prd-parse <name>"
+[ $in_progress -gt 0 ] && echo "  • Check progress on active PRDs: /ccpm:epic-status <name>"
+[ $total -eq 0 ] && echo "  • Create your first PRD: /ccpm:prd-new <name>"
 
 exit 0

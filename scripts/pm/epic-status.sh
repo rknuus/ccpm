@@ -8,7 +8,7 @@ epic_name="$1"
 
 if [ -z "$epic_name" ]; then
   echo "❌ Please specify an epic name"
-  echo "Usage: /pm:epic-status <epic-name>"
+  echo "Usage: /ccpm:epic-status <epic-name>"
   echo ""
   echo "Available epics:"
   for dir in .pm/epics/*/; do

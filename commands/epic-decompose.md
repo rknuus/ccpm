@@ -10,7 +10,7 @@ Break epic into concrete, actionable tasks.
 
 ## Usage
 ```
-/pm:epic-decompose <feature_name>
+/ccpm:epic-decompose <feature_name>
 ```
 
 ## Required Rules
@@ -25,14 +25,14 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 
 1. **Verify epic exists:**
    - Check if `.pm/epics/$ARGUMENTS/epic.md` exists
-   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /pm:prd-parse $ARGUMENTS"
+   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:prd-parse $ARGUMENTS"
    - Stop execution if epic doesn't exist
 
 2. **Check for existing tasks:**
    - Check if any numbered task files (e.g., 1.md, 2.md) already exist in `.pm/epics/$ARGUMENTS/`
    - If tasks exist, list them and ask: "⚠️ Found {count} existing tasks. Delete and recreate all tasks? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "View existing tasks with: /pm:epic-show $ARGUMENTS"
+   - If user says no, suggest: "View existing tasks with: /ccpm:epic-show $ARGUMENTS"
 
 3. **Validate epic frontmatter:**
    - Verify epic has valid frontmatter with: name, status, created, prd
@@ -221,7 +221,7 @@ architect_mode=$(grep '^architect:' .pm/epics/$ARGUMENTS/epic.md | sed 's/^archi
 ```
 
 If `architect_mode` is `gate` or `advisory`:
-- Run: `/pm:architect-review $ARGUMENTS --checkpoint design`
+- Run: `/ccpm:architect-review $ARGUMENTS --checkpoint design`
 - If gate mode and review returns "Needs Changes": report issues and ask user to address them before proceeding
 - If advisory mode: log findings and continue
 
@@ -236,10 +236,10 @@ After successfully creating tasks:
    - Parallel vs sequential breakdown
    - Total estimated effort
 3. Suggest next steps:
-   - ➡️ `/pm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
-   - `/pm:epic-start $ARGUMENTS` — Start working on tasks
-   - `/pm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
-   - `/pm:epic-show $ARGUMENTS` — Review the tasks
+   - ➡️ `/ccpm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
+   - `/ccpm:epic-start $ARGUMENTS` — Start working on tasks
+   - `/ccpm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
+   - `/ccpm:epic-show $ARGUMENTS` — Review the tasks
 
 ## Error Recovery
 

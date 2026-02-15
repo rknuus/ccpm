@@ -95,7 +95,7 @@ if [ $errors -eq 0 ] && [ $warnings -eq 0 ] && [ $invalid -eq 0 ]; then
   echo "✅ System is healthy!"
 else
   echo ""
-  echo "💡 Run /pm:clean to fix some issues automatically"
+  echo "💡 Run /ccpm:clean to fix some issues automatically"
 fi
 
 exit 0

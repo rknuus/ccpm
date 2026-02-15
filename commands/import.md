@@ -10,7 +10,7 @@ Import existing GitHub issues into the PM system.
 
 ## Usage
 ```
-/pm:import [--epic <epic_name>] [--label <label>]
+/ccpm:import [--epic <epic_name>] [--label <label>]
 ```
 
 Options:
@@ -89,8 +89,8 @@ Created structure:
 Skipped (already tracked): {count}
 
 Next steps:
-  Run /pm:status to see imported work
-  Run /pm:sync to ensure full synchronization
+  Run /ccpm:status to see imported work
+  Run /ccpm:sync to ensure full synchronization
 ```
 
 ## Important Notes

@@ -10,7 +10,7 @@ Edit epic details after creation.
 
 ## Usage
 ```
-/pm:epic-edit <epic_name>
+/ccpm:epic-edit <epic_name>
 ```
 
 ## Instructions
@@ -58,7 +58,7 @@ gh issue edit {issue_number} --body-file .pm/epics/$ARGUMENTS/epic.md
 
 {If GitHub updated}: GitHub issue updated ✅
 
-View epic: /pm:epic-show $ARGUMENTS
+View epic: /ccpm:epic-show $ARGUMENTS
 ```
 
 ## Important Notes

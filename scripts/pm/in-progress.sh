@@ -66,7 +66,7 @@ echo ""
 if [ $found -eq 0 ]; then
   echo "No active work items found."
   echo ""
-  echo "💡 Start work with: /pm:next"
+  echo "💡 Start work with: /ccpm:next"
 else
   echo "📊 Total active items: $found"
 fi

@@ -10,7 +10,7 @@ Convert PRD to technical implementation epic.
 
 ## Usage
 ```
-/pm:prd-parse <feature_name>
+/ccpm:prd-parse <feature_name>
 ```
 
 ## Required Rules
@@ -25,12 +25,12 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 
 ### Validation Steps
 1. **Verify <feature_name> was provided as a parameter:**
-   - If not, tell user: "❌ <feature_name> was not provided as parameter. Please run: /pm:prd-parse <feature_name>"
+   - If not, tell user: "❌ <feature_name> was not provided as parameter. Please run: /ccpm:prd-parse <feature_name>"
    - Stop execution if <feature_name> was not provided
 
 2. **Verify PRD exists:**
    - Check if `.pm/prds/$ARGUMENTS.md` exists
-   - If not found, tell user: "❌ PRD not found: $ARGUMENTS. First create it with: /pm:prd-new $ARGUMENTS"
+   - If not found, tell user: "❌ PRD not found: $ARGUMENTS. First create it with: /ccpm:prd-new $ARGUMENTS"
    - Stop execution if PRD doesn't exist
 
 3. **Validate PRD frontmatter:**
@@ -42,7 +42,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Check if `.pm/epics/$ARGUMENTS/epic.md` already exists
    - If it exists, ask user: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "View existing epic with: /pm:epic-show $ARGUMENTS"
+   - If user says no, suggest: "View existing epic with: /ccpm:epic-show $ARGUMENTS"
 
 5. **Verify directory permissions:**
    - Ensure `.pm/epics/` directory exists or can be created
@@ -163,9 +163,9 @@ After successfully creating the epic:
    - Key architecture decisions
    - Estimated effort
 3. Suggest next steps:
-   - ➡️ `/pm:epic-decompose $ARGUMENTS` — Break epic into tasks
-   - `/pm:epic-edit $ARGUMENTS` — Edit the epic
-   - `/pm:prd-edit $ARGUMENTS` — Edit the source PRD
+   - ➡️ `/ccpm:epic-decompose $ARGUMENTS` — Break epic into tasks
+   - `/ccpm:epic-edit $ARGUMENTS` — Edit the epic
+   - `/ccpm:prd-edit $ARGUMENTS` — Edit the source PRD
 
 ## Error Recovery
 

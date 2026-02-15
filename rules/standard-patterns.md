@@ -33,7 +33,7 @@ Don't repeat full instructions - just reference `/rules/datetime.md` once.
 Keep them short and actionable:
 ```markdown
 ❌ {What failed}: {Exact solution}
-Example: "❌ Epic not found: Run /pm:prd-parse feature-name"
+Example: "❌ Epic not found: Run /ccpm:prd-parse feature-name"
 ```
 
 ## Standard Output Formats

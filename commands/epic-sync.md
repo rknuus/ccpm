@@ -10,20 +10,20 @@ Push epic and tasks to GitHub as issues.
 
 ## Usage
 ```
-/pm:epic-sync <feature_name>
+/ccpm:epic-sync <feature_name>
 ```
 
 ## Quick Check
 
 ```bash
 # Verify epic exists
-test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /pm:prd-parse $ARGUMENTS"
+test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
 
 # Count task files
 ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
 ```
 
-If no tasks found: "❌ No tasks to sync. Run: /pm:epic-decompose $ARGUMENTS"
+If no tasks found: "❌ No tasks to sync. Run: /ccpm:epic-decompose $ARGUMENTS"
 
 ## Instructions
 
@@ -448,8 +448,8 @@ echo "✅ Created worktree: ../epic-$ARGUMENTS"
   - Worktree: ../epic-$ARGUMENTS
 
 Next steps:
-  - Start parallel execution: /pm:epic-start $ARGUMENTS
-  - Or work on single issue: /pm:issue-start {issue_number}
+  - Start parallel execution: /ccpm:epic-start $ARGUMENTS
+  - Or work on single issue: /ccpm:issue-start {issue_number}
   - View epic: https://github.com/{owner}/{repo}/issues/{epic_number}
 ```
 

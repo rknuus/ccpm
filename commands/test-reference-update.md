@@ -10,7 +10,7 @@ Test the task reference update logic used in epic-sync.
 
 ## Usage
 ```
-/pm:test-reference-update
+/ccpm:test-reference-update
 ```
 
 ## Instructions
