@@ -13,6 +13,9 @@ Mark an issue as complete and close it on GitHub.
 /pm:issue-close <issue_number> [completion_notes]
 ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-close || true`
+
 ## Instructions
 
 ### 1. Find Local Task File
@@ -53,7 +56,17 @@ If progress file exists at `.pm/epics/{epic}/updates/$ARGUMENTS/progress.md`:
 - Add completion note with timestamp
 - Update last_sync with current datetime
 
-### 5. Close on GitHub
+### 5. Satisfaction Rating
+
+Before closing, ask the user to rate their satisfaction:
+- "Rate your satisfaction with this task's outcome (1-5, or 'skip'):"
+- If user provides a rating (1-5), save it:
+  ```bash
+  source scripts/pm/stats-satisfaction.sh && stats_save_rating task $ARGUMENTS immediate {rating}
+  ```
+- If user says 'skip', proceed without saving
+
+### 6. Close on GitHub
 
 Add completion comment and close:
 ```bash
@@ -69,7 +82,7 @@ Closed at: {timestamp}" | gh issue comment $ARGUMENTS --body-file -
 gh issue close $ARGUMENTS
 ```
 
-### 6. Update Epic Task List on GitHub
+### 7. Update Epic Task List on GitHub
 
 Check the task checkbox in the epic issue:
 
@@ -94,14 +107,17 @@ if [ ! -z "$epic_issue" ]; then
 fi
 ```
 
-### 7. Update Epic Progress
+### 8. Update Epic Progress
 
 - Count total tasks in epic
 - Count closed tasks
 - Calculate new progress percentage
 - Update epic.md frontmatter progress field
 
-### 8. Output
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+
+### 9. Output
 
 ```
 ✅ Closed issue #$ARGUMENTS

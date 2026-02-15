@@ -25,6 +25,14 @@ echo ""
 # Check for required tools
 echo "🔍 Checking dependencies..."
 
+# Check jq
+if command -v jq &> /dev/null; then
+  echo "  ✅ jq installed"
+else
+  echo "  ❌ jq not found (required for stats collection)"
+  echo "  Install: brew install jq (macOS) or apt install jq (Linux)"
+fi
+
 # Check gh CLI
 if command -v gh &> /dev/null; then
   echo "  ✅ GitHub CLI (gh) installed"
@@ -68,6 +76,9 @@ echo ""
 echo "📁 Creating directory structure..."
 mkdir -p .pm/prds
 mkdir -p .pm/epics
+mkdir -p .pm/stats/prds
+mkdir -p .pm/stats/epics
+mkdir -p .pm/stats/tasks
 mkdir -p .claude/rules
 mkdir -p .claude/agents
 mkdir -p .claude/scripts/pm
@@ -79,6 +90,14 @@ if [ ! -f .pm/next-id ]; then
   echo "  ✅ Task ID counter initialized"
 else
   echo "  ✅ Task ID counter already exists"
+fi
+
+# Initialize settings file
+if [ ! -f .pm/ccpm-settings.json ]; then
+  echo '{ "collectPrompts": false }' > .pm/ccpm-settings.json
+  echo "  ✅ Settings file created"
+else
+  echo "  ✅ Settings file already exists"
 fi
 
 # Copy scripts if in main repo
@@ -185,9 +204,9 @@ echo "  Extensions: $(gh extension list | wc -l) installed"
 echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
 echo ""
 echo "🎯 Next Steps:"
-echo "  1. Create your first PRD: /pm:prd-new <feature-name>"
-echo "  2. View help: /pm:help"
-echo "  3. Check status: /pm:status"
+echo "  1. Create your first PRD: /ccpm:prd-new <feature-name>"
+echo "  2. View help: /ccpm:help"
+echo "  3. Check status: /ccpm:status"
 echo ""
 echo "📚 Documentation: README.md"
 

@@ -35,6 +35,9 @@ Launch parallel agents to work on epic tasks in a shared branch.
    ```
    If output is not empty: "❌ You have uncommitted changes. Please commit or stash them before starting an epic"
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-start || true`
+
 ## Instructions
 
 ### 1. Create or Enter Branch
@@ -180,6 +183,9 @@ As agents complete streams:
 - Check if any blocked issues are now ready
 - Launch new agents for newly-ready work
 - Update execution-status.md
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ## Output Format
 

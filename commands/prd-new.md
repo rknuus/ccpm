@@ -41,6 +41,9 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If not, create it first
    - If unable to create, tell user: "❌ Cannot create PRD directory. Please manually create: .pm/prds/"
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-new || true`
+
 ## Instructions
 
 You are a product manager creating a comprehensive Product Requirements Document (PRD) for: **$ARGUMENTS**
@@ -132,6 +135,9 @@ Before saving the PRD, verify:
 - [ ] Success criteria are measurable
 - [ ] Dependencies are clearly identified
 - [ ] Out of scope items are explicitly listed
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 6. Post-Creation
 

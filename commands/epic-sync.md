@@ -25,6 +25,9 @@ ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
 
 If no tasks found: "❌ No tasks to sync. Run: /pm:epic-decompose $ARGUMENTS"
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-sync || true`
+
 ## Instructions
 
 ### 0. Check Remote Repository
@@ -435,6 +438,9 @@ git worktree add ../epic-$ARGUMENTS -b epic/$ARGUMENTS
 
 echo "✅ Created worktree: ../epic-$ARGUMENTS"
 ```
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 8. Output
 

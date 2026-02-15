@@ -48,6 +48,9 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Ensure `.pm/epics/` directory exists or can be created
    - If cannot create, tell user: "❌ Cannot create epic directory. Please check permissions."
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-parse || true`
+
 ## Instructions
 
 You are a technical lead converting a Product Requirements Document into a detailed implementation epic for: **$ARGUMENTS**
@@ -153,6 +156,9 @@ Before saving the epic, verify:
 - [ ] Dependencies are technically accurate
 - [ ] Effort estimates are realistic
 - [ ] Architecture decisions are justified
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 7. Post-Creation
 

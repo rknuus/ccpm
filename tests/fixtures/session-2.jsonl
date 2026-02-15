@@ -1,0 +1,4 @@
+{"type":"user","timestamp":"2026-02-15T11:00:00.000Z","message":{"role":"user","content":"Now add the signup page"},"sessionId":"session-2","uuid":"u10"}
+{"type":"assistant","timestamp":"2026-02-15T11:00:08.000Z","message":{"role":"assistant","model":"claude-sonnet-4-20250514","usage":{"input_tokens":200,"output_tokens":400,"cache_creation_input_tokens":100,"cache_read_input_tokens":0}},"sessionId":"session-2","uuid":"a10","parentUuid":"u10"}
+{"type":"user","timestamp":"2026-02-15T11:00:20.000Z","message":{"role":"user","content":"Add validation"},"sessionId":"session-2","uuid":"u11","parentUuid":"a10"}
+{"type":"assistant","timestamp":"2026-02-15T11:00:28.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":120,"output_tokens":250,"cache_creation_input_tokens":30,"cache_read_input_tokens":20}},"sessionId":"session-2","uuid":"a11","parentUuid":"u11"}

@@ -25,6 +25,9 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
    test -f .pm/epics/*/$ARGUMENTS-analysis.md && echo "⚠️ Analysis already exists. Overwrite? (yes/no)"
    ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-analyze || true`
+
 ## Instructions
 
 ### 1. Read Issue Context
@@ -158,6 +161,9 @@ Ensure:
 - Dependencies are logical
 - Agent types match the work type
 - Time estimates are reasonable
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 5. Output
 

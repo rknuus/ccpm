@@ -1,0 +1,2 @@
+{"type":"user","timestamp":"2026-02-14T09:00:00.000Z","message":{"role":"user","content":"This is from yesterday"},"sessionId":"session-old","uuid":"u50"}
+{"type":"assistant","timestamp":"2026-02-14T09:00:03.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":999,"output_tokens":999,"cache_creation_input_tokens":999,"cache_read_input_tokens":999}},"sessionId":"session-old","uuid":"a50","parentUuid":"u50"}
