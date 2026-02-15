@@ -37,14 +37,24 @@ completed: {current_datetime}
 
 If epic references a PRD, update its status to "complete".
 
-### 4. Close Epic on GitHub
+### 4. Satisfaction Rating
+
+Before closing, ask the user to rate their satisfaction:
+- "Rate your satisfaction with this epic's outcome (1-5, or 'skip'):"
+- If user provides a rating (1-5), save it:
+  ```bash
+  source scripts/pm/stats-satisfaction.sh && stats_save_rating epic $ARGUMENTS immediate {rating}
+  ```
+- If user says 'skip', proceed without saving
+
+### 5. Close Epic on GitHub
 
 If epic has GitHub issue:
 ```bash
 gh issue close {epic_issue_number} --comment "✅ Epic completed - all tasks done"
 ```
 
-### 5. Archive Option
+### 6. Archive Option
 
 Ask user: "Archive completed epic? (yes/no)"
 
@@ -52,7 +62,7 @@ If yes:
 - Move epic directory to `.pm/epics/.archived/{epic_name}/`
 - Create archive summary with completion date
 
-### 6. Output
+### 7. Output
 
 ```
 ✅ Epic closed: $ARGUMENTS
