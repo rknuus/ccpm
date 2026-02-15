@@ -8,7 +8,5 @@
   },
   "repository": "https://github.com/rknuus/ccpm",
   "license": "MIT",
-  "keywords": ["project-management", "pm", "epics", "prd", "github-issues", "workflow"],
-  "commands": ["./commands/"],
-  "agents": ["./agents/"]
+  "keywords": ["project-management", "pm", "epics", "prd", "github-issues", "workflow"]
 }
