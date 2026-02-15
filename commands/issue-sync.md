@@ -59,6 +59,9 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If no changes, tell user: "ℹ️ No new updates to sync since {last_sync}"
    - Exit gracefully if nothing to sync
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-sync || true`
+
 ## Instructions
 
 You are synchronizing local development progress to GitHub as issue comments for: **Issue #$ARGUMENTS**
@@ -209,6 +212,9 @@ This task is ready for review and can be closed.
 ---
 *Task completed: 100% | Synced at {timestamp}*
 ```
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 9. Output Summary
 ```

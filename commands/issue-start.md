@@ -35,6 +35,9 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    ```
    If no analysis exists and no --analyze flag, stop execution.
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-start || true`
+
 ## Instructions
 
 ### 1. Ensure Worktree Exists
@@ -145,6 +148,9 @@ Task:
 # Assign to self and mark in-progress
 gh issue edit $ARGUMENTS --add-assignee @me --add-label "in-progress"
 ```
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 7. Output
 

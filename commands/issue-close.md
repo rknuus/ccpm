@@ -13,6 +13,9 @@ Mark an issue as complete and close it on GitHub.
 /pm:issue-close <issue_number> [completion_notes]
 ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-close || true`
+
 ## Instructions
 
 ### 1. Find Local Task File
@@ -110,6 +113,9 @@ fi
 - Count closed tasks
 - Calculate new progress percentage
 - Update epic.md frontmatter progress field
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 9. Output
 

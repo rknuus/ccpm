@@ -13,6 +13,9 @@ Edit an existing Product Requirements Document.
 /pm:prd-edit <feature_name>
 ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-edit || true`
+
 ## Instructions
 
 ### 1. Read Current PRD
@@ -48,6 +51,9 @@ If PRD has associated epic:
 - Notify user: "This PRD has epic: {epic_name}"
 - Ask: "Epic may need updating based on PRD changes. Review epic? (yes/no)"
 - If yes, show: "Review with: /pm:epic-edit {epic_name}"
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 5. Output
 

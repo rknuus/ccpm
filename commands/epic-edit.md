@@ -13,6 +13,9 @@ Edit epic details after creation.
 /pm:epic-edit <epic_name>
 ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-edit || true`
+
 ## Instructions
 
 ### 1. Read Current Epic
@@ -49,6 +52,9 @@ If yes:
 ```bash
 gh issue edit {issue_number} --body-file .pm/epics/$ARGUMENTS/epic.md
 ```
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 5. Output
 

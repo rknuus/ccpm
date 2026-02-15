@@ -13,6 +13,9 @@ Mark an epic as complete when all tasks are done.
 /pm:epic-close <epic_name>
 ```
 
+### Context Tracking
+Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-close || true`
+
 ## Instructions
 
 ### 1. Verify All Tasks Complete
@@ -61,6 +64,9 @@ Ask user: "Archive completed epic? (yes/no)"
 If yes:
 - Move epic directory to `.pm/epics/.archived/{epic_name}/`
 - Create archive summary with completion date
+
+### Close Context
+Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 7. Output
 
