@@ -46,8 +46,8 @@ fmt_duration() {
 fmt_number() {
   local n="$1"
   n="${n:-0}"
-  # Use printf + sed for portable comma formatting
-  printf "%d" "$n" 2>/dev/null | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'
+  # Use awk for portable comma formatting (works on macOS + Linux)
+  printf "%d" "$n" 2>/dev/null | awk '{len=length($0); r=""; for(i=1;i<=len;i++){r=r substr($0,i,1); if((len-i)%3==0 && i!=len) r=r","} print r}'
 }
 
 # Get setting value from ccpm-settings.json
