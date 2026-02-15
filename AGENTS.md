@@ -105,8 +105,8 @@ New agents should follow these principles:
 
 Agents integrate seamlessly with the PM command system:
 
-- `/pm:issue-analyze` → Identifies work streams
-- `/pm:issue-start` → Spawns parallel-worker agent
+- `/ccpm:issue-analyze` → Identifies work streams
+- `/ccpm:issue-start` → Spawns parallel-worker agent
 - parallel-worker → Spawns multiple sub-agents
 - Sub-agents → Work in parallel in the worktree
 - Results → Consolidated back to main thread

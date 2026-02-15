@@ -75,8 +75,7 @@ graph LR
 /ccpm:issue-start 1235
 ```
 
-> **Command namespace:** When installed as a plugin the namespace is `/ccpm:*` (e.g. `/ccpm:prd-new`).
-> Legacy install-script installations use `/pm:*` (e.g. `/pm:prd-new`).
+> **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:prd-new`).
 
 ## What Makes This Different?
 
@@ -86,7 +85,7 @@ graph LR
 | Serial task execution | **Parallel agents** on independent tasks |
 | "Vibe coding" from memory | **Spec-driven** with full traceability |
 | Progress hidden in branches | **Transparent audit trail** in GitHub |
-| Manual task coordination | **Intelligent prioritization** with `/pm:next` |
+| Manual task coordination | **Intelligent prioritization** with `/ccpm:next` |
 
 ## Why GitHub Issues?
 
@@ -136,7 +135,7 @@ No shortcuts. No assumptions. No regrets.
 
 ## System Architecture
 
-When installed as a **plugin** (recommended), CCPM lives at the repository root:
+CCPM is installed as a **plugin** and lives at the repository root:
 
 ```
 <project-root>/
@@ -161,27 +160,12 @@ When installed as a **plugin** (recommended), CCPM lives at the repository root:
     └── prds/             # PRD files
 ```
 
-When installed via the **install script** (legacy), files are placed under `.claude/`:
-
-```
-.claude/
-├── commands/
-│   ├── pm/            # Project management commands
-│   ├── context/       # Context commands
-│   └── testing/       # Testing commands
-├── ccpm/              # CCPM internals (agents, scripts, rules, etc.)
-└── settings.local.json
-```
-
-> **Note:** The plugin layout uses a flat `commands/` directory with prefixed filenames
-> (e.g. `context-create.md`, `testing-run.md`) instead of subdirectories.
-
 ## Workflow Phases
 
 ### 1. Product Planning Phase
 
 ```bash
-/pm:prd-new feature-name
+/ccpm:prd-new feature-name
 ```
 Launches comprehensive brainstorming to create a Product Requirements Document capturing vision, user stories, success criteria, and constraints.
 
@@ -190,7 +174,7 @@ Launches comprehensive brainstorming to create a Product Requirements Document c
 ### 2. Implementation Planning Phase
 
 ```bash
-/pm:prd-parse feature-name
+/ccpm:prd-parse feature-name
 ```
 Transforms PRD into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
 
@@ -199,7 +183,7 @@ Transforms PRD into a technical implementation plan with architectural decisions
 ### 3. Task Decomposition Phase
 
 ```bash
-/pm:epic-decompose feature-name
+/ccpm:epic-decompose feature-name
 ```
 Breaks epic into concrete, actionable tasks with acceptance criteria, effort estimates, and parallelization flags.
 
@@ -208,71 +192,70 @@ Breaks epic into concrete, actionable tasks with acceptance criteria, effort est
 ### 4. GitHub Synchronization
 
 ```bash
-/pm:epic-sync feature-name
+/ccpm:epic-sync feature-name
 # Or for confident workflows:
-/pm:epic-oneshot feature-name
+/ccpm:epic-oneshot feature-name
 ```
 Pushes epic and tasks to GitHub as issues with appropriate labels and relationships.
 
 ### 5. Execution Phase
 
 ```bash
-/pm:issue-start 1234  # Launch specialized agent
-/pm:issue-sync 1234   # Push progress updates
-/pm:next             # Get next priority task
+/ccpm:issue-start 1234  # Launch specialized agent
+/ccpm:issue-sync 1234   # Push progress updates
+/ccpm:next             # Get next priority task
 ```
 Specialized agents implement tasks while maintaining progress updates and an audit trail.
 
 ## Command Reference
 
 > [!TIP]
-> Type `/ccpm:help` (plugin) or `/pm:help` (legacy) for a concise command summary.
-> Commands below use the `/pm:` prefix. Plugin users should substitute `/ccpm:` instead.
+> Type `/ccpm:help` for a concise command summary.
 
 ### Initial Setup
-- `/pm:init` - Install dependencies and configure GitHub
+- `/ccpm:init` - Install dependencies and configure GitHub
 
 ### PRD Commands
-- `/pm:prd-new` - Launch brainstorming for new product requirement
-- `/pm:prd-parse` - Convert PRD to implementation epic
-- `/pm:prd-list` - List all PRDs
-- `/pm:prd-edit` - Edit existing PRD
-- `/pm:prd-status` - Show PRD implementation status
+- `/ccpm:prd-new` - Launch brainstorming for new product requirement
+- `/ccpm:prd-parse` - Convert PRD to implementation epic
+- `/ccpm:prd-list` - List all PRDs
+- `/ccpm:prd-edit` - Edit existing PRD
+- `/ccpm:prd-status` - Show PRD implementation status
 
 ### Epic Commands
-- `/pm:epic-decompose` - Break epic into task files
-- `/pm:epic-sync` - Push epic and tasks to GitHub
-- `/pm:epic-oneshot` - Decompose and sync in one command
-- `/pm:epic-list` - List all epics
-- `/pm:epic-show` - Display epic and its tasks
-- `/pm:epic-close` - Mark epic as complete
-- `/pm:epic-edit` - Edit epic details
-- `/pm:epic-refresh` - Update epic progress from tasks
+- `/ccpm:epic-decompose` - Break epic into task files
+- `/ccpm:epic-sync` - Push epic and tasks to GitHub
+- `/ccpm:epic-oneshot` - Decompose and sync in one command
+- `/ccpm:epic-list` - List all epics
+- `/ccpm:epic-show` - Display epic and its tasks
+- `/ccpm:epic-close` - Mark epic as complete
+- `/ccpm:epic-edit` - Edit epic details
+- `/ccpm:epic-refresh` - Update epic progress from tasks
 
 ### Issue Commands
-- `/pm:issue-show` - Display issue and sub-issues
-- `/pm:issue-status` - Check issue status
-- `/pm:issue-start` - Begin work with specialized agent
-- `/pm:issue-sync` - Push updates to GitHub
-- `/pm:issue-close` - Mark issue as complete
-- `/pm:issue-reopen` - Reopen closed issue
-- `/pm:issue-edit` - Edit issue details
+- `/ccpm:issue-show` - Display issue and sub-issues
+- `/ccpm:issue-status` - Check issue status
+- `/ccpm:issue-start` - Begin work with specialized agent
+- `/ccpm:issue-sync` - Push updates to GitHub
+- `/ccpm:issue-close` - Mark issue as complete
+- `/ccpm:issue-reopen` - Reopen closed issue
+- `/ccpm:issue-edit` - Edit issue details
 
 ### Workflow Commands
-- `/pm:next` - Show next priority issue with epic context
-- `/pm:status` - Overall project dashboard
-- `/pm:standup` - Daily standup report
-- `/pm:blocked` - Show blocked tasks
-- `/pm:in-progress` - List work in progress
+- `/ccpm:next` - Show next priority issue with epic context
+- `/ccpm:status` - Overall project dashboard
+- `/ccpm:standup` - Daily standup report
+- `/ccpm:blocked` - Show blocked tasks
+- `/ccpm:in-progress` - List work in progress
 
 ### Sync Commands
-- `/pm:sync` - Full bidirectional sync with GitHub
-- `/pm:import` - Import existing GitHub issues
+- `/ccpm:sync` - Full bidirectional sync with GitHub
+- `/ccpm:import` - Import existing GitHub issues
 
 ### Maintenance Commands
-- `/pm:validate` - Check system integrity
-- `/pm:clean` - Archive completed work
-- `/pm:search` - Search across all content
+- `/ccpm:validate` - Check system integrity
+- `/ccpm:clean` - Archive completed work
+- `/ccpm:search` - Search across all content
 
 ## The Parallel Execution System
 
@@ -338,17 +321,17 @@ GitHub doesn't need to know HOW the work got done – just that it IS done.
 
 ```bash
 # Analyze what can be parallelized
-/pm:issue-analyze 1234
+/ccpm:issue-analyze 1234
 
 # Launch the swarm
-/pm:epic-start memory-system
+/ccpm:epic-start memory-system
 
 # Watch the magic
 # 12 agents working across 3 issues
 # All in: ../epic-memory-system/
 
 # One clean merge when done
-/pm:epic-merge memory-system
+/ccpm:epic-merge memory-system
 ```
 
 ## Key Features & Benefits
@@ -383,34 +366,32 @@ Teams using this system report:
 
 ```bash
 # Start a new feature
-/pm:prd-new memory-system
+/ccpm:prd-new memory-system
 
 # Review and refine the PRD...
 
 # Create implementation plan
-/pm:prd-parse memory-system
+/ccpm:prd-parse memory-system
 
 # Review the epic...
 
 # Break into tasks and push to GitHub
-/pm:epic-oneshot memory-system
+/ccpm:epic-oneshot memory-system
 # Creates issues: #1234 (epic), #1235, #1236 (tasks)
 
 # Start development on a task
-/pm:issue-start 1235
+/ccpm:issue-start 1235
 # Agent begins work, maintains local progress
 
 # Sync progress to GitHub
-/pm:issue-sync 1235
+/ccpm:issue-sync 1235
 # Updates posted as issue comments
 
 # Check overall status
-/pm:epic-show memory-system
+/ccpm:epic-show memory-system
 ```
 
 ## Get Started Now
-
-### Option A: Plugin Install (Recommended)
 
 1. **Add the CCPM marketplace and install the plugin** in Claude Code:
 
@@ -435,64 +416,19 @@ Teams using this system report:
    /ccpm:prd-new your-feature-name
    ```
 
-### Option B: Install Script (Fallback)
-
-Use the install script if plugin installation is not available or if you need to install into a third-party project.
-
-1. **Install into your project**:
-
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
-   ```
-
-   #### Windows (cmd)
-   ```cmd
-   curl -o ccpm.bat https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh && ccpm.bat
-   ```
-
-   #### Third-Party Projects
-
-   When installing into a project you do not own, use `--third-party` mode.
-   This writes exclusions to `.git/info/exclude` instead of `.gitignore`,
-   keeping the host project's tracked files unchanged:
-
-   ```bash
-   curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --third-party
-   ```
-
-   See all options (`--version`, `--third-party`, `--help`) in the [installation guide](install/README.md).
-
-2. **Initialize the PM system**:
-   ```bash
-   /pm:init
-   ```
-
-3. **Create `CLAUDE.md`** with your repository information:
-   ```bash
-   /init include rules from .claude/CLAUDE.md
-   ```
-   > If you already have a `CLAUDE.md` file, run `/re-init` to update it with important rules from `.claude/CLAUDE.md`.
-
-4. **Prime the system**:
-   ```bash
-   /context:create
-   ```
-
-5. **Start your first feature**:
-   ```bash
-   /pm:prd-new your-feature-name
-   ```
-
-Watch as structured planning transforms into shipped code.
-
 ## Upgrading
 
-### From Install Script to Plugin
+### Plugin Updates
 
-If you previously installed CCPM via `curl | bash`, follow these steps to migrate to the plugin system:
+To update to the latest version of the plugin:
+
+```
+/plugin update ccpm
+```
+
+### Migrating from Install Script
+
+If you previously installed CCPM via the install script (`curl | bash`), follow these steps to migrate to the plugin system:
 
 1. **Install the plugin** (your existing `.pm/` data is preserved automatically):
    ```
@@ -512,30 +448,6 @@ If you previously installed CCPM via `curl | bash`, follow these steps to migrat
    - (all other commands follow the same pattern)
 
 Your `.pm/` directory (PRDs, epics, task files) remains untouched during migration.
-
-### Plugin Updates
-
-To update to the latest version of the plugin:
-
-```
-/plugin update ccpm
-```
-
-### Install Script Upgrades
-
-If using the install script, re-run it to upgrade. The script detects the
-current version (stored in `.claude/ccpm/.version`) and offers to upgrade,
-skip, or overwrite.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash
-```
-
-To pin a specific version:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/rknuus/ccpm/main/install/ccpm.sh | bash -s -- --version v1.0.0
-```
 
 ## Local vs Remote
 

@@ -6,30 +6,30 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 
 ### 1. Create Requirements (PRD)
 ```bash
-/pm:prd-new user-authentication
+/ccpm:prd-new user-authentication
 ```
 - Creates: `.pm/prds/user-authentication.md`
 - Output: Complete PRD with requirements and user stories
 
 ### 2. Convert to Technical Plan (Epic)
 ```bash
-/pm:prd-parse user-authentication
+/ccpm:prd-parse user-authentication
 ```
 - Creates: `.pm/epics/user-authentication/epic.md`
 - Output: Technical implementation plan
 
 ### 3. Break Down Into Tasks
 ```bash
-/pm:epic-decompose user-authentication
+/ccpm:epic-decompose user-authentication
 ```
 - Creates: `.pm/epics/user-authentication/001.md`, `002.md`, etc.
 - Output: Individual task files with acceptance criteria
 
 ### 4. View Your Work
 ```bash
-/pm:epic-show user-authentication    # View epic and all tasks
-/pm:status                           # Project dashboard
-/pm:prd-list                         # List all PRDs
+/ccpm:epic-show user-authentication    # View epic and all tasks
+/ccpm:status                           # Project dashboard
+/ccpm:prd-list                         # List all PRDs
 ```
 
 ### 5. Work on Tasks
@@ -60,20 +60,20 @@ vim .pm/epics/user-authentication/001.md
 ## Commands That Work Locally
 
 ### ✅ Fully Local Commands
-- `/pm:prd-new <name>` - Create requirements
-- `/pm:prd-parse <name>` - Generate technical plan
-- `/pm:epic-decompose <name>` - Break into tasks
-- `/pm:epic-show <name>` - View epic and tasks
-- `/pm:status` - Project dashboard
-- `/pm:prd-list` - List PRDs
-- `/pm:search <term>` - Search content
-- `/pm:validate` - Check file integrity
+- `/ccpm:prd-new <name>` - Create requirements
+- `/ccpm:prd-parse <name>` - Generate technical plan
+- `/ccpm:epic-decompose <name>` - Break into tasks
+- `/ccpm:epic-show <name>` - View epic and tasks
+- `/ccpm:status` - Project dashboard
+- `/ccpm:prd-list` - List PRDs
+- `/ccpm:search <term>` - Search content
+- `/ccpm:validate` - Check file integrity
 
 ### 🚫 GitHub-Only Commands (Skip These)
-- `/pm:epic-sync <name>` - Push to GitHub Issues
-- `/pm:issue-sync <id>` - Update GitHub Issue
-- `/pm:issue-start <id>` - Requires GitHub Issue ID
-- `/pm:epic-oneshot <name>` - Includes GitHub sync
+- `/ccpm:epic-sync <name>` - Push to GitHub Issues
+- `/ccpm:issue-sync <id>` - Update GitHub Issue
+- `/ccpm:issue-start <id>` - Requires GitHub Issue ID
+- `/ccpm:epic-oneshot <name>` - Includes GitHub sync
 
 ## Benefits of Local Mode
 

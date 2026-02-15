@@ -63,7 +63,7 @@ Resolved 10 of 12 open GitHub issues, modernized command syntax, improved docume
 
 ### 💡 Proposed Features
 - **Bug Handling Workflow** ([#654](https://github.com/automazeio/ccpm/issues/654))
-  - Designed `/pm:attach-bug` command for automated bug tracking
+  - Designed `/ccpm:attach-bug` command for automated bug tracking
   - Proposed lightweight sub-issue integration with existing infrastructure
   - Community feedback requested on implementation approach
 

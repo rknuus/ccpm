@@ -103,8 +103,8 @@
 
 代理与PM命令系统无缝集成:
 
-- `/pm:issue-analyze` → 识别工作流
-- `/pm:issue-start` → 生成parallel-worker代理
+- `/ccpm:issue-analyze` → 识别工作流
+- `/ccpm:issue-start` → 生成parallel-worker代理
 - parallel-worker → 生成多个子代理
 - 子代理 → 在工作树中并行工作
 - 结果 → 整合回主线程

@@ -4,7 +4,7 @@
 
 Complete reference of all commands available in the Claude Code PM system.
 
-> **Note**: Project Management commands (`/pm:*`) are documented in the main [README.md](README.md#command-reference).
+> **Note**: Project Management commands (`/ccpm:*`) are documented in the main [README.md](README.md#command-reference).
 
 ## Table of Contents
 
@@ -155,5 +155,5 @@ This keeps the main conversation context clean while doing complex work.
 - Commands are markdown files interpreted as instructions
 - The `/` prefix triggers command execution
 - Commands can spawn agents for context preservation
-- All PM commands (`/pm:*`) are documented in the main README
+- All PM commands (`/ccpm:*`) are documented in the main README
 - Commands follow rules defined in `/rules/`
