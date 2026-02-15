@@ -68,9 +68,6 @@ echo ""
 echo "📁 Creating directory structure..."
 mkdir -p .pm/prds
 mkdir -p .pm/epics
-mkdir -p .claude/rules
-mkdir -p .claude/agents
-mkdir -p .claude/scripts/pm
 echo "  ✅ Directories created"
 
 # Initialize global task ID counter
@@ -79,15 +76,6 @@ if [ ! -f .pm/next-id ]; then
   echo "  ✅ Task ID counter initialized"
 else
   echo "  ✅ Task ID counter already exists"
-fi
-
-# Copy scripts if in main repo
-if [ -d "scripts/pm" ] && [ ! "$(pwd)" = *"/.claude"* ]; then
-  echo ""
-  echo "📝 Copying PM scripts..."
-  cp -r scripts/pm/* .claude/scripts/pm/
-  chmod +x .claude/scripts/pm/*.sh
-  echo "  ✅ Scripts copied and made executable"
 fi
 
 # Check for git
@@ -155,25 +143,6 @@ else
   echo "  Initialize with: git init"
 fi
 
-# Copy CCPM ambient rules to .claude/rules/
-echo ""
-echo "📄 Installing CCPM rules..."
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-RULES_DIR="$SCRIPT_DIR/../../rules"
-mkdir -p .claude/rules
-rules_copied=0
-for rule in "$RULES_DIR"/*.md; do
-  if [ -f "$rule" ]; then
-    cp "$rule" ".claude/rules/$(basename "$rule")"
-    rules_copied=$((rules_copied + 1))
-  fi
-done
-if [ "$rules_copied" -gt 0 ]; then
-  echo "  ✅ $rules_copied rule files installed to .claude/rules/"
-else
-  echo "  ⚠️ Rule files not found in $RULES_DIR"
-fi
-
 # Summary
 echo ""
 echo "✅ Initialization Complete!"
@@ -185,9 +154,9 @@ echo "  Extensions: $(gh extension list | wc -l) installed"
 echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
 echo ""
 echo "🎯 Next Steps:"
-echo "  1. Create your first PRD: /pm:prd-new <feature-name>"
-echo "  2. View help: /pm:help"
-echo "  3. Check status: /pm:status"
+echo "  1. Create your first PRD: /ccpm:prd-new <feature-name>"
+echo "  2. View help: /ccpm:help"
+echo "  3. Check status: /ccpm:status"
 echo ""
 echo "📚 Documentation: README.md"
 
