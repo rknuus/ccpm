@@ -60,14 +60,14 @@ graph LR
 
 ```bash
 # 通过引导式头脑风暴创建全面的PRD
-/pm:prd-new memory-system
+/ccpm:prd-new memory-system
 
 # 将PRD转化为技术史诗任务并进行任务分解
-/pm:prd-parse memory-system
+/ccpm:prd-parse memory-system
 
 # 推送到GitHub并开始并行执行
-/pm:epic-oneshot memory-system
-/pm:issue-start 1235
+/ccpm:epic-oneshot memory-system
+/ccpm:issue-start 1235
 ```
 
 ## 与众不同之处
@@ -78,7 +78,7 @@ graph LR
 | 串行任务执行         | **并行代理处理独立任务**           |
 | 从记忆中"凭感觉编码" | **规范驱动，全程可追溯**           |
 | 进度隐藏在分支中     | **GitHub中的透明审计轨迹**         |
-| 手动任务协调         | **智能优先级排序，使用`/pm:next`** |
+| 手动任务协调         | **智能优先级排序，使用`/ccpm:next`** |
 
 ## 为什么选择GitHub Issues？
 
@@ -128,31 +128,29 @@ graph LR
 
 ## 系统架构
 
+CCPM作为Claude **插件**安装。运行`/ccpm:init`后，以下目录会在你的项目中创建：
+
 ```
-.claude/
-├── CLAUDE.md          # 始终在线的指令（将内容复制到项目的CLAUDE.md文件中）
-├── agents/            # 面向任务的代理（用于上下文保存）
-├── commands/          # 命令定义
-│   ├── context/       # 创建、更新和准备上下文
-│   ├── pm/            # ← 项目管理命令（此系统）
-│   └── testing/       # 准备和执行测试（编辑此部分）
-├── context/           # 项目范围的上下文文件
-├── epics/             # ← PM的本地工作区（放入.gitignore中）
-│   └── [epic-name]/   # 史诗任务和相关任务
-│       ├── epic.md    # 实现计划
-│       ├── [#].md     # 单个任务文件
-│       └── updates/   # 进行中的更新
-├── prds/              # ← PM的PRD文件
-├── rules/             # 将任何规则文件放在此处以供引用
-└── scripts/           # 将任何脚本文件放在此处以供使用
+<your-project>/
+├── .claude/
+│   └── rules/            # CCPM规则（从插件复制）
+└── .pm/                  # PM工作区（放入.gitignore中）
+    ├── epics/
+    │   └── [epic-name]/  # 史诗任务和相关任务
+    │       ├── epic.md
+    │       ├── [#].md    # 单个任务文件
+    │       └── updates/  # 进行中的更新
+    └── prds/             # PRD文件
 ```
+
+插件本身（命令、代理、脚本）存储在自己的仓库中，由Claude Code的插件系统加载。
 
 ## 工作流程阶段
 
 ### 1. 产品规划阶段
 
 ```bash
-/pm:prd-new feature-name
+/ccpm:prd-new feature-name
 ```
 启动全面的头脑风暴，创建产品需求文档，捕捉愿景、用户故事、成功标准和约束条件。
 
@@ -161,7 +159,7 @@ graph LR
 ### 2. 实现规划阶段
 
 ```bash
-/pm:prd-parse feature-name
+/ccpm:prd-parse feature-name
 ```
 将PRD转化为技术实现计划，包含架构决策、技术方法和依赖映射。
 
@@ -170,7 +168,7 @@ graph LR
 ### 3. 任务分解阶段
 
 ```bash
-/pm:epic-decompose feature-name
+/ccpm:epic-decompose feature-name
 ```
 将史诗任务分解为具体的、可操作的任务，包含验收标准、工作量估算和并行化标志。
 
@@ -179,70 +177,70 @@ graph LR
 ### 4. GitHub同步
 
 ```bash
-/pm:epic-sync feature-name
+/ccpm:epic-sync feature-name
 # 或对于自信的工作流程：
-/pm:epic-oneshot feature-name
+/ccpm:epic-oneshot feature-name
 ```
 将史诗任务和任务作为issues推送到GitHub，带有适当的标签和关系。
 
 ### 5. 执行阶段
 
 ```bash
-/pm:issue-start 1234  # 启动专门代理
-/pm:issue-sync 1234   # 推送进度更新
-/pm:next             # 获取下一个优先任务
+/ccpm:issue-start 1234  # 启动专门代理
+/ccpm:issue-sync 1234   # 推送进度更新
+/ccpm:next             # 获取下一个优先任务
 ```
 专门代理实现任务，同时保持进度更新和审计轨迹。
 
 ## 命令参考
 
 > [!TIP]
-> 输入`/pm:help`获取简洁的命令摘要
+> 输入`/ccpm:help`获取简洁的命令摘要
 
 ### 初始设置
-- `/pm:init` - 安装依赖并配置GitHub
+- `/ccpm:init` - 安装依赖并配置GitHub
 
 ### PRD命令
-- `/pm:prd-new` - 为新产品需求启动头脑风暴
-- `/pm:prd-parse` - 将PRD转换为实现史诗任务
-- `/pm:prd-list` - 列出所有PRD
-- `/pm:prd-edit` - 编辑现有PRD
-- `/pm:prd-status` - 显示PRD实现状态
+- `/ccpm:prd-new` - 为新产品需求启动头脑风暴
+- `/ccpm:prd-parse` - 将PRD转换为实现史诗任务
+- `/ccpm:prd-list` - 列出所有PRD
+- `/ccpm:prd-edit` - 编辑现有PRD
+- `/ccpm:prd-status` - 显示PRD实现状态
 
 ### 史诗任务命令
-- `/pm:epic-decompose` - 将史诗任务分解为任务文件
-- `/pm:epic-sync` - 将史诗任务和任务推送到GitHub
-- `/pm:epic-oneshot` - 一次性分解和同步命令
-- `/pm:epic-list` - 列出所有史诗任务
-- `/pm:epic-show` - 显示史诗任务及其任务
-- `/pm:epic-close` - 标记史诗任务为完成
-- `/pm:epic-edit` - 编辑史诗任务详情
-- `/pm:epic-refresh` - 从任务更新史诗任务进度
+- `/ccpm:epic-decompose` - 将史诗任务分解为任务文件
+- `/ccpm:epic-sync` - 将史诗任务和任务推送到GitHub
+- `/ccpm:epic-oneshot` - 一次性分解和同步命令
+- `/ccpm:epic-list` - 列出所有史诗任务
+- `/ccpm:epic-show` - 显示史诗任务及其任务
+- `/ccpm:epic-close` - 标记史诗任务为完成
+- `/ccpm:epic-edit` - 编辑史诗任务详情
+- `/ccpm:epic-refresh` - 从任务更新史诗任务进度
 
 ### Issue命令
-- `/pm:issue-show` - 显示issue和子issues
-- `/pm:issue-status` - 检查issue状态
-- `/pm:issue-start` - 开始工作并启动专门代理
-- `/pm:issue-sync` - 将更新推送到GitHub
-- `/pm:issue-close` - 标记issue为完成
-- `/pm:issue-reopen` - 重新打开已关闭的issue
-- `/pm:issue-edit` - 编辑issue详情
+- `/ccpm:issue-show` - 显示issue和子issues
+- `/ccpm:issue-status` - 检查issue状态
+- `/ccpm:issue-start` - 开始工作并启动专门代理
+- `/ccpm:issue-sync` - 将更新推送到GitHub
+- `/ccpm:issue-close` - 标记issue为完成
+- `/ccpm:issue-reopen` - 重新打开已关闭的issue
+- `/ccpm:issue-edit` - 编辑issue详情
 
 ### 工作流程命令
-- `/pm:next` - 显示下一个优先issue及史诗任务上下文
-- `/pm:status` - 整体项目仪表板
-- `/pm:standup` - 每日站会报告
-- `/pm:blocked` - 显示被阻塞的任务
-- `/pm:in-progress` - 列出进行中的工作
+- `/ccpm:next` - 显示下一个优先issue及史诗任务上下文
+- `/ccpm:status` - 整体项目仪表板
+- `/ccpm:standup` - 每日站会报告
+- `/ccpm:blocked` - 显示被阻塞的任务
+- `/ccpm:in-progress` - 列出进行中的工作
 
 ### 同步命令
-- `/pm:sync` - 与GitHub的双向同步
-- `/pm:import` - 导入现有的GitHub issues
+- `/ccpm:sync` - 与GitHub的双向同步
+- `/ccpm:import` - 导入现有的GitHub issues
 
 ### 维护命令
-- `/pm:validate` - 检查系统完整性
-- `/pm:clean` - 归档已完成的工作
-- `/pm:search` - 搜索所有内容
+- `/ccpm:validate` - 检查系统完整性
+- `/ccpm:clean` - 归档已完成的工作
+- `/ccpm:search` - 搜索所有内容
 
 ## 并行执行系统
 
@@ -308,17 +306,17 @@ GitHub无需知道工作是如何完成的——只需知道工作已完成。
 
 ```bash
 # 分析可以并行化的内容
-/pm:issue-analyze 1234
+/ccpm:issue-analyze 1234
 
 # 启动集群
-/pm:epic-start multi-agent-collaboration
+/ccpm:epic-start multi-agent-collaboration
 
 # 观看奇迹发生
 # 12个代理在3个issues上工作
 # 全部在：../epic-memory-system/中
 
 # 完成时进行一次干净的合并
-/pm:epic-merge memory-system
+/ccpm:epic-merge memory-system
 ```
 
 ## 主要功能和优势
@@ -353,58 +351,54 @@ GitHub无需知道工作是如何完成的——只需知道工作已完成。
 
 ```bash
 # 开始新功能
-/pm:prd-new memory-system
+/ccpm:prd-new memory-system
 
 # 审查和完善PRD...
 
 # 创建实现计划
-/pm:prd-parse memory-system
+/ccpm:prd-parse memory-system
 
 # 审查史诗任务...
 
 # 分解为任务并推送到GitHub
-/pm:epic-oneshot memory-system
+/ccpm:epic-oneshot memory-system
 # 创建issues：#1234（史诗任务），#1235，#1236（任务）
 
 # 开始任务开发
-/pm:issue-start 1235
+/ccpm:issue-start 1235
 # 代理开始工作，在本地维护进度
 
 # 同步进度到GitHub
-/pm:issue-sync 1235
+/ccpm:issue-sync 1235
 # 更新作为issue评论发布
 
 # 检查整体状态
-/pm:epic-show multi-agent-collaboration
+/ccpm:epic-show multi-agent-collaboration
 ```
 
 ## 立即开始
 
 ### 快速设置（2分钟）
 
-1. **将此仓库安装到你的项目中**：
+1. **在Claude Code中添加CCPM marketplace并安装插件**：
 
-   #### Unix/Linux/macOS
-
-   ```bash
-   cd path/to/your/project/
-   curl -sSL https://automaze.io/ccpm/install | bash
-   # 或：wget -qO- https://automaze.io/ccpm/install | bash
+   ```
+   /plugin marketplace add rknuus/ccpm
+   /plugin install ccpm@ccpm-marketplace
    ```
 
-   #### Windows（PowerShell）
+   **或本地测试而不安装**（例如测试fork或分支）：
+
    ```bash
-   cd path/to/your/project/
-   iwr -useb https://automaze.io/ccpm/install | iex
+   # 从你的项目目录，指向本地克隆
+   claude --plugin-dir /path/to/ccpm
    ```
-   > ⚠️ **重要**：如果你已有`.claude`目录，请将此仓库克隆到不同目录，然后将克隆的`.claude`目录内容复制到你项目的`.claude`目录中。
 
-   查看完整的/其他安装选项在[安装指南 ›](https://github.com/automazeio/ccpm/tree/main/install)中
-
+   这仅为当前会话加载插件。命令在相同的 `/ccpm:*` 命名空间下可用。
 
 2. **初始化PM系统**：
    ```bash
-   /pm:init
+   /ccpm:init
    ```
    此命令将：
    - 安装GitHub CLI（如需要）
@@ -429,7 +423,7 @@ GitHub无需知道工作是如何完成的——只需知道工作已完成。
 ### 开始你的第一个功能
 
 ```bash
-/pm:prd-new your-feature-name
+/ccpm:prd-new your-feature-name
 ```
 
 观看结构化规划如何转化为交付的代码。

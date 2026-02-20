@@ -10,7 +10,7 @@ Edit an existing Product Requirements Document.
 
 ## Usage
 ```
-/pm:prd-edit <feature_name>
+/ccpm:prd-edit <feature_name>
 ```
 
 ### Context Tracking
@@ -50,7 +50,7 @@ Update PRD file:
 If PRD has associated epic:
 - Notify user: "This PRD has epic: {epic_name}"
 - Ask: "Epic may need updating based on PRD changes. Review epic? (yes/no)"
-- If yes, show: "Review with: /pm:epic-edit {epic_name}"
+- If yes, show: "Review with: /ccpm:epic-edit {epic_name}"
 
 ### Close Context
 Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
@@ -63,7 +63,7 @@ Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 {If has epic}: ⚠️ Epic may need review: {epic_name}
 
-Next: /pm:prd-parse $ARGUMENTS to update epic
+Next: /ccpm:prd-parse $ARGUMENTS to update epic
 ```
 
 ## Important Notes

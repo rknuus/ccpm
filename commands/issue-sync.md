@@ -10,7 +10,7 @@ Push local updates as GitHub issue comments for transparent audit trail.
 
 ## Usage
 ```
-/pm:issue-sync <issue_number>
+/ccpm:issue-sync <issue_number>
 ```
 
 ## Required Rules
@@ -45,9 +45,9 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 
 3. **Local Updates Check:**
    - Check if `.pm/epics/*/updates/$ARGUMENTS/` directory exists
-   - If not found, tell user: "❌ No local updates found for issue #$ARGUMENTS. Run: /pm:issue-start $ARGUMENTS"
+   - If not found, tell user: "❌ No local updates found for issue #$ARGUMENTS. Run: /ccpm:issue-start $ARGUMENTS"
    - Check if progress.md exists
-   - If not, tell user: "❌ No progress tracking found. Initialize with: /pm:issue-start $ARGUMENTS"
+   - If not, tell user: "❌ No progress tracking found. Initialize with: /ccpm:issue-start $ARGUMENTS"
 
 4. **Check Last Sync:**
    - Read `last_sync` from progress.md frontmatter

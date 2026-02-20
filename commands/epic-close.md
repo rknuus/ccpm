@@ -10,7 +10,7 @@ Mark an epic as complete when all tasks are done.
 
 ## Usage
 ```
-/pm:epic-close <epic_name>
+/ccpm:epic-close <epic_name>
 ```
 
 ### Context Tracking
@@ -77,7 +77,7 @@ Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 {If archived}: Archived to .pm/epics/.archived/
 
-Next epic: Run /pm:next to see priority work
+Next epic: Run /ccpm:next to see priority work
 ```
 
 ## Important Notes

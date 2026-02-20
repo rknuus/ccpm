@@ -4,12 +4,12 @@ echo ""
 echo ""
 
 if [ ! -d ".pm/epics" ]; then
-  echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>"
+  echo "📁 No epics directory found. Create your first epic with: /ccpm:prd-parse <feature-name>"
   exit 0
 fi
 epic_dirs=$(ls -d .pm/epics/*/ 2>/dev/null || true)
 if [ -z "$epic_dirs" ]; then
-  echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>"
+  echo "📁 No epics found. Create your first epic with: /ccpm:prd-parse <feature-name>"
   exit 0
 fi
 

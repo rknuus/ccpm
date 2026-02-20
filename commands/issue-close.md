@@ -10,7 +10,7 @@ Mark an issue as complete and close it on GitHub.
 
 ## Usage
 ```
-/pm:issue-close <issue_number> [completion_notes]
+/ccpm:issue-close <issue_number> [completion_notes]
 ```
 
 ### Context Tracking
@@ -43,7 +43,7 @@ architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^archi
 ```
 
 If `architect_mode` is `gate` or `advisory`:
-- Run: `/pm:architect-review $epic_name --checkpoint code --task $ARGUMENTS`
+- Run: `/ccpm:architect-review $epic_name --checkpoint code --task $ARGUMENTS`
 - If gate mode and review returns "Needs Changes": report issues and do not close the issue
 - If advisory mode: log findings and continue with closing
 
@@ -125,7 +125,7 @@ Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
   GitHub: Issue closed & epic updated
   Epic progress: {new_progress}% ({closed}/{total} tasks complete)
 
-Next: Run /pm:next for next priority task
+Next: Run /ccpm:next for next priority task
 ```
 
 ## Important Notes

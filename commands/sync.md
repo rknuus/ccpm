@@ -10,7 +10,7 @@ Full bidirectional sync between local and GitHub.
 
 ## Usage
 ```
-/pm:sync [epic_name]
+/ccpm:sync [epic_name]
 ```
 
 If epic_name provided, sync only that epic. Otherwise sync all.

@@ -10,19 +10,19 @@ Launch parallel agents to work on epic tasks in a shared worktree.
 
 ## Usage
 ```
-/pm:epic-start <epic_name>
+/ccpm:epic-start <epic_name>
 ```
 
 ## Quick Check
 
 1. **Verify epic exists:**
    ```bash
-   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /pm:prd-parse $ARGUMENTS"
+   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**
    Look for `github:` field in epic frontmatter.
-   If missing: "❌ Epic not synced. Run: /pm:epic-sync $ARGUMENTS first"
+   If missing: "❌ Epic not synced. Run: /ccpm:epic-sync $ARGUMENTS first"
 
 3. **Check for worktree:**
    ```bash
@@ -147,16 +147,16 @@ echo "
 Agents launched successfully!
 
 Monitor progress:
-  /pm:epic-status $ARGUMENTS
+  /ccpm:epic-status $ARGUMENTS
 
 View worktree changes:
   cd ../epic-$ARGUMENTS && git status
 
 Stop all agents:
-  /pm:epic-stop $ARGUMENTS
+  /ccpm:epic-stop $ARGUMENTS
 
 Merge when complete:
-  /pm:epic-merge $ARGUMENTS
+  /ccpm:epic-merge $ARGUMENTS
 "
 ```
 
@@ -190,7 +190,7 @@ Blocked Issues (2):
   - #1236: UI Components (depends on #1234)
   - #1237: Integration (depends on #1235, #1236)
 
-Monitor with: /pm:epic-status $ARGUMENTS
+Monitor with: /ccpm:epic-status $ARGUMENTS
 ```
 
 ## Error Handling

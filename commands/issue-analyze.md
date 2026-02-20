@@ -10,7 +10,7 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 
 ## Usage
 ```
-/pm:issue-analyze <issue_number>
+/ccpm:issue-analyze <issue_number>
 ```
 
 ## Quick Check
@@ -18,7 +18,7 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 1. **Find local task file:**
    - First check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming convention)
    - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
-   - If not found: "❌ No local task for issue #$ARGUMENTS. Run: /pm:import first"
+   - If not found: "❌ No local task for issue #$ARGUMENTS. Run: /ccpm:import first"
 
 2. **Check for existing analysis:**
    ```bash
@@ -182,7 +182,7 @@ Parallelization potential: {factor}x speedup
 Files at risk of conflict:
   {list shared files if any}
 
-Next: Start work with /pm:issue-start $ARGUMENTS
+Next: Start work with /ccpm:issue-start $ARGUMENTS
 ```
 
 ## Important Notes

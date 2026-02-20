@@ -10,7 +10,7 @@ Run an architectural review at a specific workflow checkpoint.
 
 ## Usage
 ```
-/pm:architect-review <epic_name> --checkpoint design|plan|code [--task <task_id>] [--force]
+/ccpm:architect-review <epic_name> --checkpoint design|plan|code [--task <task_id>] [--force]
 ```
 
 ## Quick Check

@@ -4,7 +4,7 @@ query="$1"
 
 if [ -z "$query" ]; then
   echo "❌ Please provide a search query"
-  echo "Usage: /pm:search <query>"
+  echo "Usage: /ccpm:search <query>"
   exit 1
 fi
 

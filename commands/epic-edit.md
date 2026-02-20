@@ -10,7 +10,7 @@ Edit epic details after creation.
 
 ## Usage
 ```
-/pm:epic-edit <epic_name>
+/ccpm:epic-edit <epic_name>
 ```
 
 ### Context Tracking
@@ -64,7 +64,7 @@ Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
 
 {If GitHub updated}: GitHub issue updated ✅
 
-View epic: /pm:epic-show $ARGUMENTS
+View epic: /ccpm:epic-show $ARGUMENTS
 ```
 
 ## Important Notes

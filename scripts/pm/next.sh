@@ -55,8 +55,8 @@ if [ $found -eq 0 ]; then
   echo "No available tasks found."
   echo ""
   echo "💡 Suggestions:"
-  echo "  • Check blocked tasks: /pm:blocked"
-  echo "  • View all tasks: /pm:epic-list"
+  echo "  • Check blocked tasks: /ccpm:blocked"
+  echo "  • View all tasks: /ccpm:epic-list"
 fi
 
 echo ""

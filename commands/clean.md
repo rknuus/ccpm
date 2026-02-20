@@ -10,7 +10,7 @@ Clean up completed work and archive old epics.
 
 ## Usage
 ```
-/pm:clean [--dry-run]
+/ccpm:clean [--dry-run]
 ```
 
 Options:

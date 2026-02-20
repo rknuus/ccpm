@@ -10,7 +10,7 @@ Decompose epic into tasks and sync to GitHub in one operation.
 
 ## Usage
 ```
-/pm:epic-oneshot <feature_name>
+/ccpm:epic-oneshot <feature_name>
 ```
 
 ## Instructions
@@ -20,19 +20,19 @@ Decompose epic into tasks and sync to GitHub in one operation.
 Check that epic exists and hasn't been processed:
 ```bash
 # Epic must exist
-test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /pm:prd-parse $ARGUMENTS"
+test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
 
 # Check for existing tasks
 if ls .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | grep -q .; then
   echo "⚠️ Tasks already exist. This will create duplicates."
-  echo "Delete existing tasks or use /pm:epic-sync instead."
+  echo "Delete existing tasks or use /ccpm:epic-sync instead."
   exit 1
 fi
 
 # Check if already synced
 if grep -q "github:" .pm/epics/$ARGUMENTS/epic.md; then
   echo "⚠️ Epic already synced to GitHub."
-  echo "Use /pm:epic-sync to update."
+  echo "Use /ccpm:epic-sync to update."
   exit 1
 fi
 ```
@@ -41,7 +41,7 @@ fi
 
 Simply run the decompose command:
 ```
-Running: /pm:epic-decompose $ARGUMENTS
+Running: /ccpm:epic-decompose $ARGUMENTS
 ```
 
 This will:
@@ -53,7 +53,7 @@ This will:
 
 Immediately follow with sync:
 ```
-Running: /pm:epic-sync $ARGUMENTS
+Running: /ccpm:epic-sync $ARGUMENTS
 ```
 
 This will:
@@ -76,15 +76,15 @@ Step 2: GitHub Sync ✓
   - Worktree: ../epic-$ARGUMENTS
 
 Ready for development!
-  Start work: /pm:epic-start $ARGUMENTS
-  Or single task: /pm:issue-start {task_number}
+  Start work: /ccpm:epic-start $ARGUMENTS
+  Or single task: /ccpm:issue-start {task_number}
 ```
 
 ## Important Notes
 
 This is simply a convenience wrapper that runs:
-1. `/pm:epic-decompose`
-2. `/pm:epic-sync`
+1. `/ccpm:epic-decompose`
+2. `/ccpm:epic-sync`
 
 Both commands handle their own error checking, parallel execution, and validation. This command just orchestrates them in sequence.
 

@@ -10,7 +10,7 @@ Update epic progress based on task states.
 
 ## Usage
 ```
-/pm:epic-refresh <epic_name>
+/ccpm:epic-refresh <epic_name>
 ```
 
 ## Instructions
@@ -99,8 +99,8 @@ Progress: {old_progress}% → {new_progress}%
 Status: {old_status} → {new_status}
 GitHub: Task list updated ✓
 
-{If complete}: Run /pm:epic-close $ARGUMENTS to close epic
-{If in progress}: Run /pm:next to see priority tasks
+{If complete}: Run /ccpm:epic-close $ARGUMENTS to close epic
+{If in progress}: Run /ccpm:next to see priority tasks
 ```
 
 ## Important Notes

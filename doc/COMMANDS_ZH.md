@@ -2,7 +2,7 @@
 
 Claude Code PM 系统中所有可用命令的完整参考。
 
-> **注意**: 项目管理命令 (`/pm:*`) 在主 [README.md](README.md#command-reference) 中有文档说明。
+> **注意**: 项目管理命令 (`/ccpm:*`) 在主 [README.md](README.md#command-reference) 中有文档说明。
 
 ## 目录
 
@@ -153,5 +153,5 @@ Claude Code PM 系统中所有可用命令的完整参考。
 - 命令是作为指令解释的 markdown 文件
 - `/` 前缀触发命令执行
 - 命令可以生成代理以保留上下文
-- 所有 PM 命令 (`/pm:*`) 在主 README 中有文档说明
+- 所有 PM 命令 (`/ccpm:*`) 在主 README 中有文档说明
 - 命令遵循 `/rules/` 中定义的规则

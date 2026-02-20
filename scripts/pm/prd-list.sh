@@ -1,13 +1,13 @@
 # !/bin/bash
 # Check if PRD directory exists
 if [ ! -d ".pm/prds" ]; then
-  echo "📁 No PRD directory found. Create your first PRD with: /pm:prd-new <feature-name>"
+  echo "📁 No PRD directory found. Create your first PRD with: /ccpm:prd-new <feature-name>"
   exit 0
 fi
 
 # Check for PRD files
 if ! ls .pm/prds/*.md >/dev/null 2>&1; then
-  echo "📁 No PRDs found. Create your first PRD with: /pm:prd-new <feature-name>"
+  echo "📁 No PRDs found. Create your first PRD with: /ccpm:prd-new <feature-name>"
   exit 0
 fi
 

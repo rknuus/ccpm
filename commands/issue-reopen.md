@@ -10,7 +10,7 @@ Reopen a closed issue.
 
 ## Usage
 ```
-/pm:issue-reopen <issue_number> [reason]
+/ccpm:issue-reopen <issue_number> [reason]
 ```
 
 ## Instructions
@@ -63,7 +63,7 @@ Recalculate epic progress with this task now open again.
   Reason: {reason_if_provided}
   Epic progress: {updated_progress}%
 
-Start work with: /pm:issue-start $ARGUMENTS
+Start work with: /ccpm:issue-start $ARGUMENTS
 ```
 
 ## Important Notes

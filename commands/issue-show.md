@@ -10,7 +10,7 @@ Display issue and sub-issues with detailed information.
 
 ## Usage
 ```
-/pm:issue-show <issue_number>
+/ccpm:issue-show <issue_number>
 ```
 
 ## Instructions
@@ -79,8 +79,8 @@ If task file exists, show progress:
 ### 7. Quick Actions
 ```
 🚀 Quick Actions:
-   Start work: /pm:issue-start $ARGUMENTS
-   Sync updates: /pm:issue-sync $ARGUMENTS
+   Start work: /ccpm:issue-start $ARGUMENTS
+   Sync updates: /ccpm:issue-sync $ARGUMENTS
    Add comment: gh issue comment #$ARGUMENTS --body "your comment"
    View in browser: gh issue view #$ARGUMENTS --web
 ```
