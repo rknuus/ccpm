@@ -49,9 +49,9 @@ echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
 # We need to cd into test dir so the script reads .pm/ from there.
 cd "$TEST_DIR"
 
-# Override STATS_CONTEXT_FILE before sourcing context-lib
+# Override STATS_CONTEXT_FILE for ccpm-context script
 STATS_CONTEXT_FILE="$TEST_DIR/.pm/stats/active-context.json"
-source "$PROJECT_ROOT/scripts/pm/context-lib.sh"
+export STATS_CONTEXT_FILE
 source "$PROJECT_ROOT/scripts/pm/stats-lib.sh"
 
 # Source stats.sh functions by extracting them (the main function exits, so we
@@ -104,7 +104,7 @@ echo "=== fmt_duration tests ==="
 # =========================================================================
 # Source the stats.sh to get access to fmt_duration and fmt_number
 # We source it with a modified main function to prevent execution
-eval "$(sed 's/^main "$@"$//' "$PROJECT_ROOT/scripts/pm/stats.sh" | sed 's/^set -euo pipefail$//' | sed 's|^source.*stats-lib.sh.*$||' | sed 's|^source.*context-lib.sh.*$||' | sed 's|^SCRIPT_DIR=.*$||')"
+eval "$(sed 's/^main "$@"$//' "$PROJECT_ROOT/scripts/pm/stats.sh" | sed 's/^set -euo pipefail$//' | sed 's|^source.*stats-lib.sh.*$||' | sed 's|^SCRIPT_DIR=.*$||')"
 
 assert_eq "0 seconds" "0s" "$(fmt_duration 0)"
 assert_eq "30 seconds" "30s" "$(fmt_duration 30)"

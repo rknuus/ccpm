@@ -6,7 +6,7 @@
 #   stats_collect_prompts <type> <name>
 #
 # Requires: jq, stats-lib.sh (stats_extract_prompts, stats_find_jsonl_files),
-#           context-lib.sh (stats_context_history)
+#           ccpm-context
 #
 # Integration note for stats display commands (Task 12):
 #   source scripts/pm/stats-prompts.sh
@@ -20,10 +20,6 @@ STATS_PROMPTS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if ! declare -f stats_extract_prompts &>/dev/null; then
   # shellcheck source=stats-lib.sh
   source "$STATS_PROMPTS_SCRIPT_DIR/stats-lib.sh"
-fi
-if ! declare -f stats_context_history &>/dev/null; then
-  # shellcheck source=context-lib.sh
-  source "$STATS_PROMPTS_SCRIPT_DIR/context-lib.sh"
 fi
 
 # Allow tests to override the settings file path
@@ -55,7 +51,7 @@ stats_collect_prompts() {
 
   # Get context windows for this work item
   local history
-  history="$(stats_context_history "$type" "$name")"
+  history="$("$STATS_PROMPTS_SCRIPT_DIR/ccpm-context" history "$type" "$name")"
   local window_count
   window_count="$(echo "$history" | jq 'length')"
 

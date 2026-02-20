@@ -6,13 +6,12 @@
 #   bash scripts/pm/stats.sh overview           — overview dashboard
 #   bash scripts/pm/stats.sh show <type> <name>  — detailed view for one work item
 #
-# Requires: jq, stats-lib.sh, context-lib.sh
+# Requires: jq, stats-lib.sh, ccpm-context
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/stats-lib.sh"
-source "$SCRIPT_DIR/context-lib.sh"
 
 CONTEXT_FILE=".pm/stats/active-context.json"
 SETTINGS_FILE=".pm/ccpm-settings.json"
@@ -76,7 +75,7 @@ compute_item_stats() {
   local item_type="$1" item_name="$2"
 
   local history
-  history=$(stats_context_history "$item_type" "$item_name")
+  history=$("$SCRIPT_DIR/ccpm-context" history "$item_type" "$item_name")
 
   local session_count
   session_count=$(echo "$history" | jq 'length')
@@ -234,7 +233,7 @@ is_cache_valid() {
 
   # Check if any history entry has ended after computed_at
   local newer
-  newer=$(stats_context_history "$item_type" "$item_name" \
+  newer=$("$SCRIPT_DIR/ccpm-context" history "$item_type" "$item_name" \
     | jq --arg ca "$computed_at" '[.[] | select(.ended > $ca)] | length')
   [ "$newer" -eq 0 ] && return 0
   return 1
