@@ -2,8 +2,6 @@
 allowed-tools: Bash, Read, Write
 ---
 
-**IMPORTANT:** Before proceeding, verify CCPM is initialized by checking if `.claude/rules/path-standards.md` exists. If it does not exist, stop immediately and tell the user: "CCPM not initialized. Run: /ccpm:init"
-
 # Stats Rate
 
 Rate or re-rate satisfaction for a work item (delayed rating).

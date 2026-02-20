@@ -2,7 +2,7 @@
 allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/help.sh)
 ---
 
-**IMPORTANT:** Before proceeding, verify CCPM is initialized by checking if `.claude/rules/path-standards.md` exists. If it does not exist, stop immediately and tell the user: "CCPM not initialized. Run: /ccpm:init"
+**NOTE:** `/ccpm:init` is optional. If the user has not run it, commands will still work — init only provides GitHub label setup, `gh-sub-issue` installation, `gh` auth verification, and pre-creation of the `.pm/` directory structure.
 
 Output:
 !bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/help.sh

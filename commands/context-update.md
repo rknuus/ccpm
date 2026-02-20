@@ -2,8 +2,6 @@
 allowed-tools: Bash, Read, Write, LS
 ---
 
-**IMPORTANT:** Before proceeding, verify CCPM is initialized by checking if `.claude/rules/path-standards.md` exists. If it does not exist, stop immediately and tell the user: "CCPM not initialized. Run: /ccpm:init"
-
 # Update Context
 
 This command updates the project context documentation in `.claude/context/` to reflect the current state of the project. Run this at the end of each development session to keep context accurate.
