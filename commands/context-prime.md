@@ -2,8 +2,6 @@
 allowed-tools: Bash, Read, LS
 ---
 
-**IMPORTANT:** Before proceeding, verify CCPM is initialized by checking if `.claude/rules/path-standards.md` exists. If it does not exist, stop immediately and tell the user: "CCPM not initialized. Run: /ccpm:init"
-
 # Prime Context
 
 This command loads essential context for a new agent session by reading the project context documentation and understanding the codebase structure.

@@ -2,8 +2,6 @@
 allowed-tools: Bash, Read, Write
 ---
 
-**IMPORTANT:** Before proceeding, verify CCPM is initialized by checking if `.claude/rules/path-standards.md` exists. If it does not exist, stop immediately and tell the user: "CCPM not initialized. Run: /ccpm:init"
-
 # Test Reference Update
 
 Test the task reference update logic used in epic-sync.

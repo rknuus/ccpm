@@ -135,7 +135,7 @@ No shortcuts. No assumptions. No regrets.
 
 ## System Architecture
 
-CCPM is installed as a Claude **plugin**. After running `/ccpm:init`, the following directories are created in your project:
+CCPM is installed as a Claude **plugin**. Commands create the directories they need on the fly. The full structure looks like this:
 
 ```
 <your-project>/
@@ -204,8 +204,8 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 > [!TIP]
 > Type `/ccpm:help` for a concise command summary.
 
-### Initial Setup
-- `/ccpm:init` - Install dependencies and configure GitHub
+### Initial Setup (Optional)
+- `/ccpm:init` - Set up GitHub labels, install `gh-sub-issue`, verify `gh` auth, and pre-create directories
 
 ### PRD Commands
 - `/ccpm:prd-new` - Launch brainstorming for new product requirement
@@ -401,16 +401,11 @@ Teams using this system report:
 
    This loads the plugin for the current session only. Commands are available under the same `/ccpm:*` namespace.
 
-2. **Initialize the PM system**:
+2. **(Optional) Initialize the PM system** — recommended if you plan to sync with GitHub:
    ```bash
    /ccpm:init
    ```
-   This command will:
-   - Install GitHub CLI (if needed)
-   - Authenticate with GitHub
-   - Install [gh-sub-issue extension](https://github.com/yahsan2/gh-sub-issue) for proper parent-child relationships
-   - Create required directories
-   - Update .gitignore
+   This sets up GitHub labels (`epic`, `task`), installs the [gh-sub-issue extension](https://github.com/yahsan2/gh-sub-issue), verifies `gh` authentication, and pre-creates the `.pm/` directory structure. You can skip this step — commands create the directories they need automatically.
 
 3. **Start your first feature**:
    ```bash
