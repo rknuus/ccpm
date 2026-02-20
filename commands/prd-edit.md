@@ -12,7 +12,7 @@ Edit an existing Product Requirements Document.
 ```
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-edit || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-edit || true`
 
 ## Instructions
 
@@ -51,7 +51,7 @@ If PRD has associated epic:
 - If yes, show: "Review with: /ccpm:epic-edit {epic_name}"
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 5. Output
 

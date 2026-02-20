@@ -24,8 +24,7 @@ mkdir -p "$(dirname "$STATS_CONTEXT_FILE")"
 
 export STATS_SETTINGS_FILE STATS_CONTEXT_FILE
 
-# Source dependencies (context-lib first so stats-prompts doesn't re-source)
-source "$PROJECT_ROOT/scripts/pm/context-lib.sh"
+# Source dependencies
 source "$PROJECT_ROOT/scripts/pm/stats-prompts.sh"
 
 passed=0

@@ -12,7 +12,7 @@ Mark an epic as complete when all tasks are done.
 ```
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-close || true`
 
 ## Instructions
 
@@ -64,7 +64,7 @@ If yes:
 - Create archive summary with completion date
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 7. Output
 

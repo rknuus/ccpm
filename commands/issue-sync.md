@@ -58,7 +58,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Exit gracefully if nothing to sync
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-sync || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-sync || true`
 
 ## Instructions
 
@@ -212,7 +212,7 @@ This task is ready for review and can be closed.
 ```
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 9. Output Summary
 ```

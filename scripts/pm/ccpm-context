@@ -1,13 +1,19 @@
 #!/bin/bash
-# context-lib.sh — Library for tracking active work item context with timestamped history.
-# Source this file to get stats_context_* functions. No execution at source time.
+# ccpm-context — Standalone script for tracking active work item context with timestamped history.
+#
+# Usage:
+#   ccpm-context open <type> <name> <command>   — set active context (auto-closes previous)
+#   ccpm-context close                          — close active context, move to history
+#   ccpm-context history <type> <name>          — output JSON array of history entries to stdout
+#
+# Environment:
+#   STATS_CONTEXT_FILE  — override path to context file (default: .pm/stats/active-context.json)
 
 # Path to the active context file (relative to project root)
-# Allow callers (e.g., tests) to override before sourcing
 STATS_CONTEXT_FILE="${STATS_CONTEXT_FILE:-.pm/stats/active-context.json}"
 
 # Ensure the context file exists with a valid initial structure.
-_stats_context_ensure_file() {
+_ensure_file() {
   local dir
   dir="$(dirname "$STATS_CONTEXT_FILE")"
   mkdir -p "$dir" 2>/dev/null || true
@@ -16,18 +22,13 @@ _stats_context_ensure_file() {
   fi
 }
 
-# Set the active context. If one is already open, close it first.
-# Usage: stats_context_open <type> <name> <command>
-#   type    — one of: prd, epic, task
-#   name    — work item identifier
-#   command — CCPM command name (e.g., prd-new)
-stats_context_open() {
+cmd_open() {
   local ctx_type="$1" ctx_name="$2" ctx_command="$3"
   if [ -z "$ctx_type" ] || [ -z "$ctx_name" ] || [ -z "$ctx_command" ]; then
     return 0
   fi
 
-  _stats_context_ensure_file
+  _ensure_file
 
   local now
   now="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
@@ -52,11 +53,8 @@ stats_context_open() {
     && mv "${STATS_CONTEXT_FILE}.tmp" "$STATS_CONTEXT_FILE" 2>/dev/null || true
 }
 
-# Close the current active context by setting its end timestamp and moving it to history.
-# If no active context, does nothing.
-# Usage: stats_context_close
-stats_context_close() {
-  _stats_context_ensure_file
+cmd_close() {
+  _ensure_file
 
   local has_current
   has_current="$(jq -r '.current != null' "$STATS_CONTEXT_FILE" 2>/dev/null)"
@@ -73,19 +71,30 @@ stats_context_close() {
     && mv "${STATS_CONTEXT_FILE}.tmp" "$STATS_CONTEXT_FILE" 2>/dev/null || true
 }
 
-# Return a JSON array of history entries for a given work item (filtered by type and name).
-# Usage: stats_context_history <type> <name>
-# Output: JSON array to stdout
-stats_context_history() {
+cmd_history() {
   local ctx_type="$1" ctx_name="$2"
   if [ -z "$ctx_type" ] || [ -z "$ctx_name" ]; then
     echo "[]"
     return 0
   fi
 
-  _stats_context_ensure_file
+  _ensure_file
 
   jq --arg type "$ctx_type" --arg name "$ctx_name" \
     '[.history[] | select(.type == $type and .name == $name)]' \
     "$STATS_CONTEXT_FILE" 2>/dev/null || echo "[]"
 }
+
+# Main dispatch
+subcmd="${1:-}"
+shift 2>/dev/null || true
+
+case "$subcmd" in
+  open)    cmd_open "${1:-}" "${2:-}" "${3:-}" ;;
+  close)   cmd_close ;;
+  history) cmd_history "${1:-}" "${2:-}" ;;
+  *)
+    echo "Usage: ccpm-context {open|close|history} [args...]" >&2
+    exit 0
+    ;;
+esac

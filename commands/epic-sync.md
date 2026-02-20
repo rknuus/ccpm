@@ -24,7 +24,7 @@ ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
 If no tasks found: "❌ No tasks to sync. Run: /ccpm:epic-decompose $ARGUMENTS"
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-sync || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-sync || true`
 
 ## Instructions
 
@@ -438,7 +438,7 @@ echo "✅ Created worktree: ../epic-$ARGUMENTS"
 ```
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 8. Output
 

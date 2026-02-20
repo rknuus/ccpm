@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tests for scripts/pm/context-lib.sh
+# Tests for scripts/pm/ccpm-context
 # Run from project root: bash tests/test-context-lib.sh
 
 set -euo pipefail
@@ -11,9 +11,10 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
 
-# Override the context file path before sourcing
-STATS_CONTEXT_FILE="$TEST_DIR/.pm/stats/active-context.json"
-source "$PROJECT_ROOT/scripts/pm/context-lib.sh"
+# Override the context file path via environment variable
+export STATS_CONTEXT_FILE="$TEST_DIR/.pm/stats/active-context.json"
+
+CCPM_CONTEXT="$PROJECT_ROOT/scripts/pm/ccpm-context"
 
 passed=0
 failed=0
@@ -34,7 +35,7 @@ assert_eq() {
 # ─── Test 1: File creation on first use ───
 
 echo "Test 1: File creation on first use"
-_stats_context_ensure_file
+"$CCPM_CONTEXT" close
 assert_eq "context file exists" "true" "$([ -f "$STATS_CONTEXT_FILE" ] && echo true || echo false)"
 assert_eq "current is null" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
 assert_eq "history is empty array" "0" "$(jq '.history | length' "$STATS_CONTEXT_FILE")"
@@ -43,7 +44,7 @@ assert_eq "history is empty array" "0" "$(jq '.history | length' "$STATS_CONTEXT
 
 echo ""
 echo "Test 2: Open a context"
-stats_context_open "prd" "feature-auth" "prd-new"
+"$CCPM_CONTEXT" open "prd" "feature-auth" "prd-new"
 assert_eq "current type is prd" "prd" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
 assert_eq "current name is feature-auth" "feature-auth" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
 assert_eq "current command is prd-new" "prd-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
@@ -56,7 +57,7 @@ echo ""
 echo "Test 3: Close a context"
 # Small delay so ended != started
 sleep 1
-stats_context_close
+"$CCPM_CONTEXT" close
 assert_eq "current is null after close" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
 assert_eq "history has 1 entry" "1" "$(jq '.history | length' "$STATS_CONTEXT_FILE")"
 assert_eq "history entry has ended" "true" "$(jq -r '.history[0].ended != null' "$STATS_CONTEXT_FILE")"
@@ -68,7 +69,7 @@ assert_eq "history entry command" "prd-new" "$(jq -r '.history[0].command' "$STA
 
 echo ""
 echo "Test 4: Close when no active context (no-op)"
-stats_context_close
+"$CCPM_CONTEXT" close
 assert_eq "current still null" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
 assert_eq "history still has 1 entry" "1" "$(jq '.history | length' "$STATS_CONTEXT_FILE")"
 
@@ -76,10 +77,10 @@ assert_eq "history still has 1 entry" "1" "$(jq '.history | length' "$STATS_CONT
 
 echo ""
 echo "Test 5: Switch context (open while already open)"
-stats_context_open "epic" "auth-epic" "epic-decompose"
+"$CCPM_CONTEXT" open "epic" "auth-epic" "epic-decompose"
 assert_eq "current type is epic" "epic" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
 sleep 1
-stats_context_open "task" "implement-login" "issue-start"
+"$CCPM_CONTEXT" open "task" "implement-login" "issue-start"
 assert_eq "current type switched to task" "task" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
 assert_eq "current name switched" "implement-login" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
 assert_eq "current command switched" "issue-start" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
@@ -91,30 +92,30 @@ assert_eq "auto-closed entry has ended" "true" "$(jq -r '.history[1].ended != nu
 
 echo ""
 echo "Test 6: History query"
-stats_context_close
+"$CCPM_CONTEXT" close
 # Now history should have: prd/feature-auth, epic/auth-epic, task/implement-login
 
-prd_history="$(stats_context_history "prd" "feature-auth")"
+prd_history="$("$CCPM_CONTEXT" history "prd" "feature-auth")"
 assert_eq "prd history has 1 entry" "1" "$(echo "$prd_history" | jq 'length')"
 assert_eq "prd history entry name" "feature-auth" "$(echo "$prd_history" | jq -r '.[0].name')"
 
-epic_history="$(stats_context_history "epic" "auth-epic")"
+epic_history="$("$CCPM_CONTEXT" history "epic" "auth-epic")"
 assert_eq "epic history has 1 entry" "1" "$(echo "$epic_history" | jq 'length')"
 
-task_history="$(stats_context_history "task" "implement-login")"
+task_history="$("$CCPM_CONTEXT" history "task" "implement-login")"
 assert_eq "task history has 1 entry" "1" "$(echo "$task_history" | jq 'length')"
 
-no_history="$(stats_context_history "prd" "nonexistent")"
+no_history="$("$CCPM_CONTEXT" history "prd" "nonexistent")"
 assert_eq "nonexistent item returns empty array" "0" "$(echo "$no_history" | jq 'length')"
 
 # ─── Test 7: Missing arguments are safe ───
 
 echo ""
 echo "Test 7: Missing arguments are safe"
-stats_context_open "" "" ""
+"$CCPM_CONTEXT" open "" "" ""
 assert_eq "current still null after empty open" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
 
-empty_history="$(stats_context_history "" "")"
+empty_history="$("$CCPM_CONTEXT" history "" "")"
 assert_eq "empty args returns empty array" "0" "$(echo "$empty_history" | jq 'length')"
 
 # ─── Summary ───
