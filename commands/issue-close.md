@@ -12,7 +12,7 @@ Mark an issue as complete and close it on GitHub.
 ```
 
 ### Context Tracking
-Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-close || true`
 
 ## Instructions
 
@@ -113,7 +113,7 @@ fi
 - Update epic.md frontmatter progress field
 
 ### Close Context
-Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 9. Output
 
