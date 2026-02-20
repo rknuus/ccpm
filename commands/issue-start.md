@@ -34,7 +34,7 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    If no analysis exists and no --analyze flag, stop execution.
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-start || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-start || true`
 
 ## Instructions
 
@@ -148,7 +148,7 @@ gh issue edit $ARGUMENTS --add-assignee @me --add-label "in-progress"
 ```
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 7. Output
 

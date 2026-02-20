@@ -3,10 +3,10 @@ allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/prd-status.sh)
 ---
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-status || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-status || true`
 
 Output:
 !bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/prd-status.sh
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`

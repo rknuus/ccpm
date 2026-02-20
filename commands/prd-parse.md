@@ -47,7 +47,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If cannot create, tell user: "❌ Cannot create epic directory. Please check permissions."
 
 ### Context Tracking
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-parse || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-parse || true`
 
 ## Instructions
 
@@ -156,7 +156,7 @@ Before saving the epic, verify:
 - [ ] Architecture decisions are justified
 
 ### Close Context
-Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 7. Post-Creation
 
