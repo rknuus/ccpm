@@ -24,7 +24,7 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
    ```
 
 ### Context Tracking
-Run: `source scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-analyze || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open task $ARGUMENTS issue-analyze || true`
 
 ## Instructions
 
@@ -161,7 +161,7 @@ Ensure:
 - Time estimates are reasonable
 
 ### Close Context
-Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 5. Output
 

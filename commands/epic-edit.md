@@ -12,7 +12,7 @@ Edit epic details after creation.
 ```
 
 ### Context Tracking
-Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-edit || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-edit || true`
 
 ## Instructions
 
@@ -52,7 +52,7 @@ gh issue edit {issue_number} --body-file .pm/epics/$ARGUMENTS/epic.md
 ```
 
 ### Close Context
-Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 5. Output
 

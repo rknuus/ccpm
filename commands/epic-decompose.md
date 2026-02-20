@@ -40,7 +40,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If epic status is already "completed", warn user: "⚠️ Epic is marked as completed. Are you sure you want to decompose it again?"
 
 ### Context Tracking
-Run: `source scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-decompose || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open epic $ARGUMENTS epic-decompose || true`
 
 ## Instructions
 
@@ -229,7 +229,7 @@ If `architect_mode` is `gate` or `advisory`:
 If `architect_mode` is empty or `off`: skip silently.
 
 ### Close Context
-Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 11. Post-Decomposition
 

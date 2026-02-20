@@ -40,7 +40,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If unable to create, tell user: "❌ Cannot create PRD directory. Please manually create: .pm/prds/"
 
 ### Context Tracking
-Run: `source scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-new || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_open prd $ARGUMENTS prd-new || true`
 
 ## Instructions
 
@@ -135,7 +135,7 @@ Before saving the PRD, verify:
 - [ ] Out of scope items are explicitly listed
 
 ### Close Context
-Run: `source scripts/pm/context-lib.sh && stats_context_close || true`
+Run: `source ${CLAUDE_PLUGIN_ROOT}/scripts/pm/context-lib.sh && stats_context_close || true`
 
 ### 6. Post-Creation
 
