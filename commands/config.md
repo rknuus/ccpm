@@ -41,18 +41,26 @@ CCPM Settings:
   collectPrompts = {value}
 ```
 
-If the file does not exist: "No settings file found. Run /ccpm:init to initialize."
+If the file does not exist, create it first:
+```bash
+mkdir -p .pm && echo '{"collectPrompts": false}' > .pm/ccpm-settings.json
+```
+Then display the settings as normal.
 
 ### 3. Update Mode (`set <key> <value>`)
 
-1. Validate the key is one of: `collectPrompts`
+1. Ensure settings file exists:
+   ```bash
+   test -f .pm/ccpm-settings.json || (mkdir -p .pm && echo '{"collectPrompts": false}' > .pm/ccpm-settings.json)
+   ```
+2. Validate the key is one of: `collectPrompts`
    - If unknown: "Unknown setting: {key}. Valid settings: collectPrompts"
-2. Validate the value:
+3. Validate the value:
    - For `collectPrompts`: must be `true` or `false`
    - If invalid: "Invalid value for {key}. Expected: true/false"
-3. Update the setting:
+4. Update the setting:
    ```bash
    jq --argjson val {value} '.{key} = $val' .pm/ccpm-settings.json > .pm/ccpm-settings.json.tmp && mv .pm/ccpm-settings.json.tmp .pm/ccpm-settings.json
    ```
    Note: `{value}` for booleans should be passed as `--argjson` so `true`/`false` become JSON booleans, not strings.
-4. Show confirmation: "Setting updated: {key} = {value}"
+5. Show confirmation: "Setting updated: {key} = {value}"
