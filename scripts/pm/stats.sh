@@ -310,9 +310,8 @@ cmd_overview() {
   stats_timeout=$(get_setting "statsTimeout" "30")
   _start_timeout "$stats_timeout"
 
-  # Compute stats for each item
-  local grand_tokens=0 grand_working=0 grand_waiting=0 grand_sessions=0
-  local rows=""
+  # Compute stats for each item, collect raw numbers as JSON array
+  local raw_data="[]"
 
   local i=0
   while [ "$i" -lt "$count" ]; do
@@ -330,29 +329,14 @@ cmd_overview() {
       cache_stats "$item_type" "$item_name" "$stats"
     fi
 
-    local tokens working waiting sessions
+    local tokens working waiting
     tokens=$(echo "$stats" | jq '.total_tokens // 0')
     working=$(echo "$stats" | jq '.working_seconds // 0')
     waiting=$(echo "$stats" | jq '.waiting_seconds // 0')
-    sessions=$(echo "$stats" | jq '.sessions // 0')
 
-    local sat rating_str
-    sat=$(read_satisfaction "$item_type" "$item_name")
-    rating_str=$(fmt_rating "$sat")
-
-    # Format values
-    local fmt_tok fmt_work fmt_wait
-    fmt_tok=$(fmt_number "$tokens")
-    fmt_work=$(fmt_duration "$working")
-    fmt_wait=$(fmt_duration "$waiting")
-
-    rows="${rows}${item_type}|${item_name}|${fmt_tok}|${fmt_work}|${fmt_wait}|${rating_str}|${sessions}
-"
-
-    grand_tokens=$((grand_tokens + tokens))
-    grand_working=$((grand_working + working))
-    grand_waiting=$((grand_waiting + waiting))
-    grand_sessions=$((grand_sessions + sessions))
+    raw_data=$(echo "$raw_data" | jq --arg t "$item_type" --arg n "$item_name" \
+      --argjson tok "$tokens" --argjson w "$working" --argjson u "$waiting" \
+      '. + [{type: $t, name: $n, tokens: $tok, working: $w, waiting: $u}]')
 
     i=$((i + 1))
   done
@@ -361,29 +345,69 @@ cmd_overview() {
   echo -ne "\r\033[K" >&2
   _cancel_timeout
 
-  # Print table
-  printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-    "Type" "Name" "Tokens" "Working" "Waiting" "Rating" "Sessions"
-  printf "%-5s-+-%-21s-+-%9s-+-%8s-+-%8s-+-%6s-+-%s\n" \
-    "-----" "---------------------" "---------" "--------" "--------" "------" "--------"
+  # Merge rows by name: sum stats, pick best type (prefer epic over prd)
+  local merged
+  merged=$(echo "$raw_data" | jq '
+    group_by(.name)
+    | map({
+        name: .[0].name,
+        type: (if any(.type == "epic") then "epic" else .[0].type end),
+        tokens: (map(.tokens) | add),
+        working: (map(.working) | add),
+        waiting: (map(.waiting) | add)
+      })
+    | sort_by(.name)')
 
-  printf '%s' "$rows" | while IFS='|' read -r rtype rname rtok rwork rwait rrating rsess; do
-    [ -z "$rtype" ] && continue
-    # Truncate name to 21 chars
+  local merged_count
+  merged_count=$(echo "$merged" | jq 'length')
+
+  # Compute dynamic name width (min 20, max 50)
+  local name_width=20
+  local longest
+  longest=$(echo "$merged" | jq '[.[] | .name | length] | max // 20')
+  name_width=$((longest > 50 ? 50 : (longest < 20 ? 20 : longest)))
+
+  # Build format strings
+  local hdr_fmt="%-5s | %-${name_width}s | %9s | %8s | %8s\n"
+  local sep_name
+  sep_name=$(printf '%*s' "$name_width" '' | tr ' ' '-')
+  local sep_fmt="%-5s-+-%-${name_width}s-+-%9s-+-%8s-+-%8s\n"
+
+  # Print header
+  printf "$hdr_fmt" "Type" "Name" "Tokens" "Working" "Waiting"
+  printf "$sep_fmt" "-----" "$sep_name" "---------" "--------" "--------"
+
+  # Print rows
+  local grand_tokens=0 grand_working=0 grand_waiting=0
+  local j=0
+  while [ "$j" -lt "$merged_count" ]; do
+    local rtype rname rtok rwork rwait
+    rtype=$(echo "$merged" | jq -r ".[$j].type")
+    rname=$(echo "$merged" | jq -r ".[$j].name")
+    rtok=$(echo "$merged" | jq ".[$j].tokens")
+    rwork=$(echo "$merged" | jq ".[$j].working")
+    rwait=$(echo "$merged" | jq ".[$j].waiting")
+
+    # Truncate name if needed
     local dname="$rname"
-    if [ ${#dname} -gt 21 ]; then
-      dname="${dname:0:18}..."
+    if [ ${#dname} -gt "$name_width" ]; then
+      dname="${dname:0:$((name_width - 3))}..."
     fi
-    printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-      "$rtype" "$dname" "$rtok" "$rwork" "$rwait" "$rrating" "$rsess"
+
+    printf "$hdr_fmt" "$rtype" "$dname" "$(fmt_number "$rtok")" \
+      "$(fmt_duration "$rwork")" "$(fmt_duration "$rwait")"
+
+    grand_tokens=$((grand_tokens + rtok))
+    grand_working=$((grand_working + rwork))
+    grand_waiting=$((grand_waiting + rwait))
+
+    j=$((j + 1))
   done
 
   # Totals
-  printf "%-5s-+-%-21s-+-%9s-+-%8s-+-%8s-+-%6s-+-%s\n" \
-    "-----" "---------------------" "---------" "--------" "--------" "------" "--------"
-  printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-    "TOTAL" "" "$(fmt_number "$grand_tokens")" "$(fmt_duration "$grand_working")" \
-    "$(fmt_duration "$grand_waiting")" "" "$grand_sessions"
+  printf "$sep_fmt" "-----" "$sep_name" "---------" "--------" "--------"
+  printf "$hdr_fmt" "TOTAL" "" "$(fmt_number "$grand_tokens")" \
+    "$(fmt_duration "$grand_working")" "$(fmt_duration "$grand_waiting")"
 }
 
 # ---------------------------------------------------------------------------

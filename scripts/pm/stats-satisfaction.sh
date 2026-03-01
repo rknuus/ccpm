@@ -18,7 +18,7 @@ stats_save_rating() {
   local name="$2"
   local rating_type="$3"
   local rating="$4"
-  local note="$5"
+  local note="${5:-}"
 
   # Validate arguments
   if [ -z "$type" ] || [ -z "$name" ] || [ -z "$rating_type" ] || [ -z "$rating" ]; then

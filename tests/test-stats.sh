@@ -42,7 +42,7 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
 CTXEOF
 
 # Create ccpm-settings.json
-echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
+echo '{ "collectPrompts": false, "statsTimeout": "10" }' > "$TEST_DIR/.pm/ccpm-settings.json"
 
 # Override git rev-parse to return test dir (so stats_find_jsonl_files works
 # with our fixtures). We'll pass files explicitly instead.
@@ -176,10 +176,14 @@ CTXEOF
 
 output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" overview 2>&1 || true)
 assert_contains "overview has header" "Type" "$output"
-assert_contains "overview has prd row" "prd" "$output"
-assert_contains "overview has epic row" "epic" "$output"
 assert_contains "overview has TOTAL" "TOTAL" "$output"
-assert_contains "overview has Sessions column" "Sessions" "$output"
+assert_contains "overview has feature name" "feature-auth" "$output"
+assert_not_contains "overview has no Sessions column" "Sessions" "$output"
+assert_not_contains "overview has no Rating column" "Rating" "$output"
+
+# Verify deduplication: feature-auth should appear once (merged prd+epic)
+auth_rows=$(echo "$output" | grep -c "feature-auth" || true)
+assert_eq "overview deduplicates rows" "1" "$auth_rows"
 
 # =========================================================================
 echo ""
@@ -297,7 +301,7 @@ output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" overview 2>&1 || true)
 assert_contains "overview with short timeout" "TOTAL" "$output"
 
 # Restore normal settings
-echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
+echo '{ "collectPrompts": false, "statsTimeout": "10" }' > "$TEST_DIR/.pm/ccpm-settings.json"
 
 # =========================================================================
 # Summary
