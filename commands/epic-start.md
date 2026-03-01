@@ -182,6 +182,63 @@ As agents complete streams:
 - Launch new agents for newly-ready work
 - Update execution-status.md
 
+### 8. Evidence-Based Demo
+
+After all agents complete, walk through each task's acceptance criteria with evidence.
+
+**Gather evidence sources:**
+
+1. Read each task file in `.pm/epics/$ARGUMENTS/*.md` and extract the `- [ ]` acceptance criteria
+2. Map commits to tasks:
+   ```bash
+   git log --oneline main..HEAD | grep -oP 'Issue #\d+'
+   ```
+3. Run the project test suite live:
+   ```bash
+   # Detect and run test framework (same pattern as epic-merge)
+   if [ -f package.json ]; then npm test
+   elif [ -f pom.xml ]; then mvn test
+   elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then ./gradlew test
+   elif [ -f Makefile ]; then make test
+   elif [ -f Cargo.toml ]; then cargo test
+   elif [ -f go.mod ]; then go test ./...
+   elif [ -f Gemfile ]; then bundle exec rspec || bundle exec rake test
+   fi
+   ```
+   Capture the full output for reference during the walkthrough.
+
+**For each task, walk through its acceptance criteria using this evidence hierarchy:**
+
+1. **Live demo** — If the criterion describes observable CLI behavior, run the relevant command and show its output
+2. **Test evidence** — Show relevant test results from the live test run that exercise this criterion
+3. **Code diff** — Show `git diff main..HEAD -- <files>` for the task's commits and explain how the change satisfies the criterion
+
+**Present results per task:**
+
+```
+## Task #N: <title>
+
+### AC: <acceptance criterion text>
+Evidence: <live demo | test | code diff>
+<command output, test result, or diff explanation>
+Result: Met | Gap
+
+### AC: <next criterion>
+...
+```
+
+**After all tasks, show a summary:**
+
+```
+Demo Summary: N/M acceptance criteria evidenced, K gaps found
+```
+
+**If gaps are found, warn but do not block:**
+
+```
+Gaps found — review above and request fixups if needed before merging.
+```
+
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
