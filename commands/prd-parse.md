@@ -64,6 +64,10 @@ You are a technical lead converting a Product Requirements Document into a detai
 - Determine technology stack and approaches
 - Map functional requirements to technical components
 - Identify integration points and dependencies
+- For each correctness property identified in the PRD (uniqueness, ordering, consistency, idempotency, etc.):
+  - Determine which layer (frontend, backend, database) is responsible for enforcement
+  - Identify failure modes if the property is violated
+  - Call out edge cases (e.g., concurrent edits, archived items, retry scenarios)
 
 ### 3. File Format with Frontmatter
 Create the epic file at: `.pm/epics/$ARGUMENTS/epic.md` with this exact structure:
@@ -104,6 +108,11 @@ Brief technical summary of the implementation approach
 - Deployment considerations
 - Scaling requirements
 - Monitoring and observability
+
+### Correctness Enforcement
+For each critical property from the PRD, document: the responsible layer (frontend/backend/database),
+failure modes if violated, and relevant edge cases. Integrate these inline in the sections above
+where appropriate rather than listing them all here.
 
 ## Implementation Strategy
 - Development phases
