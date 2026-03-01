@@ -44,7 +44,7 @@ vim .pm/epics/user-authentication/001.md
 ## What Gets Created Locally
 
 ```text
-.claude/
+.pm/
 ├── prds/
 │   └── user-authentication.md      # Requirements document
 ├── epics/
@@ -53,8 +53,8 @@ vim .pm/epics/user-authentication/001.md
 │       ├── 001.md                  # Task: Database schema
 │       ├── 002.md                  # Task: API endpoints
 │       └── 003.md                  # Task: UI components
-└── context/
-    └── README.md                   # Project context
+└── stats/
+    └── active-context.json         # Usage statistics
 ```
 
 ## Commands That Work Locally
@@ -68,6 +68,13 @@ vim .pm/epics/user-authentication/001.md
 - `/ccpm:prd-list` - List PRDs
 - `/ccpm:search <term>` - Search content
 - `/ccpm:validate` - Check file integrity
+- `/ccpm:stats` - Token usage and time overview
+- `/ccpm:stats-show <name>` - Detailed stats for a specific item
+- `/ccpm:stats-rate <name>` - Rate satisfaction with a completed item
+- `/ccpm:context-create` - Generate project context documentation
+- `/ccpm:context-update` - Refresh context with recent changes
+- `/ccpm:context-prime` - Load context into current conversation
+- `/ccpm:config` - Configure CCPM settings
 
 ### 🚫 GitHub-Only Commands (Skip These)
 - `/ccpm:epic-sync <name>` - Push to GitHub Issues
