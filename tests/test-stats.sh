@@ -349,6 +349,14 @@ session_count=$("$PROJECT_ROOT/scripts/pm/ccpm-context" history prd completed-it
 assert_eq "post-completion sessions tracked" "2" "$session_count"
 
 # =========================================================================
+echo ""
+echo "=== Compress: cmd_compress output ==="
+# =========================================================================
+# cmd_compress should run without error even when there is nothing to compress
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" compress 2>&1 || true)
+assert_contains "compress runs without error" "Compressing old JSONL" "$output"
+
+# =========================================================================
 # Summary
 # =========================================================================
 echo ""
