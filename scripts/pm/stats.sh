@@ -29,7 +29,13 @@ fmt_duration() {
   if [ "$secs" -lt 60 ]; then
     echo "${secs}s"
   elif [ "$secs" -lt 3600 ]; then
-    echo "$((secs / 60))m"
+    local m=$((secs / 60))
+    local s=$((secs % 60))
+    if [ "$s" -eq 0 ]; then
+      echo "${m}m"
+    else
+      echo "${m}m ${s}s"
+    fi
   else
     local h=$((secs / 3600))
     local m=$(( (secs % 3600) / 60 ))
@@ -60,6 +66,10 @@ get_setting() {
     echo "$default"
   fi
 }
+
+# Export idle threshold for stats_derive_time() (convert minutes → seconds)
+_idle_minutes=$(get_setting "idleThresholdMinutes" "5")
+export STATS_IDLE_THRESHOLD_SECS=$((_idle_minutes * 60))
 
 # Get unique work items from active-context.json history
 get_unique_items() {
@@ -216,6 +226,9 @@ fmt_rating() {
   fi
 }
 
+# Cache version — increment when computation logic changes to invalidate old caches
+STATS_CACHE_VERSION=2
+
 # Cache stats to .pm/stats/{type}s/{name}/stats.json (merge with existing satisfaction)
 cache_stats() {
   local item_type="$1" item_name="$2" computed_json="$3"
@@ -232,14 +245,20 @@ cache_stats() {
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   echo "$computed_json" | jq --argjson sat "$existing_sat" --arg ts "$now" \
-    '. + { satisfaction: $sat, computed_at: $ts }' > "$file"
+    --argjson cv "$STATS_CACHE_VERSION" \
+    '. + { satisfaction: $sat, computed_at: $ts, cache_version: $cv }' > "$file"
 }
 
-# Check if cache is still valid (no newer history entries than computed_at)
+# Check if cache is still valid (no newer history entries than computed_at, correct version)
 is_cache_valid() {
   local item_type="$1" item_name="$2"
   local file=".pm/stats/${item_type}s/${item_name}/stats.json"
   [ ! -f "$file" ] && return 1
+
+  # Invalidate if cache version doesn't match
+  local cached_version
+  cached_version=$(jq -r '.cache_version // 0' "$file" 2>/dev/null)
+  [ "$cached_version" != "$STATS_CACHE_VERSION" ] && return 1
 
   local computed_at
   computed_at=$(jq -r '.computed_at // empty' "$file" 2>/dev/null)
@@ -306,9 +325,8 @@ cmd_overview() {
   stats_timeout=$(get_setting "statsTimeout" "30")
   _start_timeout "$stats_timeout"
 
-  # Compute stats for each item
-  local grand_tokens=0 grand_working=0 grand_waiting=0 grand_sessions=0
-  local rows=""
+  # Compute stats for each item, collect raw numbers as JSON array
+  local raw_data="[]"
 
   local i=0
   while [ "$i" -lt "$count" ]; do
@@ -326,29 +344,14 @@ cmd_overview() {
       cache_stats "$item_type" "$item_name" "$stats"
     fi
 
-    local tokens working waiting sessions
+    local tokens working waiting
     tokens=$(echo "$stats" | jq '.total_tokens // 0')
     working=$(echo "$stats" | jq '.working_seconds // 0')
     waiting=$(echo "$stats" | jq '.waiting_seconds // 0')
-    sessions=$(echo "$stats" | jq '.sessions // 0')
 
-    local sat rating_str
-    sat=$(read_satisfaction "$item_type" "$item_name")
-    rating_str=$(fmt_rating "$sat")
-
-    # Format values
-    local fmt_tok fmt_work fmt_wait
-    fmt_tok=$(fmt_number "$tokens")
-    fmt_work=$(fmt_duration "$working")
-    fmt_wait=$(fmt_duration "$waiting")
-
-    rows="${rows}${item_type}|${item_name}|${fmt_tok}|${fmt_work}|${fmt_wait}|${rating_str}|${sessions}
-"
-
-    grand_tokens=$((grand_tokens + tokens))
-    grand_working=$((grand_working + working))
-    grand_waiting=$((grand_waiting + waiting))
-    grand_sessions=$((grand_sessions + sessions))
+    raw_data=$(echo "$raw_data" | jq --arg t "$item_type" --arg n "$item_name" \
+      --argjson tok "$tokens" --argjson w "$working" --argjson u "$waiting" \
+      '. + [{type: $t, name: $n, tokens: $tok, working: $w, waiting: $u}]')
 
     i=$((i + 1))
   done
@@ -357,29 +360,69 @@ cmd_overview() {
   echo -ne "\r\033[K" >&2
   _cancel_timeout
 
-  # Print table
-  printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-    "Type" "Name" "Tokens" "Working" "Waiting" "Rating" "Sessions"
-  printf "%-5s-+-%-21s-+-%9s-+-%8s-+-%8s-+-%6s-+-%s\n" \
-    "-----" "---------------------" "---------" "--------" "--------" "------" "--------"
+  # Merge rows by name: sum stats, pick best type (prefer epic over prd)
+  local merged
+  merged=$(echo "$raw_data" | jq '
+    group_by(.name)
+    | map({
+        name: .[0].name,
+        type: (if any(.type == "epic") then "epic" else .[0].type end),
+        tokens: (map(.tokens) | add),
+        working: (map(.working) | add),
+        waiting: (map(.waiting) | add)
+      })
+    | sort_by(.name)')
 
-  printf '%s' "$rows" | while IFS='|' read -r rtype rname rtok rwork rwait rrating rsess; do
-    [ -z "$rtype" ] && continue
-    # Truncate name to 21 chars
+  local merged_count
+  merged_count=$(echo "$merged" | jq 'length')
+
+  # Compute dynamic name width (min 20, max 50)
+  local name_width=20
+  local longest
+  longest=$(echo "$merged" | jq '[.[] | .name | length] | max // 20')
+  name_width=$((longest > 50 ? 50 : (longest < 20 ? 20 : longest)))
+
+  # Build format strings
+  local hdr_fmt="%-5s | %-${name_width}s | %11s | %8s | %8s\n"
+  local sep_name
+  sep_name=$(printf '%*s' "$name_width" '' | tr ' ' '-')
+  local sep_fmt="%-5s-+-%-${name_width}s-+-%11s-+-%8s-+-%8s\n"
+
+  # Print header
+  printf "$hdr_fmt" "Type" "Name" "Tokens" "Working" "Waiting"
+  printf "$sep_fmt" "-----" "$sep_name" "-----------" "--------" "--------"
+
+  # Print rows
+  local grand_tokens=0 grand_working=0 grand_waiting=0
+  local j=0
+  while [ "$j" -lt "$merged_count" ]; do
+    local rtype rname rtok rwork rwait
+    rtype=$(echo "$merged" | jq -r ".[$j].type")
+    rname=$(echo "$merged" | jq -r ".[$j].name")
+    rtok=$(echo "$merged" | jq ".[$j].tokens")
+    rwork=$(echo "$merged" | jq ".[$j].working")
+    rwait=$(echo "$merged" | jq ".[$j].waiting")
+
+    # Truncate name if needed
     local dname="$rname"
-    if [ ${#dname} -gt 21 ]; then
-      dname="${dname:0:18}..."
+    if [ ${#dname} -gt "$name_width" ]; then
+      dname="${dname:0:$((name_width - 3))}..."
     fi
-    printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-      "$rtype" "$dname" "$rtok" "$rwork" "$rwait" "$rrating" "$rsess"
+
+    printf "$hdr_fmt" "$rtype" "$dname" "$(fmt_number "$rtok")" \
+      "$(fmt_duration "$rwork")" "$(fmt_duration "$rwait")"
+
+    grand_tokens=$((grand_tokens + rtok))
+    grand_working=$((grand_working + rwork))
+    grand_waiting=$((grand_waiting + rwait))
+
+    j=$((j + 1))
   done
 
   # Totals
-  printf "%-5s-+-%-21s-+-%9s-+-%8s-+-%8s-+-%6s-+-%s\n" \
-    "-----" "---------------------" "---------" "--------" "--------" "------" "--------"
-  printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
-    "TOTAL" "" "$(fmt_number "$grand_tokens")" "$(fmt_duration "$grand_working")" \
-    "$(fmt_duration "$grand_waiting")" "" "$grand_sessions"
+  printf "$sep_fmt" "-----" "$sep_name" "-----------" "--------" "--------"
+  printf "$hdr_fmt" "TOTAL" "" "$(fmt_number "$grand_tokens")" \
+    "$(fmt_duration "$grand_working")" "$(fmt_duration "$grand_waiting")"
 }
 
 # ---------------------------------------------------------------------------

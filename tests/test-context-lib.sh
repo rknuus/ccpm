@@ -118,6 +118,55 @@ assert_eq "current still null after empty open" "null" "$(jq -r '.current' "$STA
 empty_history="$("$CCPM_CONTEXT" history "" "")"
 assert_eq "empty args returns empty array" "0" "$(echo "$empty_history" | jq 'length')"
 
+# ─── Test 8: Reopen reopens last context within time window ───
+
+echo ""
+echo "Test 8: Reopen reopens last context within time window"
+# History already has entries from previous tests; current is null after Test 6 close.
+# Add a fresh entry and close it so its ended timestamp is recent.
+"$CCPM_CONTEXT" open "epic" "recent-epic" "epic-start"
+sleep 1
+"$CCPM_CONTEXT" close
+assert_eq "current null before reopen" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
+"$CCPM_CONTEXT" reopen 30
+assert_eq "reopened type" "epic" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
+assert_eq "reopened name" "recent-epic" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
+assert_eq "reopened command is followup" "followup" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
+# Clean up for next test
+"$CCPM_CONTEXT" close
+
+# ─── Test 9: Reopen does nothing when context is already open ───
+
+echo ""
+echo "Test 9: Reopen does nothing when context is already open"
+"$CCPM_CONTEXT" open "prd" "active-prd" "prd-new"
+"$CCPM_CONTEXT" reopen 30
+assert_eq "still original type" "prd" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
+assert_eq "still original name" "active-prd" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
+assert_eq "still original command" "prd-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
+"$CCPM_CONTEXT" close
+
+# ─── Test 10: Reopen does nothing when last context is stale ───
+
+echo ""
+echo "Test 10: Reopen does nothing when last context is stale"
+# Manually inject a history entry with an ended timestamp 2 hours ago
+two_hours_ago="$(date -u -v-2H +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null \
+  || date -u -d "2 hours ago" +"%Y-%m-%dT%H:%M:%SZ")"
+jq --arg ended "$two_hours_ago" \
+  '.history += [{"type":"epic","name":"stale-epic","command":"epic-start","started":"2026-01-01T00:00:00Z","ended":$ended}] | .current = null' \
+  "$STATS_CONTEXT_FILE" > "${STATS_CONTEXT_FILE}.tmp" && mv "${STATS_CONTEXT_FILE}.tmp" "$STATS_CONTEXT_FILE"
+"$CCPM_CONTEXT" reopen 30
+assert_eq "no reopen for stale context" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
+
+# ─── Test 11: Reopen does nothing when history is empty ───
+
+echo ""
+echo "Test 11: Reopen does nothing when history is empty"
+printf '{"current":null,"history":[]}\n' > "$STATS_CONTEXT_FILE"
+"$CCPM_CONTEXT" reopen 30
+assert_eq "no reopen for empty history" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
+
 # ─── Summary ───
 
 echo ""

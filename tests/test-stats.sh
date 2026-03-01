@@ -42,7 +42,7 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
 CTXEOF
 
 # Create ccpm-settings.json
-echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
+echo '{ "collectPrompts": false, "statsTimeout": "10" }' > "$TEST_DIR/.pm/ccpm-settings.json"
 
 # Override git rev-parse to return test dir (so stats_find_jsonl_files works
 # with our fixtures). We'll pass files explicitly instead.
@@ -110,7 +110,7 @@ assert_eq "0 seconds" "0s" "$(fmt_duration 0)"
 assert_eq "30 seconds" "30s" "$(fmt_duration 30)"
 assert_eq "59 seconds" "59s" "$(fmt_duration 59)"
 assert_eq "60 seconds" "1m" "$(fmt_duration 60)"
-assert_eq "90 seconds" "1m" "$(fmt_duration 90)"
+assert_eq "90 seconds" "1m 30s" "$(fmt_duration 90)"
 assert_eq "3600 seconds" "1h" "$(fmt_duration 3600)"
 assert_eq "3660 seconds" "1h 1m" "$(fmt_duration 3660)"
 assert_eq "8100 seconds" "2h 15m" "$(fmt_duration 8100)"
@@ -176,10 +176,14 @@ CTXEOF
 
 output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" overview 2>&1 || true)
 assert_contains "overview has header" "Type" "$output"
-assert_contains "overview has prd row" "prd" "$output"
-assert_contains "overview has epic row" "epic" "$output"
 assert_contains "overview has TOTAL" "TOTAL" "$output"
-assert_contains "overview has Sessions column" "Sessions" "$output"
+assert_contains "overview has feature name" "feature-auth" "$output"
+assert_not_contains "overview has no Sessions column" "Sessions" "$output"
+assert_not_contains "overview has no Rating column" "Rating" "$output"
+
+# Verify deduplication: feature-auth should appear once (merged prd+epic)
+auth_rows=$(echo "$output" | grep -c "feature-auth" || true)
+assert_eq "overview deduplicates rows" "1" "$auth_rows"
 
 # =========================================================================
 echo ""
@@ -297,7 +301,52 @@ output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" overview 2>&1 || true)
 assert_contains "overview with short timeout" "TOTAL" "$output"
 
 # Restore normal settings
-echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
+echo '{ "collectPrompts": false, "statsTimeout": "10" }' > "$TEST_DIR/.pm/ccpm-settings.json"
+
+# =========================================================================
+echo ""
+echo "=== Cache: version invalidation ==="
+# =========================================================================
+# Check that cached stats have the cache_version field
+cache_ver=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+assert_eq "cache has version" "2" "$cache_ver"
+
+# Simulate an old cache (version 1) and verify it gets recomputed
+jq '.cache_version = 1' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" > "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" \
+  && mv "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json"
+
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
+cache_ver_after=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+assert_eq "old cache invalidated and recomputed" "2" "$cache_ver_after"
+
+# =========================================================================
+echo ""
+echo "=== Post-completion: context tracking works for completed items ==="
+# =========================================================================
+# Verify that opening context for a completed item records in history
+# (ccpm-context has no status checks, so this should work)
+cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
+{
+  "current": null,
+  "history": [
+    {
+      "type": "prd",
+      "name": "completed-item",
+      "command": "prd-new",
+      "started": "2026-02-15T09:00:00Z",
+      "ended": "2026-02-15T09:30:00Z"
+    }
+  ]
+}
+CTXEOF
+
+# Open a new context for the same item (simulating post-completion work)
+"$PROJECT_ROOT/scripts/pm/ccpm-context" open prd completed-item prd-edit
+"$PROJECT_ROOT/scripts/pm/ccpm-context" close
+
+# Verify both sessions are in history
+session_count=$("$PROJECT_ROOT/scripts/pm/ccpm-context" history prd completed-item | jq 'length')
+assert_eq "post-completion sessions tracked" "2" "$session_count"
 
 # =========================================================================
 # Summary

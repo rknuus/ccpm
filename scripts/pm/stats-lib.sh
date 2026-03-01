@@ -8,8 +8,11 @@
 # ---------------------------------------------------------------------------
 # stats_find_jsonl_files
 #
-# Discovers all JSONL files (including subagent logs) for the current project
-# under ~/.claude/projects/ (falls back to ~/.config/claude/projects/).
+# Discovers top-level JSONL session files for the current project under
+# ~/.claude/projects/ (falls back to ~/.config/claude/projects/).
+#
+# Subagent JSONL files (under */subagents/*.jsonl) are excluded because
+# parent session entries already aggregate subagent token usage.
 #
 # The directory name is the project's absolute path with "/" replaced by "-".
 # e.g. /Users/rkn/Personal/FOSS/ccpm-fork -> -Users-rkn-Personal-FOSS-ccpm-fork
@@ -33,11 +36,8 @@ stats_find_jsonl_files() {
     return 0
   fi
 
-  # Top-level session JSONL files
+  # Top-level session JSONL files only (excludes subagent files)
   find "$base_dir" -maxdepth 1 -name '*.jsonl' -type f 2>/dev/null
-
-  # Subagent JSONL files inside {session}/subagents/
-  find "$base_dir" -path '*/subagents/*.jsonl' -type f 2>/dev/null
 }
 
 # ---------------------------------------------------------------------------
@@ -183,12 +183,16 @@ stats_sum_tokens() {
 #   assistant response.
 # - User wait time: sum of gaps between each assistant response and the next
 #   user message.
+# - Gaps exceeding STATS_IDLE_THRESHOLD_SECS (default 300 = 5 minutes) are
+#   excluded as idle time (laptop sleep, overnight gaps, etc.).
 #
 # Returns JSON: {"claude_working_seconds": N, "user_wait_seconds": N}
 # ---------------------------------------------------------------------------
 stats_derive_time() {
   local start="$1" end="$2"
   shift 2
+
+  local idle_threshold="${STATS_IDLE_THRESHOLD_SECS:-300}"
 
   local files=()
   if [ $# -gt 0 ]; then
@@ -207,21 +211,19 @@ stats_derive_time() {
                and .timestamp >= $start
                and .timestamp <= $end)
         | {type, timestamp}' \
-    | jq -s '
+    | jq -s --argjson threshold "$idle_threshold" '
         # Helper: strip milliseconds so fromdateiso8601 works
         def to_epoch: sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601;
         sort_by(.timestamp) as $msgs
         | reduce range(1; $msgs | length) as $i (
             {claude_working_seconds: 0, user_wait_seconds: 0};
-            if $msgs[$i-1].type == "user" and $msgs[$i].type == "assistant" then
-              .claude_working_seconds += (
-                ($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)
-              )
-            elif $msgs[$i-1].type == "assistant" and $msgs[$i].type == "user" then
-              .user_wait_seconds += (
-                ($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)
-              )
-            else . end
+            (($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)) as $gap
+            | if $gap > $threshold then .  # Skip idle gap
+              elif $msgs[$i-1].type == "user" and $msgs[$i].type == "assistant" then
+                .claude_working_seconds += $gap
+              elif $msgs[$i-1].type == "assistant" and $msgs[$i].type == "user" then
+                .user_wait_seconds += $gap
+              else . end
           )'
 }
 
