@@ -286,6 +286,20 @@ assert_eq "satisfaction preserved after recompute" "4" "$sat_rating"
 assert_contains "show includes rating" "4/5" "$output"
 
 # =========================================================================
+echo ""
+echo "=== Timeout: respects statsTimeout setting ==="
+# =========================================================================
+# Set a very short timeout (1 second) — the overview should still complete
+# because the test data is tiny. This validates the timeout mechanism activates
+# without interfering with normal operation.
+echo '{ "collectPrompts": false, "statsTimeout": "1" }' > "$TEST_DIR/.pm/ccpm-settings.json"
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" overview 2>&1 || true)
+assert_contains "overview with short timeout" "TOTAL" "$output"
+
+# Restore normal settings
+echo '{ "collectPrompts": false }' > "$TEST_DIR/.pm/ccpm-settings.json"
+
+# =========================================================================
 # Summary
 # =========================================================================
 echo ""

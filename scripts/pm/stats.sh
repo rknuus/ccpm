@@ -100,9 +100,19 @@ compute_item_stats() {
     ended=$(echo "$entry" | jq -r '.ended')
     command=$(echo "$entry" | jq -r '.command // "unknown"')
 
+    # Filter files once per session, pass to both functions
+    local filtered_files=()
+    while IFS= read -r f; do
+      filtered_files+=("$f")
+    done < <(stats_filter_files_by_timerange "$started" "$ended")
+
     # Get tokens for this window
     local tokens_json
-    tokens_json=$(stats_sum_tokens "$started" "$ended")
+    if [ ${#filtered_files[@]} -gt 0 ]; then
+      tokens_json=$(stats_sum_tokens "$started" "$ended" "${filtered_files[@]}")
+    else
+      tokens_json=$(stats_sum_tokens "$started" "$ended")
+    fi
 
     local inp outp cc cr
     inp=$(echo "$tokens_json" | jq '.total.input // 0')
@@ -130,7 +140,11 @@ compute_item_stats() {
 
     # Get time for this window
     local time_json
-    time_json=$(stats_derive_time "$started" "$ended")
+    if [ ${#filtered_files[@]} -gt 0 ]; then
+      time_json=$(stats_derive_time "$started" "$ended" "${filtered_files[@]}")
+    else
+      time_json=$(stats_derive_time "$started" "$ended")
+    fi
 
     local ws us
     ws=$(echo "$time_json" | jq '.claude_working_seconds // 0')
@@ -250,6 +264,24 @@ load_cached_stats() {
   fi
 }
 
+# Start a background watchdog that kills this process after N seconds.
+# Call _cancel_timeout when the command finishes normally.
+_TIMEOUT_PID=""
+_TIMEOUT_SECS=""
+_start_timeout() {
+  _TIMEOUT_SECS="$1"
+  ( sleep "$_TIMEOUT_SECS"; kill -TERM $$ 2>/dev/null ) </dev/null >/dev/null 2>&1 &
+  _TIMEOUT_PID=$!
+  trap 'echo "" >&2; echo "❌ Stats computation timed out after ${_TIMEOUT_SECS}s. Cached results (if any) are still available." >&2; kill $_TIMEOUT_PID 2>/dev/null; exit 124' TERM
+}
+_cancel_timeout() {
+  if [ -n "$_TIMEOUT_PID" ]; then
+    kill "$_TIMEOUT_PID" 2>/dev/null || true
+    wait "$_TIMEOUT_PID" 2>/dev/null || true
+    _TIMEOUT_PID=""
+  fi
+}
+
 # ---------------------------------------------------------------------------
 # Command: overview
 # ---------------------------------------------------------------------------
@@ -270,6 +302,10 @@ cmd_overview() {
     exit 0
   fi
 
+  local stats_timeout
+  stats_timeout=$(get_setting "statsTimeout" "30")
+  _start_timeout "$stats_timeout"
+
   # Compute stats for each item
   local grand_tokens=0 grand_working=0 grand_waiting=0 grand_sessions=0
   local rows=""
@@ -279,6 +315,8 @@ cmd_overview() {
     local item_type item_name
     item_type=$(echo "$items" | jq -r ".[$i].type")
     item_name=$(echo "$items" | jq -r ".[$i].name")
+
+    echo -ne "\rComputing stats... $((i + 1))/$count items" >&2
 
     local stats
     if is_cache_valid "$item_type" "$item_name"; then
@@ -314,6 +352,10 @@ cmd_overview() {
 
     i=$((i + 1))
   done
+
+  # Clear progress line and cancel timeout
+  echo -ne "\r\033[K" >&2
+  _cancel_timeout
 
   # Print table
   printf "%-5s | %-21s | %9s | %8s | %8s | %6s | %s\n" \
@@ -361,6 +403,10 @@ cmd_show() {
       ;;
   esac
 
+  local stats_timeout
+  stats_timeout=$(get_setting "statsTimeout" "30")
+  _start_timeout "$stats_timeout"
+
   # Compute or load cached stats
   local stats
   if is_cache_valid "$item_type" "$item_name"; then
@@ -369,6 +415,8 @@ cmd_show() {
     stats=$(compute_item_stats "$item_type" "$item_name")
     cache_stats "$item_type" "$item_name" "$stats"
   fi
+
+  _cancel_timeout
 
   local sessions
   sessions=$(echo "$stats" | jq '.sessions // 0')

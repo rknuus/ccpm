@@ -41,6 +41,74 @@ stats_find_jsonl_files() {
 }
 
 # ---------------------------------------------------------------------------
+# stats_filter_files_by_timerange START END [FILES...]
+#
+# Filters JSONL files to only those whose modification time >= START epoch.
+# This safely over-includes (never misses relevant files) since a file
+# modified before START cannot contain entries timestamped >= START.
+#
+# If FILES are not provided, discovers files via stats_find_jsonl_files.
+# Outputs one file path per line (same format as stats_find_jsonl_files).
+# ---------------------------------------------------------------------------
+stats_filter_files_by_timerange() {
+  local start="$1" end="$2"
+  shift 2
+
+  # Convert START ISO 8601 to epoch seconds (strip milliseconds first)
+  local clean_start
+  clean_start="${start%%.*Z}"
+  # Re-append Z if milliseconds were stripped; pass through if no milliseconds
+  [[ "$start" == *.*Z ]] && clean_start="${clean_start}Z"
+  local start_epoch
+  if date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clean_start" +%s &>/dev/null; then
+    start_epoch=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$clean_start" +%s 2>/dev/null)
+  else
+    start_epoch=$(date -d "$clean_start" +%s 2>/dev/null)
+  fi
+  # If conversion failed, return all files (safe fallback)
+  if [ -z "$start_epoch" ]; then
+    if [ $# -gt 0 ]; then
+      printf '%s\n' "$@"
+    else
+      stats_find_jsonl_files
+    fi
+    return 0
+  fi
+
+  local files=()
+  if [ $# -gt 0 ]; then
+    files=("$@")
+  else
+    while IFS= read -r f; do
+      files+=("$f")
+    done < <(stats_find_jsonl_files)
+  fi
+
+  # Detect stat flavor once
+  local stat_cmd
+  if stat -f %m /dev/null &>/dev/null 2>&1; then
+    stat_cmd="macos"
+  else
+    stat_cmd="linux"
+  fi
+
+  [ ${#files[@]} -eq 0 ] && return 0
+
+  local file mtime
+  for file in "${files[@]}"; do
+    [ -f "$file" ] || continue
+    if [ "$stat_cmd" = "macos" ]; then
+      mtime=$(stat -f %m "$file" 2>/dev/null) || continue
+    else
+      mtime=$(stat -c %Y "$file" 2>/dev/null) || continue
+    fi
+    if [ "$mtime" -ge "$start_epoch" ]; then
+      echo "$file"
+    fi
+  done
+}
+
+# ---------------------------------------------------------------------------
 # stats_sum_tokens START END [FILES...]
 #
 # Sums per-message token counts from assistant entries whose timestamp falls
@@ -64,7 +132,7 @@ stats_sum_tokens() {
   else
     while IFS= read -r f; do
       files+=("$f")
-    done < <(stats_find_jsonl_files)
+    done < <(stats_filter_files_by_timerange "$start" "$end")
   fi
 
   [ ${#files[@]} -eq 0 ] && echo '{"total":{"input":0,"output":0,"cache_creation":0,"cache_read":0},"by_model":{}}' && return 0
@@ -128,7 +196,7 @@ stats_derive_time() {
   else
     while IFS= read -r f; do
       files+=("$f")
-    done < <(stats_find_jsonl_files)
+    done < <(stats_filter_files_by_timerange "$start" "$end")
   fi
 
   [ ${#files[@]} -eq 0 ] && echo '{"claude_working_seconds":0,"user_wait_seconds":0}' && return 0
@@ -175,7 +243,7 @@ stats_extract_prompts() {
   else
     while IFS= read -r f; do
       files+=("$f")
-    done < <(stats_find_jsonl_files)
+    done < <(stats_filter_files_by_timerange "$start" "$end")
   fi
 
   [ ${#files[@]} -eq 0 ] && return 0

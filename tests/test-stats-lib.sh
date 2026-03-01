@@ -200,6 +200,72 @@ first_ts=$(echo "$first_line" | cut -f1)
 assert_eq "timestamp prefix" "2026-02-15T10:00:00.000Z" "$first_ts"
 
 # =========================================================================
+echo ""
+echo "=== File Filtering: includes files with recent mtime ==="
+# =========================================================================
+# Touch session-1 to set its mtime to "now" (within any window)
+# and session-outside to a date before our START window
+touch -t 202602150500.00 "$SESSION_OUTSIDE" 2>/dev/null || true
+touch "$SESSION_1" 2>/dev/null || true
+
+# Filter with START that is before session-1's mtime
+filtered=$(stats_filter_files_by_timerange "$START" "$END" "$SESSION_1" "$SESSION_OUTSIDE")
+filtered_count=$(echo "$filtered" | grep -c '.' 2>/dev/null || echo "0")
+
+# session-1 was just touched (mtime=now, >> START), should be included
+if echo "$filtered" | grep -qF "session-1.jsonl"; then
+  echo "  PASS: filter includes recent file"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: filter should include recent file"
+  echo "    filtered: $filtered"
+  failed=$((failed + 1))
+fi
+
+# =========================================================================
+echo ""
+echo "=== File Filtering: excludes files with old mtime ==="
+# =========================================================================
+# Create a temp file with a very old mtime
+OLD_FILE="$(mktemp)"
+trap 'rm -f "$OLD_FILE"' EXIT
+echo '{}' > "$OLD_FILE"
+touch -t 202001010000.00 "$OLD_FILE" 2>/dev/null || true
+
+filtered=$(stats_filter_files_by_timerange "$START" "$END" "$OLD_FILE")
+if [ -z "$filtered" ]; then
+  echo "  PASS: filter excludes old file"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: filter should exclude old file"
+  echo "    filtered: $filtered"
+  failed=$((failed + 1))
+fi
+
+# =========================================================================
+echo ""
+echo "=== File Filtering: returns empty for no matching files ==="
+# =========================================================================
+filtered=$(stats_filter_files_by_timerange "$START" "$END" "$OLD_FILE")
+filtered_count=$(echo "$filtered" | grep -c '.' 2>/dev/null || echo "0")
+if [ -z "$filtered" ]; then
+  echo "  PASS: filter returns empty for no matches"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: filter should return empty for no matches"
+  failed=$((failed + 1))
+fi
+
+# =========================================================================
+echo ""
+echo "=== File Filtering: passes through explicit files unchanged ==="
+# =========================================================================
+# When explicit files are passed to stats_sum_tokens, filtering is NOT applied
+# (the files are used as-is). Verify existing behavior is preserved.
+result=$(stats_sum_tokens "$START" "$END" "$SESSION_1")
+assert_eq "explicit files still work" "330" "$(echo "$result" | jq '.total.input')"
+
+# =========================================================================
 # Summary
 # =========================================================================
 echo ""
