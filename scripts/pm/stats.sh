@@ -267,11 +267,12 @@ load_cached_stats() {
 # Start a background watchdog that kills this process after N seconds.
 # Call _cancel_timeout when the command finishes normally.
 _TIMEOUT_PID=""
+_TIMEOUT_SECS=""
 _start_timeout() {
-  local secs="$1"
-  ( sleep "$secs"; kill -TERM $$ 2>/dev/null ) </dev/null >/dev/null 2>&1 &
+  _TIMEOUT_SECS="$1"
+  ( sleep "$_TIMEOUT_SECS"; kill -TERM $$ 2>/dev/null ) </dev/null >/dev/null 2>&1 &
   _TIMEOUT_PID=$!
-  trap 'echo "" >&2; echo "❌ Stats computation timed out after ${secs}s. Cached results (if any) are still available." >&2; kill $_TIMEOUT_PID 2>/dev/null; exit 124' TERM
+  trap 'echo "" >&2; echo "❌ Stats computation timed out after ${_TIMEOUT_SECS}s. Cached results (if any) are still available." >&2; kill $_TIMEOUT_PID 2>/dev/null; exit 124' TERM
 }
 _cancel_timeout() {
   if [ -n "$_TIMEOUT_PID" ]; then
