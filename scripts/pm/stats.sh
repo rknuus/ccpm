@@ -29,7 +29,13 @@ fmt_duration() {
   if [ "$secs" -lt 60 ]; then
     echo "${secs}s"
   elif [ "$secs" -lt 3600 ]; then
-    echo "$((secs / 60))m"
+    local m=$((secs / 60))
+    local s=$((secs % 60))
+    if [ "$s" -eq 0 ]; then
+      echo "${m}m"
+    else
+      echo "${m}m ${s}s"
+    fi
   else
     local h=$((secs / 3600))
     local m=$(( (secs % 3600) / 60 ))
@@ -377,14 +383,14 @@ cmd_overview() {
   name_width=$((longest > 50 ? 50 : (longest < 20 ? 20 : longest)))
 
   # Build format strings
-  local hdr_fmt="%-5s | %-${name_width}s | %9s | %8s | %8s\n"
+  local hdr_fmt="%-5s | %-${name_width}s | %11s | %8s | %8s\n"
   local sep_name
   sep_name=$(printf '%*s' "$name_width" '' | tr ' ' '-')
-  local sep_fmt="%-5s-+-%-${name_width}s-+-%9s-+-%8s-+-%8s\n"
+  local sep_fmt="%-5s-+-%-${name_width}s-+-%11s-+-%8s-+-%8s\n"
 
   # Print header
   printf "$hdr_fmt" "Type" "Name" "Tokens" "Working" "Waiting"
-  printf "$sep_fmt" "-----" "$sep_name" "---------" "--------" "--------"
+  printf "$sep_fmt" "-----" "$sep_name" "-----------" "--------" "--------"
 
   # Print rows
   local grand_tokens=0 grand_working=0 grand_waiting=0
@@ -414,7 +420,7 @@ cmd_overview() {
   done
 
   # Totals
-  printf "$sep_fmt" "-----" "$sep_name" "---------" "--------" "--------"
+  printf "$sep_fmt" "-----" "$sep_name" "-----------" "--------" "--------"
   printf "$hdr_fmt" "TOTAL" "" "$(fmt_number "$grand_tokens")" \
     "$(fmt_duration "$grand_working")" "$(fmt_duration "$grand_waiting")"
 }
