@@ -147,6 +147,45 @@ assert_eq "empty claude working" "0" "$(echo "$result" | jq '.claude_working_sec
 
 # =========================================================================
 echo ""
+echo "=== Idle Detection: excludes gaps exceeding threshold ==="
+# =========================================================================
+# session-idle has:
+#   user  14:00:00 -> assistant 14:00:05 => 5s working
+#   assistant 14:00:05 -> user 14:00:15 => 10s wait
+#   user  14:00:15 -> assistant 14:00:20 => 5s working
+#   assistant 14:00:20 -> user 22:00:20 => 8h gap (IDLE - should be excluded)
+#   user  22:00:20 -> assistant 22:00:28 => 8s working
+#
+# With idle detection (threshold=300s): working=5+5+8=18s, wait=10s
+# Without idle detection: working=5+5+8=18s, wait=10+28800=28810s
+SESSION_IDLE="$FIXTURES/session-idle.jsonl"
+STATS_IDLE_THRESHOLD_SECS=300 result=$(stats_derive_time "$START" "$END" "$SESSION_IDLE")
+
+assert_eq "idle: claude working" "18" "$(echo "$result" | jq '.claude_working_seconds')"
+assert_eq "idle: user wait (excludes 8h gap)" "10" "$(echo "$result" | jq '.user_wait_seconds')"
+
+# =========================================================================
+echo ""
+echo "=== Idle Detection: includes gaps below threshold ==="
+# =========================================================================
+# With a very high threshold (999999s), all gaps should be included
+STATS_IDLE_THRESHOLD_SECS=999999 result=$(stats_derive_time "$START" "$END" "$SESSION_IDLE")
+
+assert_eq "no-idle: claude working" "18" "$(echo "$result" | jq '.claude_working_seconds')"
+assert_eq "no-idle: user wait (includes 8h gap)" "28810" "$(echo "$result" | jq '.user_wait_seconds')"
+
+# =========================================================================
+echo ""
+echo "=== Idle Detection: existing session-1 unaffected ==="
+# =========================================================================
+# session-1 has no gaps > 300s, so idle detection should not change results
+STATS_IDLE_THRESHOLD_SECS=300 result=$(stats_derive_time "$START" "$END" "$SESSION_1")
+
+assert_eq "idle s1: claude working unchanged" "15" "$(echo "$result" | jq '.claude_working_seconds')"
+assert_eq "idle s1: user wait unchanged" "20" "$(echo "$result" | jq '.user_wait_seconds')"
+
+# =========================================================================
+echo ""
 echo "=== Prompt Extraction: single session ==="
 # =========================================================================
 # session-1 has 3 user messages with string content (tool result excluded):

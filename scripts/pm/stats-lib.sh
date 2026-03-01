@@ -183,12 +183,16 @@ stats_sum_tokens() {
 #   assistant response.
 # - User wait time: sum of gaps between each assistant response and the next
 #   user message.
+# - Gaps exceeding STATS_IDLE_THRESHOLD_SECS (default 300 = 5 minutes) are
+#   excluded as idle time (laptop sleep, overnight gaps, etc.).
 #
 # Returns JSON: {"claude_working_seconds": N, "user_wait_seconds": N}
 # ---------------------------------------------------------------------------
 stats_derive_time() {
   local start="$1" end="$2"
   shift 2
+
+  local idle_threshold="${STATS_IDLE_THRESHOLD_SECS:-300}"
 
   local files=()
   if [ $# -gt 0 ]; then
@@ -207,21 +211,19 @@ stats_derive_time() {
                and .timestamp >= $start
                and .timestamp <= $end)
         | {type, timestamp}' \
-    | jq -s '
+    | jq -s --argjson threshold "$idle_threshold" '
         # Helper: strip milliseconds so fromdateiso8601 works
         def to_epoch: sub("\\.[0-9]+Z$"; "Z") | fromdateiso8601;
         sort_by(.timestamp) as $msgs
         | reduce range(1; $msgs | length) as $i (
             {claude_working_seconds: 0, user_wait_seconds: 0};
-            if $msgs[$i-1].type == "user" and $msgs[$i].type == "assistant" then
-              .claude_working_seconds += (
-                ($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)
-              )
-            elif $msgs[$i-1].type == "assistant" and $msgs[$i].type == "user" then
-              .user_wait_seconds += (
-                ($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)
-              )
-            else . end
+            (($msgs[$i].timestamp | to_epoch) - ($msgs[$i-1].timestamp | to_epoch)) as $gap
+            | if $gap > $threshold then .  # Skip idle gap
+              elif $msgs[$i-1].type == "user" and $msgs[$i].type == "assistant" then
+                .claude_working_seconds += $gap
+              elif $msgs[$i-1].type == "assistant" and $msgs[$i].type == "user" then
+                .user_wait_seconds += $gap
+              else . end
           )'
 }
 

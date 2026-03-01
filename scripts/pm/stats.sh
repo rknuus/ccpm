@@ -61,6 +61,10 @@ get_setting() {
   fi
 }
 
+# Export idle threshold for stats_derive_time() (convert minutes → seconds)
+_idle_minutes=$(get_setting "idleThresholdMinutes" "5")
+export STATS_IDLE_THRESHOLD_SECS=$((_idle_minutes * 60))
+
 # Get unique work items from active-context.json history
 get_unique_items() {
   if [ ! -f "$CONTEXT_FILE" ]; then

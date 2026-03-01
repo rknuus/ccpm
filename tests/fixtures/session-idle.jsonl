@@ -1,0 +1,6 @@
+{"type":"user","timestamp":"2026-02-15T14:00:00.000Z","message":{"role":"user","content":"Start work"},"sessionId":"session-idle","uuid":"ui1"}
+{"type":"assistant","timestamp":"2026-02-15T14:00:05.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":50,"output_tokens":100,"cache_creation_input_tokens":0,"cache_read_input_tokens":0}},"sessionId":"session-idle","uuid":"ai1","parentUuid":"ui1"}
+{"type":"user","timestamp":"2026-02-15T14:00:15.000Z","message":{"role":"user","content":"Good, continue"},"sessionId":"session-idle","uuid":"ui2","parentUuid":"ai1"}
+{"type":"assistant","timestamp":"2026-02-15T14:00:20.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":60,"output_tokens":120,"cache_creation_input_tokens":0,"cache_read_input_tokens":0}},"sessionId":"session-idle","uuid":"ai2","parentUuid":"ui2"}
+{"type":"user","timestamp":"2026-02-15T22:00:20.000Z","message":{"role":"user","content":"Back after sleep"},"sessionId":"session-idle","uuid":"ui3","parentUuid":"ai2"}
+{"type":"assistant","timestamp":"2026-02-15T22:00:28.000Z","message":{"role":"assistant","model":"claude-opus-4-6","usage":{"input_tokens":70,"output_tokens":140,"cache_creation_input_tokens":0,"cache_read_input_tokens":0}},"sessionId":"session-idle","uuid":"ai3","parentUuid":"ui3"}
