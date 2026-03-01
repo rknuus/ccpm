@@ -244,7 +244,7 @@ echo "=== File Discovery: excludes subagent JSONL files ==="
 # =========================================================================
 # Create a temp directory mimicking the Claude projects structure
 MOCK_CLAUDE_DIR="$(mktemp -d)"
-trap 'rm -rf "$MOCK_CLAUDE_DIR" "$OLD_FILE"' EXIT
+trap 'rm -rf "$MOCK_CLAUDE_DIR" "$OLD_FILE" "$COMPRESS_TEST_DIR"' EXIT
 
 # Simulate project dir name (the function uses git rev-parse)
 PROJECT_DIR_NAME="$(git rev-parse --show-toplevel 2>/dev/null | sed 's|/|-|g')"
@@ -351,6 +351,168 @@ echo "=== File Filtering: passes through explicit files unchanged ==="
 # (the files are used as-is). Verify existing behavior is preserved.
 result=$(stats_sum_tokens "$START" "$END" "$SESSION_1")
 assert_eq "explicit files still work" "330" "$(echo "$result" | jq '.total.input')"
+
+# =========================================================================
+echo ""
+echo "=== stats_cat_files: plain and compressed ==="
+# =========================================================================
+CAT_TEST_DIR="$(mktemp -d)"
+
+# Create a plain test JSONL file with known content
+cat > "$CAT_TEST_DIR/test-plain.jsonl" <<'CATEOF'
+{"type":"assistant","timestamp":"2026-01-01T00:00:00Z","message":{"usage":{"input_tokens":100,"output_tokens":50}}}
+{"type":"assistant","timestamp":"2026-01-01T00:01:00Z","message":{"usage":{"input_tokens":200,"output_tokens":75}}}
+CATEOF
+
+# Test reading plain file
+plain_out=$(stats_cat_files "$CAT_TEST_DIR/test-plain.jsonl")
+plain_lines=$(echo "$plain_out" | wc -l | tr -d ' ')
+assert_eq "cat_files plain line count" "2" "$plain_lines"
+
+# Create a gzipped copy
+cp "$CAT_TEST_DIR/test-plain.jsonl" "$CAT_TEST_DIR/test-gz.jsonl"
+gzip "$CAT_TEST_DIR/test-gz.jsonl"
+
+# Test reading gzipped file produces identical content
+gz_out=$(stats_cat_files "$CAT_TEST_DIR/test-gz.jsonl.gz")
+assert_eq "cat_files gz output matches plain" "$plain_out" "$gz_out"
+
+# Test reading both plain and gz together
+both_out=$(stats_cat_files "$CAT_TEST_DIR/test-plain.jsonl" "$CAT_TEST_DIR/test-gz.jsonl.gz")
+both_lines=$(echo "$both_out" | wc -l | tr -d ' ')
+assert_eq "cat_files both files line count" "4" "$both_lines"
+
+rm -rf "$CAT_TEST_DIR"
+
+# =========================================================================
+echo ""
+echo "=== stats_compress_old_files: compression and idempotency ==="
+# =========================================================================
+COMPRESS_TEST_DIR="$(mktemp -d)"
+FAKE_PROJECT="/tmp/test-compress-project-$$"
+COMPRESS_DIR_NAME="${FAKE_PROJECT//\//-}"
+mkdir -p "$COMPRESS_TEST_DIR/.claude/projects/$COMPRESS_DIR_NAME"
+
+COMPRESS_PROJECT_DIR="$COMPRESS_TEST_DIR/.claude/projects/$COMPRESS_DIR_NAME"
+
+# Create 3 JSONL files with old mtimes (30 days ago)
+echo '{"type":"assistant","timestamp":"2026-01-01T00:00:00Z"}' > "$COMPRESS_PROJECT_DIR/old-session-1.jsonl"
+echo '{"type":"assistant","timestamp":"2026-01-02T00:00:00Z"}' > "$COMPRESS_PROJECT_DIR/old-session-2.jsonl"
+echo '{"type":"assistant","timestamp":"2026-01-03T00:00:00Z"}' > "$COMPRESS_PROJECT_DIR/new-session.jsonl"
+
+# Set old mtimes (30 days ago) for old files
+touch -t 202601010000.00 "$COMPRESS_PROJECT_DIR/old-session-1.jsonl"
+touch -t 202601020000.00 "$COMPRESS_PROJECT_DIR/old-session-2.jsonl"
+
+# new-session has current mtime (just created) — it will be the newest
+
+# Override git rev-parse so stats_compress_old_files finds our fake project
+_real_git=$(command -v git)
+git() {
+  if [[ "$1" == "rev-parse" && "$2" == "--show-toplevel" ]]; then
+    echo "$FAKE_PROJECT"
+  else
+    "$_real_git" "$@"
+  fi
+}
+export -f git
+
+OLD_HOME_COMPRESS="$HOME"
+HOME="$COMPRESS_TEST_DIR" stats_compress_old_files 0
+
+# Restore
+HOME="$OLD_HOME_COMPRESS"
+unset -f git
+
+# Check: old files should be compressed
+if [ -f "$COMPRESS_PROJECT_DIR/old-session-1.jsonl.gz" ]; then
+  echo "  PASS: old-session-1 compressed"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: old-session-1 should be compressed"
+  failed=$((failed + 1))
+fi
+
+if [ -f "$COMPRESS_PROJECT_DIR/old-session-2.jsonl.gz" ]; then
+  echo "  PASS: old-session-2 compressed"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: old-session-2 should be compressed"
+  failed=$((failed + 1))
+fi
+
+# Check: newest file should remain uncompressed
+if [ -f "$COMPRESS_PROJECT_DIR/new-session.jsonl" ]; then
+  echo "  PASS: newest file remains uncompressed"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: newest file should remain uncompressed"
+  failed=$((failed + 1))
+fi
+
+# Test idempotency: running again should not change anything
+_real_git2=$(command -v git)
+git() {
+  if [[ "$1" == "rev-parse" && "$2" == "--show-toplevel" ]]; then
+    echo "$FAKE_PROJECT"
+  else
+    "$_real_git2" "$@"
+  fi
+}
+export -f git
+
+before_count=$(find "$COMPRESS_PROJECT_DIR" -type f | wc -l | tr -d ' ')
+HOME="$COMPRESS_TEST_DIR" stats_compress_old_files 0
+after_count=$(find "$COMPRESS_PROJECT_DIR" -type f | wc -l | tr -d ' ')
+
+HOME="$OLD_HOME_COMPRESS"
+unset -f git
+
+assert_eq "idempotent: file count unchanged" "$before_count" "$after_count"
+
+rm -rf "$COMPRESS_TEST_DIR"
+
+# =========================================================================
+echo ""
+echo "=== Token/time correctness with compressed files ==="
+# =========================================================================
+GZ_FIXTURE_DIR="$(mktemp -d)"
+
+# Copy session-1 fixture as plain file
+cp "$SESSION_1" "$GZ_FIXTURE_DIR/session-plain.jsonl"
+
+# Compute tokens from plain file
+plain_tokens=$(stats_sum_tokens "$START" "$END" "$GZ_FIXTURE_DIR/session-plain.jsonl")
+plain_input=$(echo "$plain_tokens" | jq '.total.input')
+
+# Create gzipped version
+cp "$GZ_FIXTURE_DIR/session-plain.jsonl" "$GZ_FIXTURE_DIR/session-gz.jsonl"
+gzip "$GZ_FIXTURE_DIR/session-gz.jsonl"
+
+# Compute tokens from gzipped file
+gz_tokens=$(stats_sum_tokens "$START" "$END" "$GZ_FIXTURE_DIR/session-gz.jsonl.gz")
+gz_input=$(echo "$gz_tokens" | jq '.total.input')
+
+assert_eq "tokens from gz match plain" "$plain_input" "$gz_input"
+
+# Full token comparison
+plain_output=$(echo "$plain_tokens" | jq '.total.output')
+gz_output=$(echo "$gz_tokens" | jq '.total.output')
+assert_eq "output tokens from gz match plain" "$plain_output" "$gz_output"
+
+# Test time derivation with compressed files
+plain_time=$(stats_derive_time "$START" "$END" "$GZ_FIXTURE_DIR/session-plain.jsonl")
+gz_time=$(stats_derive_time "$START" "$END" "$GZ_FIXTURE_DIR/session-gz.jsonl.gz")
+
+plain_working=$(echo "$plain_time" | jq '.claude_working_seconds')
+gz_working=$(echo "$gz_time" | jq '.claude_working_seconds')
+assert_eq "working seconds from gz match plain" "$plain_working" "$gz_working"
+
+plain_waiting=$(echo "$plain_time" | jq '.user_wait_seconds')
+gz_waiting=$(echo "$gz_time" | jq '.user_wait_seconds')
+assert_eq "waiting seconds from gz match plain" "$plain_waiting" "$gz_waiting"
+
+rm -rf "$GZ_FIXTURE_DIR"
 
 # =========================================================================
 # Summary

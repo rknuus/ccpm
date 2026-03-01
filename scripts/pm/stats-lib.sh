@@ -37,7 +37,24 @@ stats_find_jsonl_files() {
   fi
 
   # Top-level session JSONL files only (excludes subagent files)
-  find "$base_dir" -maxdepth 1 -name '*.jsonl' -type f 2>/dev/null
+  find "$base_dir" -maxdepth 1 \( -name '*.jsonl' -o -name '*.jsonl.gz' \) -type f 2>/dev/null
+}
+
+# ---------------------------------------------------------------------------
+# stats_cat_files FILE...
+#
+# Outputs the contents of the given files to stdout, transparently
+# decompressing any .gz files. Equivalent to cat for plain files.
+# ---------------------------------------------------------------------------
+stats_cat_files() {
+  local file
+  for file in "$@"; do
+    [ -f "$file" ] || continue
+    case "$file" in
+      *.gz) gzip -dc "$file" 2>/dev/null ;;
+      *)    cat "$file" 2>/dev/null ;;
+    esac
+  done
 }
 
 # ---------------------------------------------------------------------------
@@ -137,7 +154,7 @@ stats_sum_tokens() {
 
   [ ${#files[@]} -eq 0 ] && echo '{"total":{"input":0,"output":0,"cache_creation":0,"cache_read":0},"by_model":{}}' && return 0
 
-  cat "${files[@]}" 2>/dev/null \
+  stats_cat_files "${files[@]}" \
     | jq -c --arg start "$start" --arg end "$end" '
         select(.type == "assistant"
                and .timestamp >= $start
@@ -205,7 +222,7 @@ stats_derive_time() {
 
   [ ${#files[@]} -eq 0 ] && echo '{"claude_working_seconds":0,"user_wait_seconds":0}' && return 0
 
-  cat "${files[@]}" 2>/dev/null \
+  stats_cat_files "${files[@]}" \
     | jq -c --arg start "$start" --arg end "$end" '
         select((.type == "user" or .type == "assistant")
                and .timestamp >= $start
@@ -250,11 +267,112 @@ stats_extract_prompts() {
 
   [ ${#files[@]} -eq 0 ] && return 0
 
-  cat "${files[@]}" 2>/dev/null \
+  stats_cat_files "${files[@]}" \
     | jq -r --arg start "$start" --arg end "$end" '
         select(.type == "user"
                and .timestamp >= $start
                and .timestamp <= $end
                and (.message.content | type) == "string")
         | "\(.timestamp)\t\(.message.content)"'
+}
+
+# ---------------------------------------------------------------------------
+# stats_compress_old_files [MAX_AGE_DAYS]
+#
+# Gzips JSONL session files that have not been modified in the last
+# MAX_AGE_DAYS days (default: 7). The most recently modified .jsonl file
+# is always excluded (likely the active session).
+#
+# Only operates on .jsonl files — already-compressed .jsonl.gz are skipped.
+# Prints one line per compressed file to stdout.
+# Returns the number of files compressed via exit code (0 = none or success).
+# ---------------------------------------------------------------------------
+stats_compress_old_files() {
+  local max_age_days="${1:-7}"
+
+  local project_root
+  project_root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+  local dir_name="${project_root//\//-}"
+
+  local base_dir=""
+  if [ -d "$HOME/.claude/projects/$dir_name" ]; then
+    base_dir="$HOME/.claude/projects/$dir_name"
+  elif [ -d "$HOME/.config/claude/projects/$dir_name" ]; then
+    base_dir="$HOME/.config/claude/projects/$dir_name"
+  else
+    return 0
+  fi
+
+  # Find only uncompressed .jsonl files (not .jsonl.gz)
+  local all_jsonl=()
+  while IFS= read -r f; do
+    all_jsonl+=("$f")
+  done < <(find "$base_dir" -maxdepth 1 -name '*.jsonl' -type f 2>/dev/null | sort)
+
+  [ ${#all_jsonl[@]} -le 1 ] && return 0  # Nothing to compress (0 or 1 file)
+
+  # Find the newest file by mtime — exclude it from compression
+  local newest=""
+  local newest_mtime=0
+  local stat_cmd
+  if stat -f %m /dev/null &>/dev/null 2>&1; then
+    stat_cmd="macos"
+  else
+    stat_cmd="linux"
+  fi
+
+  local file mtime
+  for file in "${all_jsonl[@]}"; do
+    if [ "$stat_cmd" = "macos" ]; then
+      mtime=$(stat -f %m "$file" 2>/dev/null) || continue
+    else
+      mtime=$(stat -c %Y "$file" 2>/dev/null) || continue
+    fi
+    if [ "$mtime" -gt "$newest_mtime" ]; then
+      newest_mtime="$mtime"
+      newest="$file"
+    fi
+  done
+
+  # Compute age threshold in epoch seconds
+  local now threshold
+  now=$(date +%s)
+  threshold=$((now - max_age_days * 86400))
+
+  local compressed=0
+  local bytes_saved=0
+  for file in "${all_jsonl[@]}"; do
+    [ "$file" = "$newest" ] && continue  # Skip newest file
+
+    if [ "$stat_cmd" = "macos" ]; then
+      mtime=$(stat -f %m "$file" 2>/dev/null) || continue
+    else
+      mtime=$(stat -c %Y "$file" 2>/dev/null) || continue
+    fi
+
+    [ "$mtime" -ge "$threshold" ] && continue  # Not old enough
+
+    local size_before
+    if [ "$stat_cmd" = "macos" ]; then
+      size_before=$(stat -f %z "$file" 2>/dev/null) || continue
+    else
+      size_before=$(stat -c %s "$file" 2>/dev/null) || continue
+    fi
+
+    if gzip "$file" 2>/dev/null; then
+      local size_after
+      if [ "$stat_cmd" = "macos" ]; then
+        size_after=$(stat -f %z "${file}.gz" 2>/dev/null) || size_after=0
+      else
+        size_after=$(stat -c %s "${file}.gz" 2>/dev/null) || size_after=0
+      fi
+      bytes_saved=$((bytes_saved + size_before - size_after))
+      compressed=$((compressed + 1))
+      echo "Compressed: $(basename "$file") ($(( (size_before - size_after) / 1024 ))KB saved)"
+    fi
+  done
+
+  if [ "$compressed" -gt 0 ]; then
+    echo "Total: $compressed files compressed, $((bytes_saved / 1024))KB saved"
+  fi
 }
