@@ -4,6 +4,7 @@
 # Usage:
 #   ccpm-context open <type> <name> <command>   — set active context (auto-closes previous)
 #   ccpm-context close                          — close active context, move to history
+#   ccpm-context reopen [max_age_minutes]       — reopen last closed context if recent enough
 #   ccpm-context history <type> <name>          — output JSON array of history entries to stdout
 #
 # Environment:
@@ -85,6 +86,53 @@ cmd_history() {
     "$STATS_CONTEXT_FILE" 2>/dev/null || echo "[]"
 }
 
+cmd_reopen() {
+  local max_age_minutes="${1:-30}"
+
+  _ensure_file
+
+  # If there's already an active context, nothing to do
+  local has_current
+  has_current="$(jq -r '.current != null' "$STATS_CONTEXT_FILE" 2>/dev/null)"
+  if [ "$has_current" = "true" ]; then
+    return 0
+  fi
+
+  # Get the last history entry
+  local last_entry
+  last_entry="$(jq -r '.history[-1] // empty' "$STATS_CONTEXT_FILE" 2>/dev/null)"
+  if [ -z "$last_entry" ]; then
+    return 0
+  fi
+
+  # Check staleness: compare ended timestamp to now
+  local ended_ts
+  ended_ts="$(echo "$last_entry" | jq -r '.ended // empty')"
+  if [ -z "$ended_ts" ]; then
+    return 0
+  fi
+
+  local now_epoch ended_epoch
+  now_epoch="$(date -u +%s)"
+  # macOS date -j -f needs TZ=UTC for Z-suffixed timestamps; GNU date -d handles it
+  ended_epoch="$(TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%SZ" "$ended_ts" +%s 2>/dev/null \
+    || date -d "$ended_ts" +%s 2>/dev/null \
+    || echo 0)"
+
+  local age_seconds=$(( now_epoch - ended_epoch ))
+  local max_age_seconds=$(( max_age_minutes * 60 ))
+
+  if [ "$age_seconds" -gt "$max_age_seconds" ]; then
+    return 0
+  fi
+
+  # Reopen with the same type/name but command="followup"
+  local ctx_type ctx_name
+  ctx_type="$(echo "$last_entry" | jq -r '.type')"
+  ctx_name="$(echo "$last_entry" | jq -r '.name')"
+  cmd_open "$ctx_type" "$ctx_name" "followup"
+}
+
 # Main dispatch
 subcmd="${1:-}"
 shift 2>/dev/null || true
@@ -92,9 +140,10 @@ shift 2>/dev/null || true
 case "$subcmd" in
   open)    cmd_open "${1:-}" "${2:-}" "${3:-}" ;;
   close)   cmd_close ;;
+  reopen)  cmd_reopen "${1:-}" ;;
   history) cmd_history "${1:-}" "${2:-}" ;;
   *)
-    echo "Usage: ccpm-context {open|close|history} [args...]" >&2
+    echo "Usage: ccpm-context {open|close|reopen|history} [args...]" >&2
     exit 0
     ;;
 esac
