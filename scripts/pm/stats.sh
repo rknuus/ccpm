@@ -310,6 +310,9 @@ cmd_overview() {
     exit 0
   fi
 
+  # Auto-compress old JSONL files
+  stats_compress_old_files >/dev/null 2>&1 || true
+
   local items
   items=$(get_unique_items)
 
@@ -445,6 +448,9 @@ cmd_show() {
       exit 1
       ;;
   esac
+
+  # Auto-compress old JSONL files
+  stats_compress_old_files >/dev/null 2>&1 || true
 
   local stats_timeout
   stats_timeout=$(get_setting "statsTimeout" "30")
@@ -639,6 +645,15 @@ cmd_show() {
 }
 
 # ---------------------------------------------------------------------------
+# Command: compress
+# ---------------------------------------------------------------------------
+cmd_compress() {
+  echo "Compressing old JSONL session files..."
+  echo ""
+  stats_compress_old_files "${1:-7}"
+}
+
+# ---------------------------------------------------------------------------
 # Main dispatch
 # ---------------------------------------------------------------------------
 main() {
@@ -651,6 +666,9 @@ main() {
       ;;
     show)
       cmd_show "$@"
+      ;;
+    compress)
+      cmd_compress "$@"
       ;;
     *)
       echo "Usage:"
