@@ -8,8 +8,11 @@
 # ---------------------------------------------------------------------------
 # stats_find_jsonl_files
 #
-# Discovers all JSONL files (including subagent logs) for the current project
-# under ~/.claude/projects/ (falls back to ~/.config/claude/projects/).
+# Discovers top-level JSONL session files for the current project under
+# ~/.claude/projects/ (falls back to ~/.config/claude/projects/).
+#
+# Subagent JSONL files (under */subagents/*.jsonl) are excluded because
+# parent session entries already aggregate subagent token usage.
 #
 # The directory name is the project's absolute path with "/" replaced by "-".
 # e.g. /Users/rkn/Personal/FOSS/ccpm-fork -> -Users-rkn-Personal-FOSS-ccpm-fork
@@ -33,11 +36,8 @@ stats_find_jsonl_files() {
     return 0
   fi
 
-  # Top-level session JSONL files
+  # Top-level session JSONL files only (excludes subagent files)
   find "$base_dir" -maxdepth 1 -name '*.jsonl' -type f 2>/dev/null
-
-  # Subagent JSONL files inside {session}/subagents/
-  find "$base_dir" -path '*/subagents/*.jsonl' -type f 2>/dev/null
 }
 
 # ---------------------------------------------------------------------------

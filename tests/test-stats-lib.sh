@@ -201,6 +201,54 @@ assert_eq "timestamp prefix" "2026-02-15T10:00:00.000Z" "$first_ts"
 
 # =========================================================================
 echo ""
+echo "=== File Discovery: excludes subagent JSONL files ==="
+# =========================================================================
+# Create a temp directory mimicking the Claude projects structure
+MOCK_CLAUDE_DIR="$(mktemp -d)"
+trap 'rm -rf "$MOCK_CLAUDE_DIR" "$OLD_FILE"' EXIT
+
+# Simulate project dir name (the function uses git rev-parse)
+PROJECT_DIR_NAME="$(git rev-parse --show-toplevel 2>/dev/null | sed 's|/|-|g')"
+MOCK_PROJECT_DIR="$MOCK_CLAUDE_DIR/$PROJECT_DIR_NAME"
+mkdir -p "$MOCK_PROJECT_DIR"
+
+# Create a top-level JSONL file
+echo '{}' > "$MOCK_PROJECT_DIR/session-main.jsonl"
+
+# Create a subagent JSONL file
+mkdir -p "$MOCK_PROJECT_DIR/abc123/subagents"
+echo '{}' > "$MOCK_PROJECT_DIR/abc123/subagents/agent-1.jsonl"
+
+# Override HOME so stats_find_jsonl_files looks in our mock dir
+OLD_HOME="$HOME"
+HOME="$MOCK_CLAUDE_DIR"
+# Rename project dir to match expected path under .claude/projects/
+mkdir -p "$MOCK_CLAUDE_DIR/.claude/projects"
+mv "$MOCK_PROJECT_DIR" "$MOCK_CLAUDE_DIR/.claude/projects/$PROJECT_DIR_NAME"
+
+found_files=$(stats_find_jsonl_files)
+HOME="$OLD_HOME"
+
+if echo "$found_files" | grep -qF "session-main.jsonl"; then
+  echo "  PASS: discovery includes top-level JSONL"
+  passed=$((passed + 1))
+else
+  echo "  FAIL: discovery should include top-level JSONL"
+  echo "    found: $found_files"
+  failed=$((failed + 1))
+fi
+
+if echo "$found_files" | grep -qF "subagents"; then
+  echo "  FAIL: discovery should exclude subagent JSONL files"
+  echo "    found: $found_files"
+  failed=$((failed + 1))
+else
+  echo "  PASS: discovery excludes subagent JSONL"
+  passed=$((passed + 1))
+fi
+
+# =========================================================================
+echo ""
 echo "=== File Filtering: includes files with recent mtime ==="
 # =========================================================================
 # Touch session-1 to set its mtime to "now" (within any window)
@@ -228,7 +276,7 @@ echo "=== File Filtering: excludes files with old mtime ==="
 # =========================================================================
 # Create a temp file with a very old mtime
 OLD_FILE="$(mktemp)"
-trap 'rm -f "$OLD_FILE"' EXIT
+trap 'rm -rf "$OLD_FILE" "$MOCK_CLAUDE_DIR"' EXIT
 echo '{}' > "$OLD_FILE"
 touch -t 202001010000.00 "$OLD_FILE" 2>/dev/null || true
 
