@@ -220,6 +220,9 @@ fmt_rating() {
   fi
 }
 
+# Cache version — increment when computation logic changes to invalidate old caches
+STATS_CACHE_VERSION=2
+
 # Cache stats to .pm/stats/{type}s/{name}/stats.json (merge with existing satisfaction)
 cache_stats() {
   local item_type="$1" item_name="$2" computed_json="$3"
@@ -236,14 +239,20 @@ cache_stats() {
   now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
   echo "$computed_json" | jq --argjson sat "$existing_sat" --arg ts "$now" \
-    '. + { satisfaction: $sat, computed_at: $ts }' > "$file"
+    --argjson cv "$STATS_CACHE_VERSION" \
+    '. + { satisfaction: $sat, computed_at: $ts, cache_version: $cv }' > "$file"
 }
 
-# Check if cache is still valid (no newer history entries than computed_at)
+# Check if cache is still valid (no newer history entries than computed_at, correct version)
 is_cache_valid() {
   local item_type="$1" item_name="$2"
   local file=".pm/stats/${item_type}s/${item_name}/stats.json"
   [ ! -f "$file" ] && return 1
+
+  # Invalidate if cache version doesn't match
+  local cached_version
+  cached_version=$(jq -r '.cache_version // 0' "$file" 2>/dev/null)
+  [ "$cached_version" != "$STATS_CACHE_VERSION" ] && return 1
 
   local computed_at
   computed_at=$(jq -r '.computed_at // empty' "$file" 2>/dev/null)

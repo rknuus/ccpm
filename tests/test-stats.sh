@@ -304,6 +304,51 @@ assert_contains "overview with short timeout" "TOTAL" "$output"
 echo '{ "collectPrompts": false, "statsTimeout": "10" }' > "$TEST_DIR/.pm/ccpm-settings.json"
 
 # =========================================================================
+echo ""
+echo "=== Cache: version invalidation ==="
+# =========================================================================
+# Check that cached stats have the cache_version field
+cache_ver=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+assert_eq "cache has version" "2" "$cache_ver"
+
+# Simulate an old cache (version 1) and verify it gets recomputed
+jq '.cache_version = 1' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" > "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" \
+  && mv "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json"
+
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
+cache_ver_after=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+assert_eq "old cache invalidated and recomputed" "2" "$cache_ver_after"
+
+# =========================================================================
+echo ""
+echo "=== Post-completion: context tracking works for completed items ==="
+# =========================================================================
+# Verify that opening context for a completed item records in history
+# (ccpm-context has no status checks, so this should work)
+cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
+{
+  "current": null,
+  "history": [
+    {
+      "type": "prd",
+      "name": "completed-item",
+      "command": "prd-new",
+      "started": "2026-02-15T09:00:00Z",
+      "ended": "2026-02-15T09:30:00Z"
+    }
+  ]
+}
+CTXEOF
+
+# Open a new context for the same item (simulating post-completion work)
+"$PROJECT_ROOT/scripts/pm/ccpm-context" open prd completed-item prd-edit
+"$PROJECT_ROOT/scripts/pm/ccpm-context" close
+
+# Verify both sessions are in history
+session_count=$("$PROJECT_ROOT/scripts/pm/ccpm-context" history prd completed-item | jq 'length')
+assert_eq "post-completion sessions tracked" "2" "$session_count"
+
+# =========================================================================
 # Summary
 # =========================================================================
 echo ""
