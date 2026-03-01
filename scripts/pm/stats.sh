@@ -100,9 +100,19 @@ compute_item_stats() {
     ended=$(echo "$entry" | jq -r '.ended')
     command=$(echo "$entry" | jq -r '.command // "unknown"')
 
+    # Filter files once per session, pass to both functions
+    local filtered_files=()
+    while IFS= read -r f; do
+      filtered_files+=("$f")
+    done < <(stats_filter_files_by_timerange "$started" "$ended")
+
     # Get tokens for this window
     local tokens_json
-    tokens_json=$(stats_sum_tokens "$started" "$ended")
+    if [ ${#filtered_files[@]} -gt 0 ]; then
+      tokens_json=$(stats_sum_tokens "$started" "$ended" "${filtered_files[@]}")
+    else
+      tokens_json=$(stats_sum_tokens "$started" "$ended")
+    fi
 
     local inp outp cc cr
     inp=$(echo "$tokens_json" | jq '.total.input // 0')
@@ -130,7 +140,11 @@ compute_item_stats() {
 
     # Get time for this window
     local time_json
-    time_json=$(stats_derive_time "$started" "$ended")
+    if [ ${#filtered_files[@]} -gt 0 ]; then
+      time_json=$(stats_derive_time "$started" "$ended" "${filtered_files[@]}")
+    else
+      time_json=$(stats_derive_time "$started" "$ended")
+    fi
 
     local ws us
     ws=$(echo "$time_json" | jq '.claude_working_seconds // 0')

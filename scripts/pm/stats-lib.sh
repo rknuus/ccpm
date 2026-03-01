@@ -92,6 +92,8 @@ stats_filter_files_by_timerange() {
     stat_cmd="linux"
   fi
 
+  [ ${#files[@]} -eq 0 ] && return 0
+
   local file mtime
   for file in "${files[@]}"; do
     [ -f "$file" ] || continue
