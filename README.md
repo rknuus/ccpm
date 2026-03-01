@@ -147,7 +147,8 @@ CCPM is installed as a Claude **plugin**. Commands create the directories they n
     │       ├── epic.md
     │       ├── [#].md    # Individual task files
     │       └── updates/  # Work-in-progress updates
-    └── prds/             # PRD files
+    ├── prds/             # PRD files
+    └── stats/            # Usage statistics and satisfaction ratings
 ```
 
 The plugin itself (commands, agents, scripts) lives in its own repository and is loaded by Claude Code's plugin system.
@@ -223,6 +224,8 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:epic-close` - Mark epic as complete
 - `/ccpm:epic-edit` - Edit epic details
 - `/ccpm:epic-refresh` - Update epic progress from tasks
+- `/ccpm:epic-start-worktree` - Start epic work in a git worktree
+- `/ccpm:epic-status` - Check epic execution status
 
 ### Issue Commands
 - `/ccpm:issue-show` - Display issue and sub-issues
@@ -240,6 +243,16 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:blocked` - Show blocked tasks
 - `/ccpm:in-progress` - List work in progress
 
+### Stats & Analytics
+- `/ccpm:stats` - Show token usage and working/waiting time overview
+- `/ccpm:stats-show` - Display detailed stats for a specific work item
+- `/ccpm:stats-rate` - Rate satisfaction with a completed work item
+
+### Context Management
+- `/ccpm:context-create` - Generate baseline project context documentation
+- `/ccpm:context-update` - Refresh context with recent changes
+- `/ccpm:context-prime` - Load project context into current conversation
+
 ### Sync Commands
 - `/ccpm:sync` - Full bidirectional sync with GitHub
 - `/ccpm:import` - Import existing GitHub issues
@@ -248,6 +261,7 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:validate` - Check system integrity
 - `/ccpm:clean` - Archive completed work
 - `/ccpm:search` - Search across all content
+- `/ccpm:config` - View or update CCPM settings
 
 ## The Parallel Execution System
 
