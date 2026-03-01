@@ -53,6 +53,13 @@ Follow this structured approach:
 - Understand the problem being solved
 - Identify target users and use cases
 - Gather constraints and requirements
+- Probe for domain concepts and their correctness properties:
+  - **Identifiers**: Key entities, uniqueness scope, reuse rules
+  - **State**: Valid states, allowed transitions, source of truth
+  - **Ordering**: Ordered collections, invariants after mutations
+  - **Consistency**: Multiple representations, disagreement handling
+  - **Concurrency**: Concurrent modifications, conflict resolution
+  - **Idempotency**: Which operations must be safe to retry
 
 ### 2. PRD Structure
 Create a comprehensive PRD with these sections:
@@ -68,11 +75,13 @@ Create a comprehensive PRD with these sections:
 - Primary user personas
 - Detailed user journeys
 - Pain points being addressed
+- When writing acceptance criteria, include any identified correctness properties inline (e.g., uniqueness, ordering invariants, concurrency expectations)
 
 #### Requirements
 **Functional Requirements**
 - Core features and capabilities
 - User interactions and flows
+- When writing functional requirements, weave in correctness properties discovered during brainstorming (e.g., "Task IDs are unique within a board and never reused")
 
 **Non-Functional Requirements**
 - Performance expectations
@@ -87,6 +96,7 @@ Create a comprehensive PRD with these sections:
 - Technical limitations
 - Timeline constraints
 - Resource limitations
+- Include any consistency, concurrency, or idempotency assumptions surfaced during discovery
 
 #### Out of Scope
 - What we're explicitly NOT building
