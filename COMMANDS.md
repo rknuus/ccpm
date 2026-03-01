@@ -1,7 +1,5 @@
 # Commands
 
-**[中文文档 (Chinese Documentation)](doc/COMMANDS_ZH.md)**
-
 Complete reference of all commands available in the Claude Code PM system.
 
 > **Note**: Project Management commands (`/ccpm:*`) are documented in the main [README.md](README.md#command-reference).

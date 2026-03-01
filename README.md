@@ -15,8 +15,6 @@
 
 ### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, GitHub issues, Git worktrees, and multiple AI agents running in parallel.
 
-**[中文文档 (Chinese Documentation)](zh-docs/README_ZH.md)**
-
 Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns PRDs into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
 
 ![Claude Code PM](screenshot.webp)
