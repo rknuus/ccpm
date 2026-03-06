@@ -16,7 +16,7 @@ Only check what's absolutely necessary:
 ```markdown
 ## Quick Check
 1. If command needs specific directory/file:
-   - Check it exists: `test -f {file} || echo "❌ {file} not found"`
+   - Use the Glob tool to check it exists
    - If missing, tell user exact command to fix it
 2. If command needs GitHub:
    - Assume `gh` is authenticated (it usually is)
@@ -24,23 +24,21 @@ Only check what's absolutely necessary:
 ```
 
 ### DateTime Handling
-```markdown
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
-```
-Don't repeat full instructions - just reference `/rules/datetime.md` once.
+
+Follow the pattern in `/rules/datetime.md`: run the datetime command in Bash, read the output, and use it when writing files via Edit or Write tools. Never use `$()` command substitution to capture timestamps.
 
 ### Error Messages
 Keep them short and actionable:
 ```markdown
-❌ {What failed}: {Exact solution}
-Example: "❌ Epic not found: Run /ccpm:prd-parse feature-name"
+{What failed}: {Exact solution}
+Example: "Epic not found: Run /ccpm:prd-parse feature-name"
 ```
 
 ## Standard Output Formats
 
 ### Success Output
 ```markdown
-✅ {Action} complete
+Done: {Action} complete
   - {Key result 1}
   - {Key result 2}
 Next: {Single suggested action}
@@ -60,28 +58,25 @@ Next: {Single suggested action}
 
 ## File Operations
 
-### Check and Create
-```markdown
-# Don't ask permission, just create what's needed
-mkdir -p .claude/{directory} 2>/dev/null
-```
+Prefer Claude Code built-in tools over shell commands for file I/O:
 
-### Read with Fallback
-```markdown
-# Try to read, continue if missing
-if [ -f {file} ]; then
-  # Read and use file
-else
-  # Use sensible default
-fi
-```
+| Task | Tool to use | Instead of |
+|------|-------------|------------|
+| Read a file | **Read** tool | `cat`, `head`, `tail` |
+| Search file contents | **Grep** tool | `grep`, `rg` |
+| Find files by name | **Glob** tool | `find`, `ls` |
+| Edit a file in place | **Edit** tool | `sed`, `awk` |
+| Create / overwrite a file | **Write** tool | `echo >`, `cat <<EOF >` |
+| Create directories | Bash `mkdir -p` | (no built-in equivalent) |
+
+Using built-in tools avoids shell approval prompts and is preferred for all file operations.
 
 ## GitHub Operations
 
 ### Trust gh CLI
 ```markdown
 # Don't pre-check auth, just try the operation
-gh {command} || echo "❌ GitHub CLI failed. Run: gh auth login"
+gh {command} || echo "GitHub CLI failed. Run: gh auth login"
 ```
 
 ### Simple Issue Operations
@@ -114,48 +109,50 @@ gh issue view {number} --json state,title,body
 ### DON'T: Verbose output
 ```markdown
 # Bad - too much information
-🎯 Starting operation...
-📋 Validating prerequisites...
-✅ Step 1 complete
-✅ Step 2 complete
-📊 Statistics: ...
-💡 Tips: ...
+Starting operation...
+Validating prerequisites...
+Step 1 complete
+Step 2 complete
+Statistics: ...
+Tips: ...
 ```
 
 ### DO: Concise output
 ```markdown
 # Good - just results
-✅ Done: 3 files created
+Done: 3 files created
 Failed: auth.test.js (syntax error - line 42)
 ```
 
-### DON'T: Ask too many questions
+### DON'T: Use command substitution for file operations
 ```markdown
-# Bad - too interactive
-"Continue? (yes/no)"
-"Overwrite? (yes/no)"
-"Are you sure? (yes/no)"
+# Bad - triggers approval prompts
+CONTENT=$(cat file.md)
+CURRENT_DATE=$(date -u ...)
+RESULT=$(sed '...' file.md)
 ```
 
-### DO: Smart defaults
+### DO: Use built-in tools and standalone commands
 ```markdown
-# Good - proceed with sensible defaults
-# Only ask when destructive or ambiguous
-"This will delete 10 files. Continue? (yes/no)"
+# Good - no approval prompts
+- Read tool to read file contents
+- Edit tool to modify files
+- Run `date -u ...` standalone in Bash, then use the printed value
 ```
 
 ## Quick Reference
 
 ### Essential Tools Only
-- Read/List operations: `Read, LS`
-- File creation: `Read, Write, LS`
-- GitHub operations: Add `Bash`
-- Complex analysis: Add `Task` (sparingly)
+- Read/List operations: `Read`, `Glob`
+- Content search: `Grep`
+- File modification: `Edit`, `Write`
+- GitHub operations: `Bash` (for `gh` CLI)
+- Timestamps: `Bash` (standalone `date` command)
 
 ### Status Indicators
-- ✅ Success (use sparingly)
-- ❌ Error (always with solution)
-- ⚠️ Warning (only if action needed)
+- Success (use sparingly)
+- Error (always with solution)
+- Warning (only if action needed)
 - No emoji for normal output
 
 ### Exit Strategies
@@ -167,7 +164,7 @@ Failed: auth.test.js (syntax error - line 42)
 
 **Simple is not simplistic** - We still handle errors properly, we just don't try to prevent every possible edge case. We trust that:
 - The file system usually works
-- GitHub CLI is usually authenticated  
+- GitHub CLI is usually authenticated
 - Git repositories are usually valid
 - Users know what they're doing
 
