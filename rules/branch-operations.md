@@ -24,33 +24,29 @@ The branch will be created and pushed to origin with upstream tracking.
 - Use small, focused commits
 - Commit message format: `Issue #{number}: {description}`
 - Example: `Issue #1234: Add user authentication schema`
+- To commit: use the **Write** tool to write the commit message to `/tmp/commit-msg.txt`, then run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt {files...}`
+- This avoids the `$(cat <<'EOF'...)` heredoc pattern that triggers complex approval prompts
 
 ### File Operations
 ```bash
-# Working directory is the current directory
-# (no need to change directories like with worktrees)
-
-# Normal git operations work
-git add {files}
-git commit -m "Issue #{number}: {change}"
-
 # View branch status
 git status
 git log --oneline -5
 ```
 
+For committing, use the commit script (see Agent Commits above) instead of raw `git add` + `git commit -m "$(cat <<...)"`.
+
+
 ## Parallel Work in Same Branch
 
 Multiple agents can work in the same branch if they coordinate file access:
 ```bash
-# Agent A works on API
-git add src/api/*
-git commit -m "Issue #1234: Add user endpoints"
+# Agent A works on API — write message via Write tool, then:
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/api/*
 
 # Agent B works on UI (coordinate to avoid conflicts!)
 git pull origin epic/{name}  # Get latest changes
-git add src/ui/*
-git commit -m "Issue #1235: Add dashboard component"
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/ui/*
 ```
 
 ## Merging Branches

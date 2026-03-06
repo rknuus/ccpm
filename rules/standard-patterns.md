@@ -142,12 +142,22 @@ RESULT=$(sed '...' file.md)
 
 ## Quick Reference
 
+### Git Commits
+
+To avoid the `$(cat <<'EOF'...)` heredoc pattern that triggers complex approval prompts:
+
+1. Use the **Write** tool to write the commit message to a temp file (e.g., `/tmp/commit-msg.txt`)
+2. Run: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt [files...]`
+
+This replaces `git add <files> && git commit -m "$(cat <<'EOF'...EOF)"` with a single, clean script call.
+
 ### Essential Tools Only
 - Read/List operations: `Read`, `Glob`
 - Content search: `Grep`
 - File modification: `Edit`, `Write`
 - GitHub operations: `Bash` (for `gh` CLI)
 - Timestamps: `Bash` (standalone `date` command)
+- Git commits: `Write` + `Bash` (via `ccpm-git-commit.sh`)
 
 ### Status Indicators
 - Success (use sparingly)
