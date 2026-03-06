@@ -139,7 +139,7 @@ Save tasks as: `.pm/epics/$ARGUMENTS/{task_id}.md`
 ### 4. Frontmatter Guidelines
 - **name**: Use a descriptive task title (without "Task:" prefix)
 - **status**: Always start with "open" for new tasks
-- **created**: Get REAL current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- **created**: Get REAL current datetime by running: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - **updated**: Use the same real datetime as created for new tasks
 - **github**: Leave placeholder text - will be updated during sync
 - **depends_on**: List task IDs that must complete before this can start (e.g., [1, 2])
@@ -216,10 +216,7 @@ Before finalizing tasks, verify:
 
 ### 10. Architect Review (Optional)
 
-Check if architect review is enabled for this epic:
-```bash
-architect_mode=$(grep '^architect:' .pm/epics/$ARGUMENTS/epic.md | sed 's/^architect: *//')
-```
+Check if architect review is enabled for this epic by using the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extracting the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $ARGUMENTS --checkpoint design`

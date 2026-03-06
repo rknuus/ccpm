@@ -42,13 +42,13 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-st
 
 Follow `/rules/branch-operations.md`:
 
+Check for uncommitted changes first:
 ```bash
-# Check for uncommitted changes
-if [ -n "$(git status --porcelain)" ]; then
-  echo "❌ You have uncommitted changes. Please commit or stash them before starting an epic."
-  exit 1
-fi
+git status --porcelain
+```
+If there is output, stop with: "You have uncommitted changes. Please commit or stash them before starting an epic."
 
+```bash
 # If branch doesn't exist, create it
 if ! git branch -a | grep -q "epic/$ARGUMENTS"; then
   git checkout main

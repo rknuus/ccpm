@@ -52,7 +52,7 @@ Gather information about what has changed:
 - Check if new dependencies were added or versions changed across any build system
 
 ### 3. Get Current DateTime
-- Run: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- Run: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - Store for updating `last_updated` field in modified files
 
 ## Instructions

@@ -42,16 +42,16 @@ fi
 ```
 
 ### Atomic Commits
-Make commits atomic and focused:
+Make commits atomic and focused. Use the **Write** tool to create `/tmp/commit-msg.txt`, then the commit script:
 ```bash
 # Good - Single purpose commit
-git add src/api/users.ts src/api/users.test.ts
-git commit -m "Issue #1234: Add user CRUD endpoints"
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/api/users.ts src/api/users.test.ts
 
-# Bad - Mixed concerns
-git add src/api/* src/db/* src/ui/*
-git commit -m "Issue #1234: Multiple changes"
+# Bad - Mixed concerns (too many unrelated files)
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/api/* src/db/* src/ui/*
 ```
+
+This avoids the `$(cat <<'EOF'...)` heredoc pattern that triggers complex approval prompts.
 
 ## Communication Between Agents
 
@@ -143,12 +143,10 @@ fi
 ## Agent Communication Protocol
 
 ### Status Updates
-Agents should update their status regularly:
+Agents should update their status regularly. Use the **Write** tool to update progress files and create commit messages, then commit:
 ```bash
-# Update progress file every significant step
-echo "✅ Completed: Database schema" >> stream-A.md
-git add stream-A.md
-git commit -m "Progress: Stream A - schema complete"
+# Commit progress update
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt stream-A.md
 ```
 
 ### Coordination Requests
@@ -164,26 +162,17 @@ When agents need to coordinate:
 ## Parallel Commit Strategy
 
 ### No Conflicts Possible
-When working on completely different files:
-```bash
-# These can happen simultaneously
-Agent-A: git commit -m "Issue #1234: Update database"
-Agent-B: git commit -m "Issue #1235: Update UI"
-Agent-C: git commit -m "Issue #1236: Add tests"
-```
+When working on completely different files, agents can commit simultaneously using the commit script.
 
 ### Sequential When Needed
 When touching shared resources:
 ```bash
-# Agent A commits first
-git add src/types/index.ts
-git commit -m "Issue #1234: Update type definitions"
+# Agent A commits first (write message via Write tool, then:)
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/types/index.ts
 
-# Agent B waits, then proceeds
-# (After A's commit)
+# Agent B waits, then proceeds (after A's commit)
 git pull
-git add src/api/users.ts
-git commit -m "Issue #1235: Use new types"
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt src/api/users.ts
 ```
 
 ## Best Practices

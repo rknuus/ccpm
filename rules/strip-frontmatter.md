@@ -11,17 +11,17 @@ YAML frontmatter contains internal metadata that should not appear in GitHub iss
 
 ## The Solution
 
-Use sed to strip frontmatter from any markdown file:
+Use the utility script to strip frontmatter from any markdown file:
 
 ```bash
-# Strip frontmatter (everything between first two --- lines)
-sed '1,/^---$/d; 1,/^---$/d' input.md > output.md
+# Output to stdout
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh input.md
+
+# Output to a file
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh input.md /tmp/clean.md
 ```
 
-This removes:
-1. The opening `---` line
-2. All YAML content
-3. The closing `---` line
+The script removes the opening `---`, all YAML content, and the closing `---`. If the file has no frontmatter it passes content through unchanged.
 
 ## When to Strip Frontmatter
 
@@ -35,48 +35,17 @@ Always strip frontmatter when:
 
 ### Creating an issue from a file
 ```bash
-# Bad - includes frontmatter
-gh issue create --body-file task.md
-
-# Good - strips frontmatter and specifies repo
-remote_url=$(git remote get-url origin 2>/dev/null || echo "")
-REPO=$(echo "$remote_url" | sed 's|.*github.com[:/]||' | sed 's|\.git$||')
-[ -z "$REPO" ] && REPO="user/repo"
-sed '1,/^---$/d; 1,/^---$/d' task.md > /tmp/clean.md
-gh issue create --repo "$REPO" --body-file /tmp/clean.md
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh task.md /tmp/clean.md
+gh issue create --body-file /tmp/clean.md --title "{title}" --label "{labels}"
 ```
 
 ### Posting a comment
 ```bash
-# Strip frontmatter before posting
-sed '1,/^---$/d; 1,/^---$/d' progress.md > /tmp/comment.md
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh progress.md /tmp/comment.md
 gh issue comment 123 --body-file /tmp/comment.md
-```
-
-### In a loop
-```bash
-for file in *.md; do
-  # Strip frontmatter from each file
-  sed '1,/^---$/d; 1,/^---$/d' "$file" > "/tmp/$(basename $file)"
-  # Use the clean version
-done
-```
-
-## Alternative Approaches
-
-If sed is not available or you need more control:
-
-```bash
-# Using awk
-awk 'BEGIN{fm=0} /^---$/{fm++; next} fm==2{print}' input.md > output.md
-
-# Using grep with line numbers
-grep -n "^---$" input.md | head -2 | tail -1 | cut -d: -f1 | xargs -I {} tail -n +$(({}+1)) input.md
 ```
 
 ## Important Notes
 
-- Always test with a sample file first
-- Keep original files intact
-- Use temporary files for cleaned content
-- Some files may not have frontmatter - the command handles this gracefully
+- Keep original files intact -- only strip when sending to external systems
+- The script handles files without frontmatter gracefully

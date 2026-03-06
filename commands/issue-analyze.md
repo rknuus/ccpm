@@ -61,7 +61,7 @@ Analyze the issue to identify independent work that can run in parallel:
 
 ### 3. Create Analysis File
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Create `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
 

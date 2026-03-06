@@ -144,7 +144,7 @@ High-level task categories that will be created:
 ### 4. Frontmatter Guidelines
 - **name**: Use the exact feature name (same as $ARGUMENTS)
 - **status**: Always start with "backlog" for new epics
-- **created**: Get REAL current datetime by running: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- **created**: Get REAL current datetime by running: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - **progress**: Always start with "0%" for new epics
 - **prd**: Reference the source PRD file path
 - **github**: Leave placeholder text - will be updated during sync
