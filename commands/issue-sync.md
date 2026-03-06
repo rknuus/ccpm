@@ -24,13 +24,9 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 0. **Repository Protection Check:**
    Follow `/rules/github-operations.md` - check remote origin:
    ```bash
-   remote_url=$(git remote get-url origin 2>/dev/null || echo "")
-   if [[ "$remote_url" == *"automazeio/ccpm"* ]]; then
-     echo "❌ ERROR: Cannot sync to CCPM template repository!"
-     echo "Update your remote: git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git"
-     exit 1
-   fi
+   bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-repo-check.sh
    ```
+   If the script exits with a non-zero status, stop execution.
 
 1. **GitHub Authentication:**
    - Run: `gh auth status`
@@ -42,13 +38,13 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If issue is closed and completion < 100%, warn: "⚠️ Issue is closed but work incomplete"
 
 3. **Local Updates Check:**
-   - Check if `.pm/epics/*/updates/$ARGUMENTS/` directory exists
+   - Use the Glob tool to check if `.pm/epics/*/updates/$ARGUMENTS/` directory exists
    - If not found, tell user: "❌ No local updates found for issue #$ARGUMENTS. Run: /ccpm:issue-start $ARGUMENTS"
-   - Check if progress.md exists
+   - Use the Read tool to check if progress.md exists in that directory
    - If not, tell user: "❌ No progress tracking found. Initialize with: /ccpm:issue-start $ARGUMENTS"
 
 4. **Check Last Sync:**
-   - Read `last_sync` from progress.md frontmatter
+   - Use the Read tool to read `last_sync` from progress.md frontmatter
    - If synced recently (< 5 minutes), ask: "⚠️ Recently synced. Force sync anyway? (yes/no)"
    - Calculate what's new since last sync
 
@@ -66,7 +62,7 @@ You are synchronizing local development progress to GitHub as issue comments for
 
 ### 1. Gather Local Updates
 Collect all local updates for the issue:
-- Read from `.pm/epics/{epic_name}/updates/$ARGUMENTS/`
+- Use the Read tool to read from `.pm/epics/{epic_name}/updates/$ARGUMENTS/`
 - Check for new content in:
   - `progress.md` - Development progress
   - `notes.md` - Technical notes and decisions
@@ -74,9 +70,9 @@ Collect all local updates for the issue:
   - Any other update files
 
 ### 2. Update Progress Tracking Frontmatter
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update the progress.md file frontmatter:
+Use the Edit tool to update the progress.md file frontmatter:
 ```yaml
 ---
 issue: $ARGUMENTS
@@ -127,15 +123,15 @@ Create comprehensive update comment:
 ```
 
 ### 5. Post to GitHub
-Use GitHub CLI to add comment:
+Use the Write tool to save the formatted comment to a temporary file, then post it:
 ```bash
 gh issue comment #$ARGUMENTS --body-file {temp_comment_file}
 ```
 
 ### 6. Update Local Task File
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update the task file frontmatter with sync information:
+Use the Edit tool to update the task file frontmatter with sync information:
 ```yaml
 ---
 name: [Task Title]
@@ -147,7 +143,7 @@ github: https://github.com/{org}/{repo}/issues/$ARGUMENTS
 ```
 
 ### 7. Handle Completion
-If task is complete, update all relevant frontmatter:
+If task is complete, use the Edit tool to update all relevant frontmatter:
 
 **Task file frontmatter**:
 ```yaml
@@ -170,7 +166,7 @@ completion: 100%
 ---
 ```
 
-**Epic progress update**: Recalculate epic progress based on completed tasks and update epic frontmatter:
+**Epic progress update**: Recalculate epic progress based on completed tasks and use the Edit tool to update epic frontmatter:
 ```yaml
 ---
 name: [Epic Name]
@@ -232,7 +228,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 ```
 
 ### 10. Frontmatter Maintenance
-- Always update task file frontmatter with current timestamp
+- Always use the Edit tool to update task file frontmatter with current timestamp
 - Track completion percentages in progress files
 - Update epic progress when tasks complete
 - Maintain sync timestamps for audit trail
@@ -281,11 +277,11 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 ### 14. Epic Progress Calculation
 
 When updating epic progress:
-1. Count total tasks in epic directory
-2. Count tasks with `status: closed` in frontmatter
+1. Use the Glob tool to find all task files in the epic directory
+2. Use the Read tool to check `status:` in each task's frontmatter
 3. Calculate: `progress = (closed_tasks / total_tasks) * 100`
 4. Round to nearest integer
-5. Update epic frontmatter only if percentage changed
+5. Use the Edit tool to update epic frontmatter only if percentage changed
 
 ### 15. Post-Sync Validation
 

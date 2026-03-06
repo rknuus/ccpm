@@ -20,18 +20,14 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    If it fails: "❌ Cannot access issue #$ARGUMENTS. Check number or run: gh auth login"
 
 2. **Find local task file:**
-   - First check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming)
-   - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
+   - Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming)
+   - If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/epics/` (old naming)
    - If not found: "❌ No local task for issue #$ARGUMENTS. This issue may have been created outside the PM system."
 
 3. **Check for analysis:**
-   ```bash
-   test -f .pm/epics/*/$ARGUMENTS-analysis.md || echo "❌ No analysis found for issue #$ARGUMENTS
-
-   Run: /ccpm:issue-analyze $ARGUMENTS first
-   Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
-   ```
-   If no analysis exists and no --analyze flag, stop execution.
+   - Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS-analysis.md` exists
+   - If no analysis exists and no --analyze flag, stop execution with:
+     "❌ No analysis found for issue #$ARGUMENTS. Run: /ccpm:issue-analyze $ARGUMENTS first. Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
 
 ### Context Tracking
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-start || true`
@@ -40,31 +36,23 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-s
 
 ### 1. Ensure Worktree Exists
 
-Check if epic worktree exists:
+Extract the epic name from the task file path. Then check if the epic worktree exists:
 ```bash
-# Find epic name from task file
-epic_name={extracted_from_path}
-
-# Check worktree
-if ! git worktree list | grep -q "epic-$epic_name"; then
-  echo "❌ No worktree for epic. Run: /ccpm:epic-start $epic_name"
-  exit 1
-fi
+git worktree list | grep "epic-$epic_name"
 ```
+
+If not found: "❌ No worktree for epic. Run: /ccpm:epic-start $epic_name"
 
 ### 2. Read Analysis
 
-Read `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
+Use the Read tool to read `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
 - Parse parallel streams
 - Identify which can start immediately
 - Note dependencies between streams
 
 ### 3. Architect Review (Optional)
 
-Check if architect review is enabled for this epic:
-```bash
-architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
-```
+Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $epic_name --checkpoint plan --task $ARGUMENTS`
@@ -75,20 +63,20 @@ If `architect_mode` is empty or `off`: skip silently.
 
 ### 4. Setup Progress Tracking
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Create workspace structure:
 ```bash
 mkdir -p .pm/epics/{epic_name}/updates/$ARGUMENTS
 ```
 
-Update task file frontmatter `updated` field with current datetime.
+Use the Edit tool to update the task file frontmatter `updated` field with the current datetime.
 
 ### 5. Launch Parallel Agents
 
 For each stream that can start immediately:
 
-Create `.pm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md`:
+Use the Write tool to create `.pm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md`:
 ```markdown
 ---
 issue: $ARGUMENTS
@@ -126,7 +114,7 @@ Task:
     - Work to complete: {stream_description}
 
     Requirements:
-    1. Read full task from: .pm/epics/{epic_name}/{task_file}
+    1. Use the Read tool to read the full task from: .pm/epics/{epic_name}/{task_file}
     2. Work ONLY in your assigned files
     3. Commit frequently with format: "Issue #$ARGUMENTS: {specific change}"
     4. Update progress in: .pm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md

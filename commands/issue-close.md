@@ -18,15 +18,15 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-c
 
 ### 1. Find Local Task File
 
-First check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming).
-If not found, search for task file with `github:.*issues/$ARGUMENTS` in frontmatter (old naming).
+Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming).
+If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/epics/` (old naming).
 If not found: "❌ No local task for issue #$ARGUMENTS"
 
 ### 2. Update Local Status
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update task file frontmatter:
+Use the Edit tool to update the task file frontmatter:
 ```yaml
 status: closed
 updated: {current_datetime}
@@ -34,11 +34,7 @@ updated: {current_datetime}
 
 ### 3. Architect Review (Optional)
 
-Find the epic name from the task file path and check if architect review is enabled:
-```bash
-epic_name={extracted_from_path}
-architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
-```
+Extract the epic name from the task file path. Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $epic_name --checkpoint code --task $ARGUMENTS`
@@ -49,10 +45,10 @@ If `architect_mode` is empty or `off`: skip silently.
 
 ### 4. Update Progress File
 
-If progress file exists at `.pm/epics/{epic}/updates/$ARGUMENTS/progress.md`:
-- Set completion: 100%
+If progress file exists at `.pm/epics/{epic}/updates/$ARGUMENTS/progress.md` (check with the Read tool):
+- Use the Edit tool to set completion: 100%
 - Add completion note with timestamp
-- Update last_sync with current datetime
+- Update last_sync with current datetime (from step 2)
 
 ### 5. Satisfaction Rating
 
@@ -82,35 +78,27 @@ gh issue close $ARGUMENTS
 
 ### 7. Update Epic Task List on GitHub
 
-Check the task checkbox in the epic issue:
+Extract the epic name from the local task file path. Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the GitHub issue number from the `github:` frontmatter field.
 
+If an epic issue number is found:
 ```bash
-# Get epic name from local task file path
-epic_name={extract_from_path}
+# Get current epic body
+gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
+```
 
-# Get epic issue number from epic.md
-epic_issue=$(grep 'github:' .pm/epics/$epic_name/epic.md | grep -oE '[0-9]+$')
+Use the Edit tool on `/tmp/epic-body.md` to check off this task by replacing `- [ ] #$ARGUMENTS` with `- [x] #$ARGUMENTS`.
 
-if [ ! -z "$epic_issue" ]; then
-  # Get current epic body
-  gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
-
-  # Check off this task
-  sed -i "s/- \[ \] #$ARGUMENTS/- [x] #$ARGUMENTS/" /tmp/epic-body.md
-
-  # Update epic issue
-  gh issue edit $epic_issue --body-file /tmp/epic-body.md
-
-  echo "✓ Updated epic progress on GitHub"
-fi
+Then update the epic issue:
+```bash
+gh issue edit $epic_issue --body-file /tmp/epic-body.md
 ```
 
 ### 8. Update Epic Progress
 
-- Count total tasks in epic
-- Count closed tasks
+- Use the Glob tool to find all task files in the epic directory
+- Use the Read tool to count total tasks and closed tasks (by checking `status:` in frontmatter)
 - Calculate new progress percentage
-- Update epic.md frontmatter progress field
+- Use the Edit tool to update epic.md frontmatter progress field
 
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
