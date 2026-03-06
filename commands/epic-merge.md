@@ -29,16 +29,13 @@ Merge completed epic from worktree back to main branch.
 Navigate to worktree and check status:
 ```bash
 cd ../epic-$ARGUMENTS
+git status --porcelain
+```
 
-# Check for uncommitted changes
-if [[ $(git status --porcelain) ]]; then
-  echo "⚠️ Uncommitted changes in worktree:"
-  git status --short
-  echo "Commit or stash changes before merging"
-  exit 1
-fi
+If there are uncommitted changes, warn: "Uncommitted changes in worktree. Commit or stash changes before merging."
 
-# Check branch status
+Then fetch and check branch status:
+```bash
 git fetch origin
 git status -sb
 ```
@@ -76,7 +73,7 @@ fi
 
 ### 3. Update Epic Documentation
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Update `.pm/epics/$ARGUMENTS/epic.md`:
 - Set status to "completed"
@@ -92,48 +89,37 @@ cd {main-repo-path}
 # Ensure main is up to date
 git checkout main
 git pull origin main
+```
 
-# Attempt merge
-echo "Merging epic/$ARGUMENTS to main..."
+Before merging, build the commit message:
+1. Use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md`
+2. Use the Read tool to extract the `name:` field from each task file's frontmatter to build the feature list
+3. Use the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number
+
+Then perform the merge:
+```bash
 git merge epic/$ARGUMENTS --no-ff -m "Merge epic: $ARGUMENTS
 
 Completed features:
-# Generate feature list
-feature_list=""
-if [ -d ".pm/epics/$ARGUMENTS" ]; then
-  cd .pm/epics/$ARGUMENTS
-  for task_file in [0-9]*.md; do
-    [ -f "$task_file" ] || continue
-    task_name=$(grep '^name:' "$task_file" | cut -d: -f2 | sed 's/^ *//')
-    feature_list="$feature_list\n- $task_name"
-  done
-  cd - > /dev/null
-fi
+{feature_list built from task names}
 
-echo "$feature_list"
-
-# Extract epic issue number
-epic_github_line=$(grep 'github:' .pm/epics/$ARGUMENTS/epic.md 2>/dev/null || true)
-if [ -n "$epic_github_line" ]; then
-  epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+' || true)
-  if [ -n "$epic_issue" ]; then
-    echo "\nCloses epic #$epic_issue"
-  fi
-fi"
+{If epic issue number found: Closes epic #{epic_issue}}"
 ```
 
 ### 5. Handle Merge Conflicts
 
 If merge fails with conflicts:
 ```bash
-# Check conflict status
 git status
+git diff --name-only --diff-filter=U
+```
 
-echo "
+Report the conflicted files and present options:
+```
 ❌ Merge conflicts detected!
 
 Conflicts in:
-$(git diff --name-only --diff-filter=U)
+{list of conflicted files from git diff output}
 
 Options:
 1. Resolve manually:
@@ -148,8 +134,6 @@ Options:
    /ccpm:epic-resolve $ARGUMENTS
 
 Worktree preserved at: ../epic-$ARGUMENTS
-"
-exit 1
 ```
 
 ### 6. Post-Merge Cleanup
@@ -167,49 +151,29 @@ echo "✅ Worktree removed: ../epic-$ARGUMENTS"
 git branch -d epic/$ARGUMENTS
 git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 
-# Mark all task files as closed before archiving
-for task_file in .pm/epics/$ARGUMENTS/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  sed -i '' 's/^status: *open/status: closed/' "$task_file"
-done
-
 # Archive epic locally
 mkdir -p .pm/epics/archived/
 mv .pm/epics/$ARGUMENTS .pm/epics/archived/
 echo "✅ Epic archived: .pm/epics/archived/$ARGUMENTS"
 ```
 
+Before archiving, use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md` and use the Edit tool to change `status: open` to `status: closed` in each task file's frontmatter.
+
 ### 7. Update GitHub Issues
 
 Close related issues:
-```bash
-# Get issue numbers from epic
-# Extract epic issue number
-epic_github_line=$(grep 'github:' .pm/epics/archived/$ARGUMENTS/epic.md 2>/dev/null || true)
-if [ -n "$epic_github_line" ]; then
-  epic_issue=$(echo "$epic_github_line" | grep -oE '[0-9]+$' || true)
-else
-  epic_issue=""
-fi
 
-# Close epic issue
-gh issue close $epic_issue -c "Epic completed and merged to main"
-
-# Close task issues
-for task_file in .pm/epics/archived/$ARGUMENTS/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  # Extract task issue number
-  task_github_line=$(grep 'github:' "$task_file" 2>/dev/null || true)
-  if [ -n "$task_github_line" ]; then
-    issue_num=$(echo "$task_github_line" | grep -oE '[0-9]+$' || true)
-  else
-    issue_num=""
-  fi
-  if [ ! -z "$issue_num" ]; then
-    gh issue close $issue_num -c "Completed in epic merge"
-  fi
-done
-```
+1. Use the Read tool to read `.pm/epics/archived/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number.
+2. Close the epic issue:
+   ```bash
+   gh issue close $epic_issue -c "Epic completed and merged to main"
+   ```
+3. Use the Glob tool to find all task files matching `.pm/epics/archived/$ARGUMENTS/[0-9]*.md`.
+4. For each task file, use the Read tool to extract the `github:` field and get the issue number.
+5. Close each task issue:
+   ```bash
+   gh issue close $issue_num -c "Completed in epic merge"
+   ```
 
 ### 8. Final Output
 

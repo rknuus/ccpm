@@ -20,7 +20,7 @@ If not found: "❌ No local task for issue #$ARGUMENTS"
 
 ### 2. Update Local Status
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Update task file frontmatter:
 ```yaml

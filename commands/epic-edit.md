@@ -34,7 +34,7 @@ Ask user what to edit:
 
 ### 3. Update Epic File
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Update epic.md:
 - Preserve all frontmatter except `updated`

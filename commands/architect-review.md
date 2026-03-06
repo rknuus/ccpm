@@ -26,9 +26,7 @@ Run an architectural review at a specific workflow checkpoint.
    - `force`: Whether `--force` flag is present
 
 3. **Check architect mode:**
-   ```bash
-   architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
-   ```
+   Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
    - If empty or `off` and no `--force` flag:
      "ℹ️ Architect review is disabled for this epic. Set `architect: advisory` or `architect: gate` in epic frontmatter to enable, or use `--force`."
    - If `--force` is present, proceed regardless of mode (treat as advisory)
@@ -45,48 +43,24 @@ Run an architectural review at a specific workflow checkpoint.
 Based on checkpoint type, collect the review context:
 
 #### For `design` checkpoint:
-```bash
-# Read epic overview and architecture decisions
-cat .pm/epics/$epic_name/epic.md
-
-# Read all task files
-for task_file in .pm/epics/$epic_name/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  echo "=== $(basename $task_file) ==="
-  cat "$task_file"
-done
-```
+- Use the Read tool to read `.pm/epics/$epic_name/epic.md`
+- Use the Glob tool to find all task files matching `.pm/epics/$epic_name/[0-9]*.md`
+- Use the Read tool to read each task file
 
 #### For `plan` checkpoint:
-```bash
-# Read epic overview (architecture decisions section)
-cat .pm/epics/$epic_name/epic.md
-
-# Read the specific task
-cat .pm/epics/$epic_name/$task_id.md
-
-# Check for any in-progress tasks that might conflict
-for task_file in .pm/epics/$epic_name/[0-9]*.md; do
-  [ -f "$task_file" ] || continue
-  if grep -q '^status: in-progress' "$task_file"; then
-    echo "=== In-progress: $(basename $task_file) ==="
-    grep '^name:\|^conflicts_with:' "$task_file"
-  fi
-done
-```
+- Use the Read tool to read `.pm/epics/$epic_name/epic.md` (architecture decisions section)
+- Use the Read tool to read `.pm/epics/$epic_name/$task_id.md`
+- Use the Grep tool to search for `^status: in-progress` in `.pm/epics/$epic_name/[0-9]*.md` to find any in-progress tasks that might conflict
+- For each in-progress task found, use the Read tool to extract `name:` and `conflicts_with:` fields
 
 #### For `code` checkpoint:
-```bash
-# Read epic overview (architecture decisions section)
-cat .pm/epics/$epic_name/epic.md
-
-# Read the task specification
-cat .pm/epics/$epic_name/$task_id.md
-
-# Get the git diff for recent changes
-git diff HEAD~5 --stat
-git diff HEAD~5
-```
+- Use the Read tool to read `.pm/epics/$epic_name/epic.md` (architecture decisions section)
+- Use the Read tool to read `.pm/epics/$epic_name/$task_id.md`
+- Get the git diff for recent changes:
+  ```bash
+  git diff HEAD~5 --stat
+  git diff HEAD~5
+  ```
 
 ### 2. Invoke Architect Agent
 
@@ -119,7 +93,7 @@ Task:
 
 ### 3. Append to Architect Log
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 If `.pm/epics/$epic_name/architect-log.md` does not exist, create it:
 ```markdown
@@ -157,10 +131,7 @@ Where `{subject}` is:
 
 ### 4. Report Result
 
-Determine the architect mode:
-```bash
-architect_mode=$(grep '^architect:' .pm/epics/$epic_name/epic.md | sed 's/^architect: *//')
-```
+Determine the architect mode by using the Read tool to read `.pm/epics/$epic_name/epic.md` and extracting the `architect:` field from frontmatter.
 
 **If gate mode and verdict is "Needs Changes":**
 ```

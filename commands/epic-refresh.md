@@ -33,38 +33,27 @@ Round to nearest integer.
 
 If epic has GitHub issue, sync task checkboxes:
 
-```bash
-# Get epic issue number from epic.md frontmatter
-epic_issue={extract_from_github_field}
+Use the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number.
 
-if [ ! -z "$epic_issue" ]; then
-  # Get current epic body
-  gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
+If the epic has a GitHub issue:
 
-  # For each task, check its status and update checkbox
-  for task_file in .pm/epics/$ARGUMENTS/[0-9]*.md; do
-    # Extract task issue number
-    task_github_line=$(grep 'github:' "$task_file" 2>/dev/null || true)
-    if [ -n "$task_github_line" ]; then
-      task_issue=$(echo "$task_github_line" | grep -oE '[0-9]+$' || true)
-    else
-      task_issue=""
-    fi
-    task_status=$(grep 'status:' $task_file | cut -d: -f2 | tr -d ' ')
+1. Get the current epic body:
+   ```bash
+   gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
+   ```
 
-    if [ "$task_status" = "closed" ]; then
-      # Mark as checked
-      sed -i "s/- \[ \] #$task_issue/- [x] #$task_issue/" /tmp/epic-body.md
-    else
-      # Ensure unchecked (in case manually checked)
-      sed -i "s/- \[x\] #$task_issue/- [ ] #$task_issue/" /tmp/epic-body.md
-    fi
-  done
+2. Use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md`.
 
-  # Update epic issue
-  gh issue edit $epic_issue --body-file /tmp/epic-body.md
-fi
-```
+3. For each task file, use the Read tool to extract the `github:` field (task issue number) and `status:` field.
+
+4. Use the Edit tool on `/tmp/epic-body.md` to update checkboxes:
+   - If task status is `closed`: replace `- [ ] #$task_issue` with `- [x] #$task_issue`
+   - If task status is not `closed`: replace `- [x] #$task_issue` with `- [ ] #$task_issue`
+
+5. Update the epic issue:
+   ```bash
+   gh issue edit $epic_issue --body-file /tmp/epic-body.md
+   ```
 
 ### 4. Determine Epic Status
 
@@ -74,9 +63,9 @@ fi
 
 ### 5. Update Epic
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update epic.md frontmatter:
+Use the Edit tool to update epic.md frontmatter:
 ```yaml
 status: {calculated_status}
 progress: {calculated_progress}%

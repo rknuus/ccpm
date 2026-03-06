@@ -346,7 +346,7 @@ Create `.claude/testing-config.md` with discovered information:
 ---
 framework: {detected_framework}
 test_command: {detected_command}
-created: [Use REAL datetime from: date -u +"%Y-%m-%dT%H:%M:%SZ"]
+created: [Use REAL datetime from: bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh]
 ---
 
 # Testing Configuration

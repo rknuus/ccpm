@@ -24,7 +24,7 @@ Check all task files in `.pm/epics/$ARGUMENTS/`:
 
 ### 2. Update Epic Status
 
-Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
 Update epic.md frontmatter:
 ```yaml

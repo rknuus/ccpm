@@ -39,7 +39,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 - If permission denied, tell user: "❌ Cannot create context directory. Check permissions."
 
 ### 4. Get Current DateTime
-- Run: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+- Run: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - Store this value for use in all context file frontmatter
 
 ## Instructions
