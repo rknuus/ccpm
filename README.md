@@ -59,18 +59,28 @@ graph LR
     D --> E[Parallel Execution]
 ```
 
-### See It In Action (60 seconds)
+### Quick Start — Small Jobs (3 commands)
+
+For simple features where you want to go from idea to running agents fast:
 
 ```bash
-# Create a comprehensive PRD through guided brainstorming
-/ccpm:prd-new memory-system
+/ccpm:prd-new memory-system        # Brainstorm and write the PRD
+/ccpm:prd-go memory-system         # Parse → decompose → start agents
+/ccpm:epic-merge memory-system     # Merge to main when done
+```
 
-# Transform PRD into a technical epic with task breakdown
-/ccpm:prd-parse memory-system
+No GitHub sync, no extra steps — purely local.
 
-# Push to GitHub and start parallel execution
-/ccpm:epic-oneshot memory-system
-/ccpm:issue-start 1235
+### Full Workflow — Team Projects
+
+For larger features with GitHub integration and team visibility:
+
+```bash
+/ccpm:prd-new memory-system        # Brainstorm and write the PRD
+/ccpm:prd-parse memory-system      # Convert PRD to technical epic
+/ccpm:epic-oneshot memory-system   # Decompose + sync to GitHub
+/ccpm:epic-start memory-system     # Launch parallel agents
+/ccpm:epic-merge memory-system     # Merge to main when done
 ```
 
 > **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:prd-new`).
