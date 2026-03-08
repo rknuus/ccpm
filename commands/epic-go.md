@@ -74,6 +74,7 @@ Phase 2: Start ✓
   - Blocked issues: {blocked_count}
 
 Monitor with: /ccpm:epic-status $ARGUMENTS
+Merge when complete: /ccpm:epic-merge $ARGUMENTS
 ```
 
 ## Important Notes
