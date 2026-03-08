@@ -239,7 +239,7 @@ After successfully creating tasks:
 3. Suggest next steps:
    - ➡️ `/ccpm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
    - `/ccpm:epic-start $ARGUMENTS` — Start working on tasks
-   - `/ccpm:epic-go $ARGUMENTS` — Decompose and start agents (local-only, no GitHub sync)
+   - `/ccpm:prd-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
    - `/ccpm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
    - `/ccpm:epic-show $ARGUMENTS` — Review the tasks
 

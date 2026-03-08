@@ -209,6 +209,7 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 ### PRD Commands
 - `/ccpm:prd-new` - Launch brainstorming for new product requirement
 - `/ccpm:prd-parse` - Convert PRD to implementation epic
+- `/ccpm:prd-go` - Parse, decompose, and start agents in one step (local-only, no GitHub sync)
 - `/ccpm:prd-list` - List all PRDs
 - `/ccpm:prd-edit` - Edit existing PRD
 - `/ccpm:prd-status` - Show PRD implementation status
@@ -217,7 +218,6 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:epic-decompose` - Break epic into task files
 - `/ccpm:epic-sync` - Push epic and tasks to GitHub
 - `/ccpm:epic-oneshot` - Decompose and sync in one command
-- `/ccpm:epic-go` - Decompose epic into tasks and immediately start agents (local-only, no GitHub sync)
 - `/ccpm:epic-list` - List all epics
 - `/ccpm:epic-show` - Display epic and its tasks
 - `/ccpm:epic-close` - Mark epic as complete

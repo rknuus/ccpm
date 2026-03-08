@@ -154,6 +154,7 @@ After successfully creating the PRD:
 2. Show brief summary of what was captured
 3. Suggest next steps:
    - ➡️ `/ccpm:prd-parse $ARGUMENTS` — Convert PRD to epic
+   - `/ccpm:prd-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
    - `/ccpm:prd-edit $ARGUMENTS` — Edit the PRD
    - `/ccpm:prd-new <name>` — Create another PRD
 

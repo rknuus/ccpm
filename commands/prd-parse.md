@@ -177,7 +177,7 @@ After successfully creating the epic:
    - Estimated effort
 3. Suggest next steps:
    - ➡️ `/ccpm:epic-decompose $ARGUMENTS` — Break epic into tasks
-   - `/ccpm:epic-go $ARGUMENTS` — Decompose and start agents (local-only, no GitHub sync)
+   - `/ccpm:prd-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
    - `/ccpm:epic-edit $ARGUMENTS` — Edit the epic
    - `/ccpm:prd-edit $ARGUMENTS` — Edit the source PRD
 
