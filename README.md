@@ -217,6 +217,7 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:epic-decompose` - Break epic into task files
 - `/ccpm:epic-sync` - Push epic and tasks to GitHub
 - `/ccpm:epic-oneshot` - Decompose and sync in one command
+- `/ccpm:epic-go` - Decompose epic into tasks and immediately start agents (local-only, no GitHub sync)
 - `/ccpm:epic-list` - List all epics
 - `/ccpm:epic-show` - Display epic and its tasks
 - `/ccpm:epic-close` - Mark epic as complete
