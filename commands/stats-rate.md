@@ -12,8 +12,8 @@ Rate or re-rate satisfaction for a work item (delayed rating).
 ```
 
 Where:
-- `type` is `prd`, `epic`, or `task`
-- `name` is the work item name (for PRDs/epics) or issue number (for tasks)
+- `type` is `initiative`, `epic`, or `task`
+- `name` is the work item name (for Initiatives/epics) or issue number (for tasks)
 
 ## Instructions
 
@@ -21,7 +21,7 @@ Where:
 
 Extract `type` and `name` from `$ARGUMENTS`.
 - If fewer than 2 arguments: "Usage: /ccpm:stats-rate <type> <name>"
-- Validate type is one of: `prd`, `epic`, `task`
+- Validate type is one of: `initiative`, `epic`, `task`
 
 ### 2. Show Existing Ratings
 

@@ -18,7 +18,7 @@ Decompose epic into tasks and sync to GitHub in one operation.
 Check that epic exists and hasn't been processed:
 ```bash
 # Epic must exist
-test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
+test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
 
 # Check for existing tasks
 if ls .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | grep -q .; then

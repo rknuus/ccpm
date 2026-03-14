@@ -2,13 +2,13 @@
 allowed-tools: Bash, Read, Write, LS
 ---
 
-# PRD Parse
+# Initiative Parse
 
-Convert PRD to technical implementation epic.
+Convert Initiative to technical implementation epic.
 
 ## Usage
 ```
-/ccpm:prd-parse <feature_name>
+/ccpm:initiative-parse <feature_name>
 ```
 
 ## Required Rules
@@ -23,17 +23,17 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 
 ### Validation Steps
 1. **Verify <feature_name> was provided as a parameter:**
-   - If not, tell user: "❌ <feature_name> was not provided as parameter. Please run: /ccpm:prd-parse <feature_name>"
+   - If not, tell user: "❌ <feature_name> was not provided as parameter. Please run: /ccpm:initiative-parse <feature_name>"
    - Stop execution if <feature_name> was not provided
 
-2. **Verify PRD exists:**
-   - Check if `.pm/prds/$ARGUMENTS.md` exists
-   - If not found, tell user: "❌ PRD not found: $ARGUMENTS. First create it with: /ccpm:prd-new $ARGUMENTS"
-   - Stop execution if PRD doesn't exist
+2. **Verify Initiative exists:**
+   - Check if `.pm/initiatives/$ARGUMENTS.md` exists
+   - If not found, tell user: "❌ Initiative not found: $ARGUMENTS. First create it with: /ccpm:initiative-new $ARGUMENTS"
+   - Stop execution if Initiative doesn't exist
 
-3. **Validate PRD frontmatter:**
-   - Verify PRD has valid frontmatter with: name, description, status, created
-   - If frontmatter is invalid or missing, tell user: "❌ Invalid PRD frontmatter. Please check: .pm/prds/$ARGUMENTS.md"
+3. **Validate Initiative frontmatter:**
+   - Verify Initiative has valid frontmatter with: name, description, status, created
+   - If frontmatter is invalid or missing, tell user: "❌ Invalid Initiative frontmatter. Please check: .pm/initiatives/$ARGUMENTS.md"
    - Show what's missing or invalid
 
 4. **Check for existing epic:**
@@ -47,24 +47,24 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If cannot create, tell user: "❌ Cannot create epic directory. Please check permissions."
 
 ### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-parse || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-parse || true`
 
 ## Instructions
 
-You are a technical lead converting a Product Requirements Document into a detailed implementation epic for: **$ARGUMENTS**
+You are a technical lead converting an Initiative document into a detailed implementation epic for: **$ARGUMENTS**
 
-### 1. Read the PRD
-- Load the PRD from `.pm/prds/$ARGUMENTS.md`
+### 1. Read the Initiative
+- Load the Initiative from `.pm/initiatives/$ARGUMENTS.md`
 - Analyze all requirements and constraints
 - Understand the user stories and success criteria
-- Extract the PRD description from frontmatter
+- Extract the Initiative description from frontmatter
 
 ### 2. Technical Analysis
 - Identify architectural decisions needed
 - Determine technology stack and approaches
 - Map functional requirements to technical components
 - Identify integration points and dependencies
-- For each correctness property identified in the PRD (uniqueness, ordering, consistency, idempotency, etc.):
+- For each correctness property identified in the Initiative (uniqueness, ordering, consistency, idempotency, etc.):
   - Determine which layer (frontend, backend, database) is responsible for enforcement
   - Identify failure modes if the property is violated
   - Call out edge cases (e.g., concurrent edits, archived items, retry scenarios)
@@ -78,7 +78,7 @@ name: $ARGUMENTS
 status: backlog
 created: [Current ISO date/time]
 progress: 0%
-prd: .pm/prds/$ARGUMENTS.md
+initiative: .pm/initiatives/$ARGUMENTS.md
 github: [Will be updated when synced to GitHub]
 architect: off  # Set to 'advisory' or 'gate' to enable architect reviews
 ---
@@ -110,7 +110,7 @@ Brief technical summary of the implementation approach
 - Monitoring and observability
 
 ### Correctness Enforcement
-For each critical property from the PRD, document: the responsible layer (frontend/backend/database),
+For each critical property from the Initiative, document: the responsible layer (frontend/backend/database),
 failure modes if violated, and relevant edge cases. Integrate these inline in the sections above
 where appropriate rather than listing them all here.
 
@@ -146,7 +146,7 @@ High-level task categories that will be created:
 - **status**: Always start with "backlog" for new epics
 - **created**: Get REAL current datetime by running: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - **progress**: Always start with "0%" for new epics
-- **prd**: Reference the source PRD file path
+- **initiative**: Reference the source Initiative file path
 - **github**: Leave placeholder text - will be updated during sync
 - **architect**: Default to "off". Set to "advisory" or "gate" to enable architect reviews at workflow checkpoints
 
@@ -158,7 +158,7 @@ Create the directory structure if it doesn't exist:
 ### 6. Quality Validation
 
 Before saving the epic, verify:
-- [ ] All PRD requirements are addressed in the technical approach
+- [ ] All Initiative requirements are addressed in the technical approach
 - [ ] Task breakdown categories cover all implementation areas
 - [ ] Dependencies are technically accurate
 - [ ] Effort estimates are realistic
@@ -177,19 +177,19 @@ After successfully creating the epic:
    - Estimated effort
 3. Suggest next steps:
    - ➡️ `/ccpm:epic-decompose $ARGUMENTS` — Break epic into tasks
-   - `/ccpm:prd-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
+   - `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
    - `/ccpm:epic-edit $ARGUMENTS` — Edit the epic
-   - `/ccpm:prd-edit $ARGUMENTS` — Edit the source PRD
+   - `/ccpm:initiative-edit $ARGUMENTS` — Edit the source Initiative
 
 ## Error Recovery
 
 If any step fails:
 - Clearly explain what went wrong
-- If PRD is incomplete, list specific missing sections
+- If Initiative is incomplete, list specific missing sections
 - If technical approach is unclear, identify what needs clarification
 - Never create an epic with incomplete information
 
-Focus on creating a technically sound implementation plan that addresses all PRD requirements while being practical and achievable for "$ARGUMENTS".
+Focus on creating a technically sound implementation plan that addresses all Initiative requirements while being practical and achievable for "$ARGUMENTS".
 
 ## IMPORTANT:
 - Aim for as few tasks as possible and limit the total number of tasks to 10 or less.

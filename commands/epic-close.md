@@ -34,9 +34,9 @@ updated: {current_datetime}
 completed: {current_datetime}
 ```
 
-### 3. Update PRD Status
+### 3. Update Initiative Status
 
-If epic references a PRD, update its status to "complete".
+If epic references an Initiative, update its status to "complete".
 
 ### 4. Satisfaction Rating
 
@@ -82,4 +82,4 @@ Next epic: Run /ccpm:next to see priority work
 
 Only close epics with all tasks complete.
 Preserve all data when archiving.
-Update related PRD status.
+Update related Initiative status.

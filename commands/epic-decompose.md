@@ -23,7 +23,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
 
 1. **Verify epic exists:**
    - Check if `.pm/epics/$ARGUMENTS/epic.md` exists
-   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:prd-parse $ARGUMENTS"
+   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:initiative-parse $ARGUMENTS"
    - Stop execution if epic doesn't exist
 
 2. **Check for existing tasks:**
@@ -33,7 +33,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If user says no, suggest: "View existing tasks with: /ccpm:epic-show $ARGUMENTS"
 
 3. **Validate epic frontmatter:**
-   - Verify epic has valid frontmatter with: name, status, created, prd
+   - Verify epic has valid frontmatter with: name, status, created, initiative
    - If invalid, tell user: "❌ Invalid epic frontmatter. Please check: .pm/epics/$ARGUMENTS/epic.md"
 
 4. **Check epic status:**
@@ -239,7 +239,7 @@ After successfully creating tasks:
 3. Suggest next steps:
    - ➡️ `/ccpm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
    - `/ccpm:epic-start $ARGUMENTS` — Start working on tasks
-   - `/ccpm:prd-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
+   - `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
    - `/ccpm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
    - `/ccpm:epic-show $ARGUMENTS` — Review the tasks
 

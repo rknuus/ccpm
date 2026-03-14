@@ -2,23 +2,23 @@
 allowed-tools: Read, Write, LS
 ---
 
-# PRD Edit
+# Initiative Edit
 
-Edit an existing Product Requirements Document.
+Edit an existing Initiative document.
 
 ## Usage
 ```
-/ccpm:prd-edit <feature_name>
+/ccpm:initiative-edit <feature_name>
 ```
 
 ### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-edit || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-edit || true`
 
 ## Instructions
 
-### 1. Read Current PRD
+### 1. Read Current Initiative
 
-Read `.pm/prds/$ARGUMENTS.md`:
+Read `.pm/initiatives/$ARGUMENTS.md`:
 - Parse frontmatter
 - Read all sections
 
@@ -34,20 +34,20 @@ Ask user what sections to edit:
 - Out of Scope
 - Dependencies
 
-### 3. Update PRD
+### 3. Update Initiative
 
 Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update PRD file:
+Update Initiative file:
 - Preserve frontmatter except `updated` field
 - Apply user's edits to selected sections
 - Update `updated` field with current datetime
 
 ### 4. Check Epic Impact
 
-If PRD has associated epic:
-- Notify user: "This PRD has epic: {epic_name}"
-- Ask: "Epic may need updating based on PRD changes. Review epic? (yes/no)"
+If Initiative has associated epic:
+- Notify user: "This Initiative has epic: {epic_name}"
+- Ask: "Epic may need updating based on Initiative changes. Review epic? (yes/no)"
 - If yes, show: "Review with: /ccpm:epic-edit {epic_name}"
 
 ### Close Context
@@ -56,12 +56,12 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 ### 5. Output
 
 ```
-✅ Updated PRD: $ARGUMENTS
+✅ Updated Initiative: $ARGUMENTS
   Sections edited: {list_of_sections}
 
 {If has epic}: ⚠️ Epic may need review: {epic_name}
 
-Next: /ccpm:prd-parse $ARGUMENTS to update epic
+Next: /ccpm:initiative-parse $ARGUMENTS to update epic
 ```
 
 ## Important Notes

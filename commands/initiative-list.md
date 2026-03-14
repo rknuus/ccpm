@@ -1,6 +1,6 @@
 ---
-allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/prd-list.sh)
+allowed-tools: Bash(bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/initiative-list.sh)
 ---
 
 Output:
-!bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/prd-list.sh
+!bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/initiative-list.sh
