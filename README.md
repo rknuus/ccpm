@@ -53,34 +53,50 @@ This system solves all of that.
 
 ```mermaid
 graph LR
-    A[Initiative Creation] --> B[Epic Planning]
+    A[Initiative] --> B[Epic Planning]
     B --> C[Task Decomposition]
-    C --> D[GitHub Sync]
-    D --> E[Parallel Execution]
+    C --> D[Parallel Execution]
+    D --> E[Merge to Main]
 ```
 
-### Quick Start — Small Jobs (3 commands)
+### Simple — Small Features (3 commands)
 
-For simple features where you want to go from idea to running agents fast:
+Go from idea to running agents in one step:
 
 ```bash
-/ccpm:initiative-new memory-system        # Brainstorm and write the Initiative
+/ccpm:initiative-new memory-system        # Brainstorm and write the initiative
 /ccpm:initiative-go memory-system         # Parse → decompose → start agents
-/ccpm:epic-merge memory-system     # Merge to main when done
+/ccpm:initiative-merge memory-system      # Merge everything to main
 ```
 
-No GitHub sync, no extra steps — purely local.
+### Step-by-Step — Single Epic, Full Control
 
-### Full Workflow — Team Projects
-
-For larger features with GitHub integration and team visibility:
+Pause between phases to review and refine:
 
 ```bash
-/ccpm:initiative-new memory-system        # Brainstorm and write the Initiative
-/ccpm:initiative-parse memory-system      # Convert Initiative to technical epic
-/ccpm:epic-oneshot memory-system   # Decompose + sync to GitHub
-/ccpm:epic-start memory-system     # Launch parallel agents
-/ccpm:epic-merge memory-system     # Merge to main when done
+/ccpm:initiative-new memory-system        # Brainstorm and write the initiative
+/ccpm:initiative-parse memory-system      # Convert to technical epic
+/ccpm:epic-decompose memory-system        # Break into tasks
+/ccpm:epic-start memory-system            # Launch parallel agents
+/ccpm:initiative-merge memory-system      # Merge everything to main
+```
+
+### Multi-Epic — Large Initiatives (up to 10 epics)
+
+For features that need multiple coordinated epics:
+
+```bash
+/ccpm:initiative-new auth-system          # Brainstorm the initiative
+/ccpm:initiative-decompose auth-system    # Break into multiple epics
+
+# Work on each epic (can be done in parallel):
+/ccpm:epic-decompose login-flow           # Break epic into tasks
+/ccpm:epic-start login-flow               # Launch agents
+
+/ccpm:epic-decompose oauth-providers      # Another epic
+/ccpm:epic-start oauth-providers          # Launch agents
+
+/ccpm:initiative-merge auth-system        # Merge all epics to main
 ```
 
 > **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:initiative-new`).
@@ -148,15 +164,18 @@ CCPM is installed as a Claude **plugin**. Commands create the directories they n
 ```
 <your-project>/
 ├── .claude/
-│   └── rules/            # CCPM rules (copied from the plugin)
-└── .pm/                  # PM workspace (gitignored)
-    ├── epics/
-    │   └── [epic-name]/  # Epic and related tasks
-    │       ├── epic.md
-    │       ├── [#].md    # Individual task files
-    │       └── updates/  # Work-in-progress updates
-    ├── initiatives/      # Initiative files
-    └── stats/            # Usage statistics and satisfaction ratings
+│   └── rules/                    # CCPM rules (copied from the plugin)
+└── .pm/                          # PM workspace (gitignored)
+    ├── initiatives/
+    │   ├── [name].md             # Initiative document
+    │   └── [name]/               # Epics for this initiative
+    │       └── [epic-name]/      # Epic directory
+    │           ├── epic.md       # Epic document
+    │           ├── [#].md        # Task files
+    │           └── updates/      # Work-in-progress updates
+    ├── epics/                    # Legacy layout (backward compat)
+    ├── stats/                    # Usage statistics and satisfaction ratings
+    └── next-id                   # Global task ID counter
 ```
 
 The plugin itself (commands, agents, scripts) lives in its own repository and is loaded by Claude Code's plugin system.
@@ -174,39 +193,34 @@ Launches comprehensive brainstorming to create an Initiative capturing vision, u
 
 ### 2. Implementation Planning Phase
 
-```bash
-/ccpm:initiative-parse feature-name
-```
-Transforms Initiative into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
+**Single epic:** `/ccpm:initiative-parse feature-name` — creates one detailed epic.
+**Multiple epics:** `/ccpm:initiative-decompose feature-name` — breaks initiative into up to 10 epics.
 
-**Output:** `.pm/epics/feature-name/epic.md`
+**Output:** `.pm/initiatives/feature-name/[epic-name]/epic.md`
 
 ### 3. Task Decomposition Phase
 
 ```bash
-/ccpm:epic-decompose feature-name
+/ccpm:epic-decompose epic-name
 ```
-Breaks epic into concrete, actionable tasks with acceptance criteria, effort estimates, and parallelization flags.
+Breaks each epic into concrete, actionable tasks (up to 10 per epic) with acceptance criteria, effort estimates, and parallelization flags.
 
-**Output:** `.pm/epics/feature-name/[task].md`
+**Output:** `.pm/initiatives/feature-name/[epic-name]/[task].md`
 
-### 4. GitHub Synchronization
+### 4. Execution Phase
 
 ```bash
-/ccpm:epic-sync feature-name
-# Or for confident workflows:
-/ccpm:epic-oneshot feature-name
+/ccpm:epic-start epic-name    # Launch parallel agents
+/ccpm:next                    # Get next priority task
 ```
-Pushes epic and tasks to GitHub as issues with appropriate labels and relationships.
+Specialized agents implement tasks while maintaining progress updates. Each epic gets its own branch under the initiative branch.
 
-### 5. Execution Phase
+### 5. Merge Phase
 
 ```bash
-/ccpm:issue-start 1234  # Launch specialized agent
-/ccpm:issue-sync 1234   # Push progress updates
-/ccpm:next             # Get next priority task
+/ccpm:initiative-merge feature-name
 ```
-Specialized agents implement tasks while maintaining progress updates and an audit trail.
+Merges all epic branches into the initiative branch, then merges the initiative branch into main. Validates epic completion and runs tests before merging.
 
 ## Command Reference
 
@@ -217,12 +231,14 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:init` - Set up GitHub labels, install `gh-sub-issue`, verify `gh` auth, and pre-create directories
 
 ### Initiative Commands
-- `/ccpm:initiative-new` - Launch brainstorming for new product requirement
-- `/ccpm:initiative-parse` - Convert Initiative to implementation epic
-- `/ccpm:initiative-go` - Parse, decompose, and start agents in one step (local-only, no GitHub sync)
-- `/ccpm:initiative-list` - List all Initiatives
-- `/ccpm:initiative-edit` - Edit existing Initiative
-- `/ccpm:initiative-status` - Show Initiative implementation status
+- `/ccpm:initiative-new` - Launch brainstorming for new initiative
+- `/ccpm:initiative-parse` - Convert initiative to single epic
+- `/ccpm:initiative-decompose` - Break initiative into multiple epics (up to 10)
+- `/ccpm:initiative-go` - Parse, decompose, and start agents in one step
+- `/ccpm:initiative-merge` - Merge initiative branch to main (auto-merges pending epic branches)
+- `/ccpm:initiative-list` - List all initiatives
+- `/ccpm:initiative-edit` - Edit existing initiative
+- `/ccpm:initiative-status` - Show initiative implementation status
 
 ### Epic Commands
 - `/ccpm:epic-decompose` - Break epic into task files
@@ -234,6 +250,7 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 - `/ccpm:epic-edit` - Edit epic details
 - `/ccpm:epic-refresh` - Update epic progress from tasks
 - `/ccpm:epic-start-worktree` - Start epic work in a git worktree
+- `/ccpm:epic-merge` - Merge epic branch to initiative branch
 - `/ccpm:epic-status` - Check epic execution status
 
 ### Issue Commands
@@ -346,7 +363,7 @@ GitHub doesn't need to know HOW the work got done – just that it IS done.
 # All in: ../epic-memory-system/
 
 # One clean merge when done
-/ccpm:epic-merge memory-system
+/ccpm:initiative-merge memory-system
 ```
 
 ## Key Features & Benefits
@@ -379,31 +396,37 @@ Teams using this system report:
 
 ## Example Flow
 
+### Simple (all-in-one)
 ```bash
-# Start a new feature
-/ccpm:initiative-new memory-system
+/ccpm:initiative-new memory-system        # Brainstorm
+/ccpm:initiative-go memory-system         # Parse + decompose + start agents
+# ... agents work ...
+/ccpm:initiative-merge memory-system      # Merge to main
+```
 
-# Review and refine the Initiative...
+### Step-by-step (single epic)
+```bash
+/ccpm:initiative-new memory-system        # Brainstorm
+/ccpm:initiative-parse memory-system      # Create epic
+/ccpm:epic-decompose memory-system        # Break into tasks
+/ccpm:epic-start memory-system            # Launch agents
+# ... agents work ...
+/ccpm:epic-show memory-system             # Check status
+/ccpm:initiative-merge memory-system      # Merge to main
+```
 
-# Create implementation plan
-/ccpm:initiative-parse memory-system
+### Multi-epic (large initiative)
+```bash
+/ccpm:initiative-new auth-system          # Brainstorm
+/ccpm:initiative-decompose auth-system    # Create multiple epics
 
-# Review the epic...
+/ccpm:epic-decompose login-flow           # Decompose first epic
+/ccpm:epic-start login-flow               # Start first epic
+/ccpm:epic-decompose oauth-providers      # Decompose second (in parallel)
+/ccpm:epic-start oauth-providers          # Start second
 
-# Break into tasks and push to GitHub
-/ccpm:epic-oneshot memory-system
-# Creates issues: #1234 (epic), #1235, #1236 (tasks)
-
-# Start development on a task
-/ccpm:issue-start 1235
-# Agent begins work, maintains local progress
-
-# Sync progress to GitHub
-/ccpm:issue-sync 1235
-# Updates posted as issue comments
-
-# Check overall status
-/ccpm:epic-show memory-system
+# ... agents work on both epics ...
+/ccpm:initiative-merge auth-system        # Merge all epics to main
 ```
 
 ## Get Started Now
@@ -496,8 +519,10 @@ Your `.pm/` directory (Initiatives, epics, task files) remains untouched during 
 - Intentionally avoids GitHub Projects API complexity
 - All commands operate on local files first for speed
 - Synchronization with GitHub is explicit and controlled
+- Two-level git branching: `main` → `initiative/{name}` → `epic/{epic-name}`
 - Worktrees provide clean git isolation for parallel work
-- GitHub Projects can be added separately for visualization
+- Initiatives support 1-10 epics, each with up to 10 tasks
+- Path resolution library (`paths-lib.sh`) provides backward compatibility with older directory layouts
 
 ---
 
