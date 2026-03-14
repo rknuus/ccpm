@@ -37,14 +37,25 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Show what's missing or invalid
 
 4. **Check for existing epic:**
-   - Check if `.pm/epics/$ARGUMENTS/epic.md` already exists
-   - If it exists, ask user: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
+   - Check if `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` already exists
+   - If not found, also check old location `.pm/epics/$ARGUMENTS/epic.md` as fallback
+   - If it exists at either location, ask user: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
    - If user says no, suggest: "View existing epic with: /ccpm:epic-show $ARGUMENTS"
 
 5. **Verify directory permissions:**
-   - Ensure `.pm/epics/` directory exists or can be created
+   - Ensure `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/` directory exists or can be created
    - If cannot create, tell user: "❌ Cannot create epic directory. Please check permissions."
+
+6. **Create or enter initiative branch:**
+   - Create `initiative/$ARGUMENTS` branch from main (or enter it if it already exists):
+     ```bash
+     git checkout main && git pull origin main 2>/dev/null; git checkout -b initiative/$ARGUMENTS 2>/dev/null || git checkout initiative/$ARGUMENTS
+     ```
+   - Push with optional fallback:
+     ```bash
+     git push -u origin initiative/$ARGUMENTS 2>/dev/null || echo "ℹ️ No remote configured — continuing with local branch only"
+     ```
 
 ### Context Tracking
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-parse || true`
@@ -70,7 +81,7 @@ You are a technical lead converting an Initiative document into a detailed imple
   - Call out edge cases (e.g., concurrent edits, archived items, retry scenarios)
 
 ### 3. File Format with Frontmatter
-Create the epic file at: `.pm/epics/$ARGUMENTS/epic.md` with this exact structure:
+Create the epic file at: `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` with this exact structure:
 
 ```markdown
 ---
@@ -152,8 +163,8 @@ High-level task categories that will be created:
 
 ### 5. Output Location
 Create the directory structure if it doesn't exist:
-- `.pm/epics/$ARGUMENTS/` (directory)
-- `.pm/epics/$ARGUMENTS/epic.md` (epic file)
+- `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/` (directory)
+- `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` (epic file)
 
 ### 6. Quality Validation
 
@@ -170,7 +181,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 ### 7. Post-Creation
 
 After successfully creating the epic:
-1. Confirm: "✅ Epic created: .pm/epics/$ARGUMENTS/epic.md"
+1. Confirm: "✅ Epic created: .pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md"
 2. Show summary of:
    - Number of task categories identified
    - Key architecture decisions
