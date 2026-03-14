@@ -39,7 +39,36 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS i
 
 ## Instructions
 
-### 1. Validate Epic Completion
+### 1. Merge Pending Epic Branches
+
+Check for unmerged epic branches belonging to this initiative:
+```bash
+# Find epic branches that haven't been merged into the initiative branch
+git checkout initiative/$ARGUMENTS
+for branch in $(git branch --list "epic/*" 2>/dev/null | sed 's/^[* ]*//'); do
+  # Check if this branch has commits not in the initiative branch
+  if [ "$(git log initiative/$ARGUMENTS..$branch --oneline 2>/dev/null | wc -l)" -gt 0 ]; then
+    echo "Unmerged epic branch: $branch"
+  fi
+done
+```
+
+For each unmerged epic branch found:
+1. Attempt merge into the initiative branch:
+   ```bash
+   git checkout initiative/$ARGUMENTS
+   git merge $branch --no-ff -m "Merge $branch into initiative/$ARGUMENTS"
+   ```
+2. If merge succeeds:
+   - Clean up worktree if one exists for this epic
+   - Delete the epic branch (local + remote)
+   - Log: "✅ Merged $branch into initiative/$ARGUMENTS"
+3. If merge conflicts occur:
+   - Abort: `git merge --abort`
+   - Stop and report: "❌ Merge conflict merging $branch. Resolve manually, then retry."
+   - Do not continue with remaining epics
+
+### 2. Validate Epic Completion
 
 Use the Glob tool to find all epic files matching `.pm/initiatives/$ARGUMENTS/*/epic.md`.
 
@@ -57,7 +86,7 @@ Continue with merge anyway? (yes/no)
 
 Only proceed with explicit 'yes' confirmation. If user says no, suggest: "Complete remaining epics first, then retry: /ccpm:initiative-merge $ARGUMENTS"
 
-### 2. Run Tests (Optional but Recommended)
+### 3. Run Tests (Optional but Recommended)
 
 ```bash
 # Look for test commands based on project type
@@ -88,7 +117,7 @@ elif [ -f Makefile ]; then
 fi
 ```
 
-### 3. Update Initiative Status
+### 4. Update Initiative Status
 
 Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
@@ -97,7 +126,7 @@ Update `.pm/initiatives/$ARGUMENTS.md` frontmatter:
 - Set `updated` to current datetime
 - Set `completed` to current datetime
 
-### 4. Attempt Merge
+### 5. Attempt Merge
 
 ```bash
 # Ensure main is up to date
@@ -117,7 +146,7 @@ Completed epics:
 {epic_list built from epic names}"
 ```
 
-### 5. Handle Merge Conflicts
+### 6. Handle Merge Conflicts
 
 If merge fails with conflicts:
 ```bash
@@ -144,7 +173,7 @@ Options:
 Branch preserved: initiative/$ARGUMENTS
 ```
 
-### 6. Post-Merge Cleanup
+### 7. Post-Merge Cleanup
 
 If merge succeeds:
 ```bash
@@ -171,7 +200,7 @@ git push origin main
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
-### 7. Final Output
+### 8. Final Output
 
 ```
 ✅ Initiative Merged Successfully: $ARGUMENTS
