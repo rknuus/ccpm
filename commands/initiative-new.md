@@ -152,11 +152,11 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 After successfully creating the Initiative:
 1. Confirm: "✅ Initiative created: .pm/initiatives/$ARGUMENTS.md"
 2. Show brief summary of what was captured
-3. Suggest next steps:
-   - ➡️ `/ccpm:initiative-parse $ARGUMENTS` — Convert Initiative to epic
-   - `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
+3. Suggest next steps — three workflows available:
+   - **Simple** (all-in-one): `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, start agents in one step
+   - **Step-by-step** (single epic): `/ccpm:initiative-parse $ARGUMENTS` → `epic-decompose` → `epic-start` → `initiative-merge`
+   - **Multi-epic** (large initiatives): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` + `epic-start` per epic → `initiative-merge`
    - `/ccpm:initiative-edit $ARGUMENTS` — Edit the Initiative
-   - `/ccpm:initiative-new <name>` — Create another Initiative
 
 ## Error Recovery
 
