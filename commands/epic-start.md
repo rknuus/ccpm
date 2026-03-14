@@ -15,7 +15,7 @@ Launch parallel agents to work on epic tasks in a shared branch.
 
 1. **Verify epic exists:**
    ```bash
-   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
+   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**

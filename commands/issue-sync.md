@@ -173,7 +173,7 @@ name: [Epic Name]
 status: in-progress
 created: [existing date]
 progress: [calculated percentage based on completed tasks]%
-prd: [existing path]
+initiative: [existing path]
 github: [existing URL]
 ---
 ```

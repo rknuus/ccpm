@@ -8,7 +8,7 @@ Resolved 10 of 12 open GitHub issues, modernized command syntax, improved docume
 ### ✨ Added
 - **Local Mode Support** ([#201](https://github.com/automazeio/ccpm/issues/201))
   - Created `LOCAL_MODE.md` with comprehensive offline workflow guide
-  - All core commands (prd-new, prd-parse, epic-decompose) work without GitHub
+  - All core commands (initiative-new, initiative-parse, epic-decompose) work without GitHub
   - Clear distinction between local-only vs GitHub-dependent commands
 
 - **Automatic GitHub Label Creation** ([#544](https://github.com/automazeio/ccpm/issues/544))
@@ -29,7 +29,7 @@ Resolved 10 of 12 open GitHub issues, modernized command syntax, improved docume
   - Reduced token usage and improved Claude Code compatibility
 
 - **Comprehensive README Overhaul** ([#323](https://github.com/automazeio/ccpm/issues/323))
-  - Clarified PRD vs Epic terminology and definitions
+  - Clarified Initiative vs Epic terminology and definitions
   - Streamlined workflow explanations and removed redundant sections
   - Fixed installation instructions and troubleshooting guidance
   - Improved overall structure and navigation
@@ -90,7 +90,7 @@ Resolved 10 of 12 open GitHub issues, modernized command syntax, improved docume
 ### 🛠️ Technical Details
 - **Files Modified**: 16 core files + documentation
 - **New Files**: `LOCAL_MODE.md`, `CONTEXT_ACCURACY.md`  
-- **Commands Updated**: All 14 PM slash commands modernized
+- **Commands Updated**: All 14 PM skills modernized
 - **Backward Compatibility**: Fully maintained
 - **Dependencies**: No new external dependencies added
 

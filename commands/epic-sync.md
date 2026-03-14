@@ -15,7 +15,7 @@ Push epic and tasks to GitHub as issues.
 
 ```bash
 # Verify epic exists
-test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:prd-parse $ARGUMENTS"
+test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
 
 # Count task files
 ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l

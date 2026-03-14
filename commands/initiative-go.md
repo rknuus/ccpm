@@ -2,36 +2,36 @@
 allowed-tools: Bash, Read, Write, LS, Task
 ---
 
-# PRD Go
+# Initiative Go
 
-Parse PRD into epic, decompose into tasks, and start agents — no GitHub sync required.
+Parse Initiative into epic, decompose into tasks, and start agents — no GitHub sync required.
 
 ## Usage
 ```
-/ccpm:prd-go <feature_name>
+/ccpm:initiative-go <feature_name>
 ```
 
 ## Instructions
 
 ### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open prd $ARGUMENTS prd-go || true`
+Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-go || true`
 
 ### Phase 1: Parse
 
-Follow the same logic as `/ccpm:prd-parse $ARGUMENTS`:
+Follow the same logic as `/ccpm:initiative-parse $ARGUMENTS`:
 
-1. **Validate PRD exists:**
+1. **Validate Initiative exists:**
    ```bash
-   test -f .pm/prds/$ARGUMENTS.md || echo "❌ PRD not found. Run: /ccpm:prd-new $ARGUMENTS"
+   test -f .pm/initiatives/$ARGUMENTS.md || echo "❌ Initiative not found. Run: /ccpm:initiative-new $ARGUMENTS"
    ```
 
 2. **Check for existing epic:**
    - If `.pm/epics/$ARGUMENTS/epic.md` exists, ask: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes'
 
-3. **Create epic** — Read the PRD, perform technical analysis, create `.pm/epics/$ARGUMENTS/epic.md` following the format and guidelines from `prd-parse`.
+3. **Create epic** — Read the Initiative, perform technical analysis, create `.pm/epics/$ARGUMENTS/epic.md` following the format and guidelines from `initiative-parse`.
 
-If parse fails, stop with: "❌ Parse failed. Check the PRD at `.pm/prds/$ARGUMENTS.md`"
+If parse fails, stop with: "❌ Parse failed. Check the Initiative at `.pm/initiatives/$ARGUMENTS.md`"
 
 ### Phase 2: Decompose
 
@@ -74,7 +74,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 ## Output
 
 ```
-PRD Go Complete: $ARGUMENTS
+Initiative Go Complete: $ARGUMENTS
 
 Phase 1: Parse ✓
   - Epic created: .pm/epics/$ARGUMENTS/epic.md
@@ -95,4 +95,4 @@ Merge when complete: /ccpm:epic-merge $ARGUMENTS
 ## Important Notes
 
 This is a convenience wrapper that runs parse + decompose + start without GitHub.
-Use when you want to go from PRD to working agents in one step, purely locally.
+Use when you want to go from Initiative to working agents in one step, purely locally.

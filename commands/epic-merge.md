@@ -194,7 +194,7 @@ Cleanup completed:
 
 Next steps:
   - Deploy changes if needed
-  - Start new epic: /ccpm:prd-new {feature}
+  - Start new epic: /ccpm:initiative-new {feature}
   - View completed work: git log --oneline -20
 ```
 

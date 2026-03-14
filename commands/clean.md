@@ -98,5 +98,5 @@ System is clean and organized.
 ## Important Notes
 
 Always offer --dry-run to preview changes.
-Never delete PRDs or incomplete work.
+Never delete Initiatives or incomplete work.
 Keep archive log for history.

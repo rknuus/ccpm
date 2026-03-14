@@ -16,7 +16,7 @@ Only check what's absolutely necessary:
 ```markdown
 ## Quick Check
 1. If command needs specific directory/file:
-   - Use the Glob tool to check it exists
+   - Check it exists: `test -f {file} || echo "❌ {file} not found"`
    - If missing, tell user exact command to fix it
 2. If command needs GitHub:
    - Assume `gh` is authenticated (it usually is)
@@ -24,21 +24,23 @@ Only check what's absolutely necessary:
 ```
 
 ### DateTime Handling
-
-Follow the pattern in `/rules/datetime.md`: run the datetime command in Bash, read the output, and use it when writing files via Edit or Write tools. Never use `$()` command substitution to capture timestamps.
+```markdown
+Get current datetime: `date -u +"%Y-%m-%dT%H:%M:%SZ"`
+```
+Don't repeat full instructions - just reference `/rules/datetime.md` once.
 
 ### Error Messages
 Keep them short and actionable:
 ```markdown
-{What failed}: {Exact solution}
-Example: "Epic not found: Run /ccpm:initiative-parse feature-name"
+❌ {What failed}: {Exact solution}
+Example: "❌ Epic not found: Run /pm:initiative-parse feature-name"
 ```
 
 ## Standard Output Formats
 
 ### Success Output
 ```markdown
-Done: {Action} complete
+✅ {Action} complete
   - {Key result 1}
   - {Key result 2}
 Next: {Single suggested action}
@@ -58,25 +60,28 @@ Next: {Single suggested action}
 
 ## File Operations
 
-Prefer Claude Code built-in tools over shell commands for file I/O:
+### Check and Create
+```markdown
+# Don't ask permission, just create what's needed
+mkdir -p .claude/{directory} 2>/dev/null
+```
 
-| Task | Tool to use | Instead of |
-|------|-------------|------------|
-| Read a file | **Read** tool | `cat`, `head`, `tail` |
-| Search file contents | **Grep** tool | `grep`, `rg` |
-| Find files by name | **Glob** tool | `find`, `ls` |
-| Edit a file in place | **Edit** tool | `sed`, `awk` |
-| Create / overwrite a file | **Write** tool | `echo >`, `cat <<EOF >` |
-| Create directories | Bash `mkdir -p` | (no built-in equivalent) |
-
-Using built-in tools avoids shell approval prompts and is preferred for all file operations.
+### Read with Fallback
+```markdown
+# Try to read, continue if missing
+if [ -f {file} ]; then
+  # Read and use file
+else
+  # Use sensible default
+fi
+```
 
 ## GitHub Operations
 
 ### Trust gh CLI
 ```markdown
 # Don't pre-check auth, just try the operation
-gh {command} || echo "GitHub CLI failed. Run: gh auth login"
+gh {command} || echo "❌ GitHub CLI failed. Run: gh auth login"
 ```
 
 ### Simple Issue Operations
@@ -109,60 +114,48 @@ gh issue view {number} --json state,title,body
 ### DON'T: Verbose output
 ```markdown
 # Bad - too much information
-Starting operation...
-Validating prerequisites...
-Step 1 complete
-Step 2 complete
-Statistics: ...
-Tips: ...
+🎯 Starting operation...
+📋 Validating prerequisites...
+✅ Step 1 complete
+✅ Step 2 complete
+📊 Statistics: ...
+💡 Tips: ...
 ```
 
 ### DO: Concise output
 ```markdown
 # Good - just results
-Done: 3 files created
+✅ Done: 3 files created
 Failed: auth.test.js (syntax error - line 42)
 ```
 
-### DON'T: Use command substitution for file operations
+### DON'T: Ask too many questions
 ```markdown
-# Bad - triggers approval prompts
-CONTENT=$(cat file.md)
-CURRENT_DATE=$(date -u ...)
-RESULT=$(sed '...' file.md)
+# Bad - too interactive
+"Continue? (yes/no)"
+"Overwrite? (yes/no)"
+"Are you sure? (yes/no)"
 ```
 
-### DO: Use built-in tools and standalone commands
+### DO: Smart defaults
 ```markdown
-# Good - no approval prompts
-- Read tool to read file contents
-- Edit tool to modify files
-- Run `date -u ...` standalone in Bash, then use the printed value
+# Good - proceed with sensible defaults
+# Only ask when destructive or ambiguous
+"This will delete 10 files. Continue? (yes/no)"
 ```
 
 ## Quick Reference
 
-### Git Commits
-
-To avoid the `$(cat <<'EOF'...)` heredoc pattern that triggers complex approval prompts:
-
-1. Use the **Write** tool to write the commit message to a temp file (e.g., `/tmp/commit-msg.txt`)
-2. Run: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-git-commit.sh /tmp/commit-msg.txt [files...]`
-
-This replaces `git add <files> && git commit -m "$(cat <<'EOF'...EOF)"` with a single, clean script call.
-
 ### Essential Tools Only
-- Read/List operations: `Read`, `Glob`
-- Content search: `Grep`
-- File modification: `Edit`, `Write`
-- GitHub operations: `Bash` (for `gh` CLI)
-- Timestamps: `Bash` (standalone `date` command)
-- Git commits: `Write` + `Bash` (via `ccpm-git-commit.sh`)
+- Read/List operations: `Read, LS`
+- File creation: `Read, Write, LS`
+- GitHub operations: Add `Bash`
+- Complex analysis: Add `Task` (sparingly)
 
 ### Status Indicators
-- Success (use sparingly)
-- Error (always with solution)
-- Warning (only if action needed)
+- ✅ Success (use sparingly)
+- ❌ Error (always with solution)
+- ⚠️ Warning (only if action needed)
 - No emoji for normal output
 
 ### Exit Strategies
@@ -174,7 +167,7 @@ This replaces `git add <files> && git commit -m "$(cat <<'EOF'...EOF)"` with a s
 
 **Simple is not simplistic** - We still handle errors properly, we just don't try to prevent every possible edge case. We trust that:
 - The file system usually works
-- GitHub CLI is usually authenticated
+- GitHub CLI is usually authenticated  
 - Git repositories are usually valid
 - Users know what they're doing
 

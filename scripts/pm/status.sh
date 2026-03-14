@@ -9,12 +9,12 @@ echo "📊 Project Status"
 echo "================"
 echo ""
 
-echo "📄 PRDs:"
-if [ -d ".pm/prds" ]; then
-  total=$(ls .pm/prds/*.md 2>/dev/null | wc -l)
+echo "📄 Initiatives:"
+if [ -d ".pm/initiatives" ]; then
+  total=$(ls .pm/initiatives/*.md 2>/dev/null | wc -l)
   echo "  Total: $total"
 else
-  echo "  No PRDs found"
+  echo "  No Initiatives found"
 fi
 
 echo ""

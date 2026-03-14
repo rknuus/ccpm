@@ -363,7 +363,7 @@ cmd_overview() {
   echo -ne "\r\033[K" >&2
   _cancel_timeout
 
-  # Merge rows by name: sum stats, pick best type (prefer epic over prd)
+  # Merge rows by name: sum stats, pick best type (prefer epic over initiative)
   local merged
   merged=$(echo "$raw_data" | jq '
     group_by(.name)
@@ -436,15 +436,15 @@ cmd_show() {
 
   if [ -z "$item_type" ] || [ -z "$item_name" ]; then
     echo "Usage: /ccpm:stats-show <type> <name>"
-    echo "  type: prd, epic, or task"
+    echo "  type: initiative, epic, or task"
     echo "  name: work item name or issue number"
     exit 1
   fi
 
   case "$item_type" in
-    prd|epic|task) ;;
+    initiative|epic|task) ;;
     *)
-      echo "Invalid type: $item_type (must be prd, epic, or task)"
+      echo "Invalid type: $item_type (must be initiative, epic, or task)"
       exit 1
       ;;
   esac

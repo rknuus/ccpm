@@ -5,7 +5,7 @@ Complete reference of all commands available in the Claude Code PM system.
 > **Note**: Project Management commands (`/ccpm:*`) are documented in the main [README.md](README.md#command-reference).
 >
 > **Epic Commands**: `/ccpm:epic-oneshot` (decompose + sync) is documented in the README.
-> **PRD Commands**: `/ccpm:prd-go` (parse + decompose + start agents locally, no GitHub sync) is documented in the README.
+> **Initiative Commands**: `/ccpm:initiative-go` (parse + decompose + start agents locally, no GitHub sync) is documented in the README.
 
 ## Table of Contents
 
@@ -68,15 +68,15 @@ Commands for tracking project statistics and satisfaction ratings.
 ### `/ccpm:stats`
 - **Purpose**: Display project statistics overview dashboard
 - **Usage**: `/ccpm:stats`
-- **Description**: Shows a high-level overview of project statistics including time spent, work item counts, and progress across PRDs, epics, and tasks. Reads from `.pm/stats/` data files.
+- **Description**: Shows a high-level overview of project statistics including time spent, work item counts, and progress across Initiatives, epics, and tasks. Reads from `.pm/stats/` data files.
 - **When to use**: To get a quick summary of project health and progress
 - **Output**: Dashboard with aggregated statistics for all tracked work items
 
 ### `/ccpm:stats-show`
 - **Purpose**: Show detailed statistics for a specific work item
 - **Usage**: `/ccpm:stats-show <type> <name>`
-- **Description**: Displays detailed statistics for a single work item including time tracking, token usage, satisfaction ratings, and prompt history. Type is `prd`, `epic`, or `task`; name is the work item identifier.
-- **When to use**: To drill down into metrics for a specific PRD, epic, or task
+- **Description**: Displays detailed statistics for a single work item including time tracking, token usage, satisfaction ratings, and prompt history. Type is `initiative`, `epic`, or `task`; name is the work item identifier.
+- **When to use**: To drill down into metrics for a specific Initiative, epic, or task
 - **Output**: Detailed statistics view for the specified work item
 
 ### `/ccpm:stats-rate`

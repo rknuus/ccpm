@@ -14,7 +14,7 @@ warnings=0
 # Check directory structure
 echo "📁 Directory Structure:"
 [ -d ".claude" ] && echo "  ✅ .claude directory exists" || { echo "  ❌ .claude directory missing"; ((errors++)); }
-[ -d ".pm/prds" ] && echo "  ✅ PRDs directory exists" || echo "  ⚠️ PRDs directory missing"
+[ -d ".pm/initiatives" ] && echo "  ✅ Initiatives directory exists" || echo "  ⚠️ Initiatives directory missing"
 [ -d ".pm/epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
 [ -d ".claude/rules" ] && echo "  ✅ Rules directory exists" || echo "  ⚠️ Rules directory missing"
 echo ""
@@ -74,7 +74,7 @@ echo ""
 echo "📝 Frontmatter Validation:"
 invalid=0
 
-for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null); do
+for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/initiatives/*" 2>/dev/null); do
   if ! grep -q "^---" "$file"; then
     echo "  ⚠️ Missing frontmatter: $(basename "$file")"
     ((invalid++))

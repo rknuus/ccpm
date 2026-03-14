@@ -24,9 +24,9 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
   "current": null,
   "history": [
     {
-      "type": "prd",
+      "type": "initiative",
       "name": "feature-auth",
-      "command": "prd-new",
+      "command": "initiative-new",
       "started": "2026-02-15T09:59:00Z",
       "ended": "2026-02-15T10:01:00Z"
     },
@@ -157,9 +157,9 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
   "current": null,
   "history": [
     {
-      "type": "prd",
+      "type": "initiative",
       "name": "feature-auth",
-      "command": "prd-new",
+      "command": "initiative-new",
       "started": "2026-02-15T09:59:00Z",
       "ended": "2026-02-15T10:01:00Z"
     },
@@ -181,7 +181,7 @@ assert_contains "overview has feature name" "feature-auth" "$output"
 assert_not_contains "overview has no Sessions column" "Sessions" "$output"
 assert_not_contains "overview has no Rating column" "Rating" "$output"
 
-# Verify deduplication: feature-auth should appear once (merged prd+epic)
+# Verify deduplication: feature-auth should appear once (merged initiative+epic)
 auth_rows=$(echo "$output" | grep -c "feature-auth" || true)
 assert_eq "overview deduplicates rows" "1" "$auth_rows"
 
@@ -210,7 +210,7 @@ assert_contains "no stats message" "No stats found" "$output"
 echo ""
 echo "=== Show: with data ==="
 # =========================================================================
-output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "initiative" "feature-auth" 2>&1 || true)
 assert_contains "show has summary" "Summary" "$output"
 assert_contains "show has sessions" "Sessions" "$output"
 assert_contains "show has model breakdown" "Model Breakdown" "$output"
@@ -223,7 +223,7 @@ assert_contains "show has stats-rate action" "/ccpm:stats-rate" "$output"
 echo ""
 echo "=== Show: prompts disabled message ==="
 # =========================================================================
-output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "initiative" "feature-auth" 2>&1 || true)
 assert_contains "prompts disabled" "Prompt collection: disabled" "$output"
 assert_contains "config hint" "/ccpm:config" "$output"
 
@@ -231,17 +231,17 @@ assert_contains "config hint" "/ccpm:config" "$output"
 echo ""
 echo "=== Cache: stats.json created ==="
 # =========================================================================
-assert_eq "prd cache exists" "true" \
-  "$([ -f "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" ] && echo true || echo false)"
+assert_eq "initiative cache exists" "true" \
+  "$([ -f "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" ] && echo true || echo false)"
 assert_eq "epic cache exists" "true" \
   "$([ -f "$TEST_DIR/.pm/stats/epics/feature-auth/stats.json" ] && echo true || echo false)"
 
 # Check cache has computed_at
-computed_at=$(jq -r '.computed_at // empty' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+computed_at=$(jq -r '.computed_at // empty' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" 2>/dev/null)
 assert_eq "cache has computed_at" "true" "$([ -n "$computed_at" ] && echo true || echo false)"
 
 # Check cache has satisfaction field preserved
-sat=$(jq '.satisfaction' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+sat=$(jq '.satisfaction' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" 2>/dev/null)
 assert_eq "cache has satisfaction field" "true" "$([ "$sat" != "null" ] && echo true || echo false)"
 
 # =========================================================================
@@ -250,7 +250,7 @@ echo "=== Cache: satisfaction preserved after recompute ==="
 # =========================================================================
 # Add a satisfaction rating to the cache
 source "$PROJECT_ROOT/scripts/pm/stats-satisfaction.sh"
-stats_save_rating "prd" "feature-auth" "immediate" "4" > /dev/null 2>&1
+stats_save_rating "initiative" "feature-auth" "immediate" "4" > /dev/null 2>&1
 
 # Force recompute by adding a newer history entry
 cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
@@ -258,16 +258,16 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
   "current": null,
   "history": [
     {
-      "type": "prd",
+      "type": "initiative",
       "name": "feature-auth",
-      "command": "prd-new",
+      "command": "initiative-new",
       "started": "2026-02-15T09:59:00Z",
       "ended": "2026-02-15T10:01:00Z"
     },
     {
-      "type": "prd",
+      "type": "initiative",
       "name": "feature-auth",
-      "command": "prd-edit",
+      "command": "initiative-edit",
       "started": "2026-02-15T23:59:00Z",
       "ended": "2026-02-15T23:59:59Z"
     },
@@ -282,8 +282,8 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
 }
 CTXEOF
 
-output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
-sat_rating=$(jq -r '.satisfaction.immediate.rating // empty' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "initiative" "feature-auth" 2>&1 || true)
+sat_rating=$(jq -r '.satisfaction.immediate.rating // empty' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" 2>/dev/null)
 assert_eq "satisfaction preserved after recompute" "4" "$sat_rating"
 
 # Check the show output reflects the rating
@@ -308,15 +308,15 @@ echo ""
 echo "=== Cache: version invalidation ==="
 # =========================================================================
 # Check that cached stats have the cache_version field
-cache_ver=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+cache_ver=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" 2>/dev/null)
 assert_eq "cache has version" "2" "$cache_ver"
 
 # Simulate an old cache (version 1) and verify it gets recomputed
-jq '.cache_version = 1' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" > "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" \
-  && mv "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json.tmp" "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json"
+jq '.cache_version = 1' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" > "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json.tmp" \
+  && mv "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json.tmp" "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json"
 
-output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "prd" "feature-auth" 2>&1 || true)
-cache_ver_after=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/prds/feature-auth/stats.json" 2>/dev/null)
+output=$(bash "$PROJECT_ROOT/scripts/pm/stats.sh" show "initiative" "feature-auth" 2>&1 || true)
+cache_ver_after=$(jq -r '.cache_version // 0' "$TEST_DIR/.pm/stats/initiatives/feature-auth/stats.json" 2>/dev/null)
 assert_eq "old cache invalidated and recomputed" "2" "$cache_ver_after"
 
 # =========================================================================
@@ -330,9 +330,9 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
   "current": null,
   "history": [
     {
-      "type": "prd",
+      "type": "initiative",
       "name": "completed-item",
-      "command": "prd-new",
+      "command": "initiative-new",
       "started": "2026-02-15T09:00:00Z",
       "ended": "2026-02-15T09:30:00Z"
     }
@@ -341,11 +341,11 @@ cat > "$TEST_DIR/.pm/stats/active-context.json" <<'CTXEOF'
 CTXEOF
 
 # Open a new context for the same item (simulating post-completion work)
-"$PROJECT_ROOT/scripts/pm/ccpm-context" open prd completed-item prd-edit
+"$PROJECT_ROOT/scripts/pm/ccpm-context" open initiative completed-item initiative-edit
 "$PROJECT_ROOT/scripts/pm/ccpm-context" close
 
 # Verify both sessions are in history
-session_count=$("$PROJECT_ROOT/scripts/pm/ccpm-context" history prd completed-item | jq 'length')
+session_count=$("$PROJECT_ROOT/scripts/pm/ccpm-context" history initiative completed-item | jq 'length')
 assert_eq "post-completion sessions tracked" "2" "$session_count"
 
 # =========================================================================

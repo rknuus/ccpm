@@ -1,13 +1,13 @@
 # !/bin/bash
-# Check if PRD directory exists
-if [ ! -d ".pm/prds" ]; then
-  echo "📁 No PRD directory found. Create your first PRD with: /ccpm:prd-new <feature-name>"
+# Check if Initiative directory exists
+if [ ! -d ".pm/initiatives" ]; then
+  echo "No Initiative directory found. Create your first Initiative with: /ccpm:initiative-new <feature-name>"
   exit 0
 fi
 
-# Check for PRD files
-if ! ls .pm/prds/*.md >/dev/null 2>&1; then
-  echo "📁 No PRDs found. Create your first PRD with: /ccpm:prd-new <feature-name>"
+# Check for Initiative files
+if ! ls .pm/initiatives/*.md >/dev/null 2>&1; then
+  echo "No Initiatives found. Create your first Initiative with: /ccpm:initiative-new <feature-name>"
   exit 0
 fi
 
@@ -17,18 +17,18 @@ in_progress_count=0
 implemented_count=0
 total_count=0
 
-echo "Getting PRDs..."
+echo "Getting Initiatives..."
 echo ""
 echo ""
 
 
-echo "📋 PRD List"
+echo "Initiative List"
 echo "==========="
 echo ""
 
 # Display by status groups
-echo "🔍 Backlog PRDs:"
-for file in .pm/prds/*.md; do
+echo "Backlog Initiatives:"
+for file in .pm/initiatives/*.md; do
   [ -f "$file" ] || continue
   status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
   if [ "$status" = "backlog" ] || [ "$status" = "draft" ] || [ -z "$status" ]; then
@@ -36,8 +36,8 @@ for file in .pm/prds/*.md; do
     desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
+    # echo "   $name - $desc"
+    echo "   $file - $desc"
     ((backlog_count++))
   fi
   ((total_count++))
@@ -45,8 +45,8 @@ done
 [ $backlog_count -eq 0 ] && echo "   (none)"
 
 echo ""
-echo "🔄 In-Progress PRDs:"
-for file in .pm/prds/*.md; do
+echo "In-Progress Initiatives:"
+for file in .pm/initiatives/*.md; do
   [ -f "$file" ] || continue
   status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
   if [ "$status" = "in-progress" ] || [ "$status" = "active" ]; then
@@ -54,16 +54,16 @@ for file in .pm/prds/*.md; do
     desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
+    # echo "   $name - $desc"
+    echo "   $file - $desc"
     ((in_progress_count++))
   fi
 done
 [ $in_progress_count -eq 0 ] && echo "   (none)"
 
 echo ""
-echo "✅ Implemented PRDs:"
-for file in .pm/prds/*.md; do
+echo "Implemented Initiatives:"
+for file in .pm/initiatives/*.md; do
   [ -f "$file" ] || continue
   status=$(grep "^status:" "$file" | head -1 | sed 's/^status: *//')
   if [ "$status" = "implemented" ] || [ "$status" = "completed" ] || [ "$status" = "done" ]; then
@@ -71,8 +71,8 @@ for file in .pm/prds/*.md; do
     desc=$(grep "^description:" "$file" | head -1 | sed 's/^description: *//')
     [ -z "$name" ] && name=$(basename "$file" .md)
     [ -z "$desc" ] && desc="No description"
-    # echo "   📋 $name - $desc"
-    echo "   📋 $file - $desc"
+    # echo "   $name - $desc"
+    echo "   $file - $desc"
     ((implemented_count++))
   fi
 done
@@ -80,8 +80,8 @@ done
 
 # Display summary
 echo ""
-echo "📊 PRD Summary"
-echo "   Total PRDs: $total_count"
+echo "Initiative Summary"
+echo "   Total Initiatives: $total_count"
 echo "   Backlog: $backlog_count"
 echo "   In-Progress: $in_progress_count"
 echo "   Implemented: $implemented_count"

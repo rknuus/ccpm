@@ -16,10 +16,10 @@ echo "🔍 Search results for: '$query'"
 echo "================================"
 echo ""
 
-# Search in PRDs
-if [ -d ".pm/prds" ]; then
-  echo "📄 PRDs:"
-  results=$(grep -l -i "$query" .pm/prds/*.md 2>/dev/null)
+# Search in Initiatives
+if [ -d ".pm/initiatives" ]; then
+  echo "📄 Initiatives:"
+  results=$(grep -l -i "$query" .pm/initiatives/*.md 2>/dev/null)
   if [ -n "$results" ]; then
     for file in $results; do
       name=$(basename "$file" .md)

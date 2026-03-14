@@ -4,16 +4,17 @@ Standard patterns for working with YAML frontmatter in markdown files.
 
 ## Reading Frontmatter
 
-Use the **Read** tool to read the markdown file, then parse the YAML between the `---` markers at the start of the file. If frontmatter is invalid or missing, use sensible defaults.
+Extract frontmatter from any markdown file:
+1. Look for content between `---` markers at start of file
+2. Parse as YAML
+3. If invalid or missing, use sensible defaults
 
 ## Updating Frontmatter
 
-Use the **Edit** tool to update frontmatter fields in place:
+When updating existing files:
 1. Preserve all existing fields
 2. Only update specified fields
 3. Always update `updated` field with current datetime (see `/rules/datetime.md`)
-
-**Do not** use shell commands (`sed`, `awk`) to modify frontmatter -- the Edit tool handles in-place replacements safely without approval prompts.
 
 ## Standard Fields
 
@@ -28,7 +29,7 @@ updated: {ISO datetime}      # Update on any modification
 
 ### Status Values
 - Initiatives: `backlog`, `in-progress`, `complete`
-- Epics: `backlog`, `in-progress`, `completed`
+- Epics: `backlog`, `in-progress`, `completed`  
 - Tasks: `open`, `in-progress`, `closed`
 
 ### Progress Tracking
@@ -39,7 +40,7 @@ completion: {0-100}%         # For progress files
 
 ## Creating New Files
 
-Use the **Write** tool to create new markdown files with frontmatter:
+Always include frontmatter when creating markdown files:
 ```yaml
 ---
 name: {from_arguments_or_context}
@@ -48,8 +49,6 @@ created: {current_datetime}
 updated: {current_datetime}
 ---
 ```
-
-Get `{current_datetime}` by running the datetime command as described in `/rules/datetime.md`.
 
 ## Important Notes
 
