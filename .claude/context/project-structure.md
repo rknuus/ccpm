@@ -51,8 +51,13 @@ ccpm-fork/
 ├── hooks/                     # Hook definitions for plugin system
 ├── doc/                       # Chinese documentation translations
 ├── .pm/                       # PM workspace (gitignored in consumer projects)
-│   ├── initiatives/           # Initiative files
-│   ├── epics/                 # Epic directories with tasks
+│   ├── initiatives/           # Initiative files and nested epics/tasks
+│   │   ├── {name}.md          # Initiative document
+│   │   └── {name}/            # Epic directories for this initiative
+│   │       └── {epic-name}/   # Epic with tasks
+│   │           ├── epic.md    # Epic document
+│   │           └── {id}.md    # Task files
+│   ├── epics/                 # Legacy epic directories (backward compat)
 │   ├── stats/                 # Cached stats and active-context.json
 │   └── next-id               # Global task ID counter
 ├── CLAUDE.md                  # Project instructions for Claude

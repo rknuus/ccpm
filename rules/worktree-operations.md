@@ -2,6 +2,48 @@
 
 Git worktrees enable parallel development by allowing multiple working directories for the same repository.
 
+## Initiative-Level Worktrees
+
+For initiatives with multiple epics, worktrees follow the two-level branch model:
+
+```
+main repo → ../initiative-{name}/ → ../epic-{epic-name}/
+```
+
+### Creating Initiative Worktrees
+```bash
+# From main repo, create initiative worktree
+git checkout main && git pull origin main
+git worktree add ../initiative-{name} -b initiative/{name}
+```
+
+### Creating Epic Worktrees from Initiative
+```bash
+# From initiative worktree, create epic worktree
+cd ../initiative-{name}
+git worktree add ../epic-{epic-name} -b epic/{epic-name}
+```
+
+### Merge Flow
+```bash
+# 1. Merge epic worktree back to initiative
+cd ../initiative-{name}
+git merge epic/{epic-name}
+git worktree remove ../epic-{epic-name}
+git branch -d epic/{epic-name}
+
+# 2. When all epics done, merge initiative to main
+cd {main-repo}
+git checkout main
+git merge initiative/{name}
+git worktree remove ../initiative-{name}
+git branch -d initiative/{name}
+```
+
+## Epic-Level Worktrees (Simple Workflow)
+
+For standalone epics without a parent initiative, use the simpler single-level model below.
+
 ## Creating Worktrees
 
 Always create worktrees from a clean main branch:

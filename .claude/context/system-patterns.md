@@ -67,8 +67,15 @@ updated: 2026-01-01T00:00:00Z
 - Environment variables override paths (`STATS_CONTEXT_FILE`, etc.)
 - No external test framework dependency
 
+### Path Resolution
+- `scripts/pm/paths-lib.sh` provides centralized path resolution for `.pm/` directories
+- Supports both new layout (`.pm/initiatives/{name}/{epic}/`) and legacy layout (`.pm/epics/{name}/`)
+- All commands and scripts use path library functions instead of hardcoded paths
+
 ### Parallel Work Coordination
 - One git branch per epic (not per task)
+- For multi-epic initiatives: `main` → `initiative/{name}` → `epic/{epic-name}` (two-level model)
+- For standalone epics: `main` → `epic/{name}` (simple model, backward compatible)
 - Multiple agents work in the same branch on different files
 - Agents coordinate through commits and progress files
 - Conflicts are surfaced immediately for human resolution
