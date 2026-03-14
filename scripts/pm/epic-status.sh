@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/paths-lib.sh"
 
 echo "Getting status..."
 echo ""
@@ -6,27 +9,32 @@ echo ""
 
 epic_name="$1"
 
+_list_available_epics() {
+  for f in .pm/initiatives/*/*/epic.md; do
+    [ -f "$f" ] && echo "  • $(basename "$(dirname "$f")")"
+  done
+  for dir in .pm/epics/*/; do
+    [ -d "$dir" ] && echo "  • $(basename "$dir")"
+  done
+}
+
 if [ -z "$epic_name" ]; then
   echo "❌ Please specify an epic name"
   echo "Usage: /ccpm:epic-status <epic-name>"
   echo ""
   echo "Available epics:"
-  for dir in .pm/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
-  done
+  _list_available_epics
   exit 1
 else
   # Show status for specific epic
-  epic_dir=".pm/epics/$epic_name"
-  epic_file="$epic_dir/epic.md"
+  epic_dir="$(pm_find_epic "$epic_name")"
+  epic_file="${epic_dir}epic.md"
 
   if [ ! -f "$epic_file" ]; then
     echo "❌ Epic not found: $epic_name"
     echo ""
     echo "Available epics:"
-    for dir in .pm/epics/*/; do
-      [ -d "$dir" ] && echo "  • $(basename "$dir")"
-    done
+    _list_available_epics
     exit 1
   fi
 

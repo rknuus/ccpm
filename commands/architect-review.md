@@ -13,9 +13,15 @@ Run an architectural review at a specific workflow checkpoint.
 
 ## Quick Check
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$epic_name/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found.
+
 1. **Verify epic exists:**
    ```bash
-   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found: $ARGUMENTS"
+   test -f {epic_dir}/epic.md || echo "❌ Epic not found: $ARGUMENTS"
    ```
 
 2. **Parse arguments:**
@@ -26,7 +32,7 @@ Run an architectural review at a specific workflow checkpoint.
    - `force`: Whether `--force` flag is present
 
 3. **Check architect mode:**
-   Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
+   Use the Read tool to read `{epic_dir}/epic.md` and extract the `architect:` field from frontmatter.
    - If empty or `off` and no `--force` flag:
      "ℹ️ Architect review is disabled for this epic. Set `architect: advisory` or `architect: gate` in epic frontmatter to enable, or use `--force`."
    - If `--force` is present, proceed regardless of mode (treat as advisory)
@@ -34,7 +40,7 @@ Run an architectural review at a specific workflow checkpoint.
 4. **Validate checkpoint parameter:**
    - If `--checkpoint` not provided: "❌ Missing --checkpoint parameter. Use: design, plan, or code"
    - If `plan` or `code` and `--task` not provided: "❌ --task parameter required for plan/code checkpoints"
-   - If `--task` provided, verify task file exists: `.pm/epics/$epic_name/$task_id.md`
+   - If `--task` provided, verify task file exists: `{epic_dir}/$task_id.md`
 
 ## Instructions
 
@@ -43,19 +49,19 @@ Run an architectural review at a specific workflow checkpoint.
 Based on checkpoint type, collect the review context:
 
 #### For `design` checkpoint:
-- Use the Read tool to read `.pm/epics/$epic_name/epic.md`
-- Use the Glob tool to find all task files matching `.pm/epics/$epic_name/[0-9]*.md`
+- Use the Read tool to read `{epic_dir}/epic.md`
+- Use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md`
 - Use the Read tool to read each task file
 
 #### For `plan` checkpoint:
-- Use the Read tool to read `.pm/epics/$epic_name/epic.md` (architecture decisions section)
-- Use the Read tool to read `.pm/epics/$epic_name/$task_id.md`
-- Use the Grep tool to search for `^status: in-progress` in `.pm/epics/$epic_name/[0-9]*.md` to find any in-progress tasks that might conflict
+- Use the Read tool to read `{epic_dir}/epic.md` (architecture decisions section)
+- Use the Read tool to read `{epic_dir}/$task_id.md`
+- Use the Grep tool to search for `^status: in-progress` in `{epic_dir}/[0-9]*.md` to find any in-progress tasks that might conflict
 - For each in-progress task found, use the Read tool to extract `name:` and `conflicts_with:` fields
 
 #### For `code` checkpoint:
-- Use the Read tool to read `.pm/epics/$epic_name/epic.md` (architecture decisions section)
-- Use the Read tool to read `.pm/epics/$epic_name/$task_id.md`
+- Use the Read tool to read `{epic_dir}/epic.md` (architecture decisions section)
+- Use the Read tool to read `{epic_dir}/$task_id.md`
 - Get the git diff for recent changes:
   ```bash
   git diff HEAD~5 --stat
@@ -95,7 +101,7 @@ Task:
 
 Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-If `.pm/epics/$epic_name/architect-log.md` does not exist, create it:
+If `{epic_dir}/architect-log.md` does not exist, create it:
 ```markdown
 ---
 epic: {epic_name}
@@ -131,7 +137,7 @@ Where `{subject}` is:
 
 ### 4. Report Result
 
-Determine the architect mode by using the Read tool to read `.pm/epics/$epic_name/epic.md` and extracting the `architect:` field from frontmatter.
+Determine the architect mode by using the Read tool to read `{epic_dir}/epic.md` and extracting the `architect:` field from frontmatter.
 
 **If gate mode and verdict is "Needs Changes":**
 ```
@@ -140,19 +146,19 @@ Determine the architect mode by using the Read tool to read `.pm/epics/$epic_nam
 {summary of critical findings}
 
 Fix issues and re-run this command.
-See full review: .pm/epics/{epic_name}/architect-log.md
+See full review: {epic_dir}/architect-log.md
 ```
 
 **If gate mode and verdict is "Approved":**
 ```
 ✅ Architect review: Approved
-See full review: .pm/epics/{epic_name}/architect-log.md
+See full review: {epic_dir}/architect-log.md
 ```
 
 **If advisory mode (or --force):**
 ```
 ℹ️ Architect review: {verdict}
-See full review: .pm/epics/{epic_name}/architect-log.md
+See full review: {epic_dir}/architect-log.md
 ```
 
 ## Error Handling

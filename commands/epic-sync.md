@@ -13,12 +13,18 @@ Push epic and tasks to GitHub as issues.
 
 ## Quick Check
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found.
+
 ```bash
 # Verify epic exists
-test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
 
 # Count task files
-ls .pm/epics/$ARGUMENTS/*.md 2>/dev/null | grep -v epic.md | wc -l
+ls {epic_dir}/*.md 2>/dev/null | grep -v epic.md | wc -l
 ```
 
 If no tasks found: "❌ No tasks to sync. Run: /ccpm:epic-decompose $ARGUMENTS"
@@ -46,7 +52,7 @@ Run `git remote get-url origin` to get the remote URL, then run `gh repo view --
 Strip frontmatter and prepare GitHub issue body:
 ```bash
 # Extract content without frontmatter
-bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh .pm/epics/$ARGUMENTS/epic.md /tmp/epic-body-raw.md
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-strip-frontmatter.sh {epic_dir}/epic.md /tmp/epic-body-raw.md
 
 # Remove "## Tasks Created" section and replace with Stats
 awk '
@@ -114,12 +120,12 @@ gh extension list | grep -q "yahsan2/gh-sub-issue" && echo "available" || echo "
 
 Count task files to determine strategy:
 ```bash
-ls .pm/epics/$ARGUMENTS/[0-9]*.md 2>/dev/null | wc -l
+ls {epic_dir}/[0-9]*.md 2>/dev/null | wc -l
 ```
 
 ### For Small Batches (< 5 tasks): Sequential Creation
 
-For each task file in `.pm/epics/$ARGUMENTS/[0-9]*.md`:
+For each task file in `{epic_dir}/[0-9]*.md`:
 
 1. Use the Read tool to read the task file and extract the `name:` field from frontmatter.
 2. Strip frontmatter:
@@ -230,13 +236,13 @@ Update the epic file with GitHub URL, timestamp, and real task IDs:
 
 1. Run `gh repo view --json nameWithOwner -q .nameWithOwner` to get the repo identifier.
 2. Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current timestamp.
-3. Use the Edit tool to update `.pm/epics/$ARGUMENTS/epic.md` frontmatter:
+3. Use the Edit tool to update `{epic_dir}/epic.md` frontmatter:
    - Set `github:` to `https://github.com/{repo}/issues/{epic_number}`
    - Set `updated:` to the current timestamp
 
 #### 5b. Update Tasks Created Section
 
-1. Use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md`.
+1. Use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md`.
 2. Use the Read tool to read each task file and extract `name:` and `parallel:` from frontmatter.
 3. Build the new Tasks Created section with the real issue numbers and summary statistics.
 4. Use the Edit tool to replace the existing `## Tasks Created` section in `epic.md` with the updated content.
@@ -245,7 +251,7 @@ Update the epic file with GitHub URL, timestamp, and real task IDs:
 
 1. Run `gh repo view --json nameWithOwner -q .nameWithOwner` to get the repo identifier.
 2. Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current timestamp.
-3. Use the Write tool to create `.pm/epics/$ARGUMENTS/github-mapping.md` with the following content:
+3. Use the Write tool to create `{epic_dir}/github-mapping.md` with the following content:
 
 ```markdown
 # GitHub Issue Mapping

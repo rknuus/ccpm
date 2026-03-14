@@ -13,9 +13,15 @@ Update epic progress based on task states.
 
 ## Instructions
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found.
+
 ### 1. Count Task Status
 
-Scan all task files in `.pm/epics/$ARGUMENTS/`:
+Scan all task files in `{epic_dir}/`:
 - Count total tasks
 - Count tasks with `status: closed`
 - Count tasks with `status: open`
@@ -33,7 +39,7 @@ Round to nearest integer.
 
 If epic has GitHub issue, sync task checkboxes:
 
-Use the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number.
+Use the Read tool to read `{epic_dir}/epic.md` and extract the `github:` field to get the epic issue number.
 
 If the epic has a GitHub issue:
 
@@ -42,7 +48,7 @@ If the epic has a GitHub issue:
    gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
    ```
 
-2. Use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md`.
+2. Use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md`.
 
 3. For each task file, use the Read tool to extract the `github:` field (task issue number) and `status:` field.
 

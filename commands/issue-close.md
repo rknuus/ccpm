@@ -18,9 +18,11 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-c
 
 ### 1. Find Local Task File
 
-Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming).
-If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/epics/` (old naming).
+Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
+Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
+If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/initiatives/` and `.pm/epics/`.
 If not found: "❌ No local task for issue #$ARGUMENTS"
+Extract `{epic_dir}` from the found task file's parent directory.
 
 ### 2. Update Local Status
 
@@ -34,7 +36,7 @@ updated: {current_datetime}
 
 ### 3. Architect Review (Optional)
 
-Extract the epic name from the task file path. Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
+Extract the epic name from the task file path. Use the Read tool to read `{epic_dir}/epic.md` and extract the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $epic_name --checkpoint code --task $ARGUMENTS`
@@ -45,7 +47,7 @@ If `architect_mode` is empty or `off`: skip silently.
 
 ### 4. Update Progress File
 
-If progress file exists at `.pm/epics/{epic}/updates/$ARGUMENTS/progress.md` (check with the Read tool):
+If progress file exists at `{epic_dir}/updates/$ARGUMENTS/progress.md` (check with the Read tool):
 - Use the Edit tool to set completion: 100%
 - Add completion note with timestamp
 - Update last_sync with current datetime (from step 2)
@@ -78,7 +80,7 @@ gh issue close $ARGUMENTS
 
 ### 7. Update Epic Task List on GitHub
 
-Extract the epic name from the local task file path. Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the GitHub issue number from the `github:` frontmatter field.
+Extract the epic name from the local task file path. Use the Read tool to read `{epic_dir}/epic.md` and extract the GitHub issue number from the `github:` frontmatter field.
 
 If an epic issue number is found:
 ```bash

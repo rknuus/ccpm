@@ -48,8 +48,9 @@ Based on labels:
 For each issue to import:
 
 **If Epic:**
+Determine target directory: if an initiative exists, use `.pm/initiatives/{initiative_name}/{epic_name}/`; otherwise fall back to `.pm/epics/{epic_name}/`.
 ```bash
-mkdir -p .pm/epics/{epic_name}
+mkdir -p {epic_dir}
 # Create epic.md with GitHub content and frontmatter
 ```
 

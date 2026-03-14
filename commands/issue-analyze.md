@@ -14,13 +14,15 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 ## Quick Check
 
 1. **Find local task file:**
-   - First check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming convention)
-   - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
+   - First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
+   - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+   - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter in `.pm/initiatives/` and `.pm/epics/`
    - If not found: "❌ No local task for issue #$ARGUMENTS. Run: /ccpm:import first"
+   - Extract `{epic_dir}` from the found task file's parent directory.
 
 2. **Check for existing analysis:**
    ```bash
-   test -f .pm/epics/*/$ARGUMENTS-analysis.md && echo "⚠️ Analysis already exists. Overwrite? (yes/no)"
+   test -f {epic_dir}/$ARGUMENTS-analysis.md && echo "⚠️ Analysis already exists. Overwrite? (yes/no)"
    ```
 
 ### Context Tracking
@@ -63,7 +65,7 @@ Analyze the issue to identify independent work that can run in parallel:
 
 Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Create `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
+Create `{epic_dir}/$ARGUMENTS-analysis.md`:
 
 ```markdown
 ---
