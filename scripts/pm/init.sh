@@ -74,9 +74,9 @@ fi
 # Create directory structure
 echo ""
 echo "📁 Creating directory structure..."
-mkdir -p .pm/prds
+mkdir -p .pm/initiatives
 mkdir -p .pm/epics
-mkdir -p .pm/stats/prds
+mkdir -p .pm/stats/initiatives
 mkdir -p .pm/stats/epics
 mkdir -p .pm/stats/tasks
 mkdir -p .claude/rules
@@ -177,7 +177,7 @@ echo "  Extensions: $(gh extension list | wc -l) installed"
 echo "  Auth: $(gh auth status 2>&1 | grep -o 'Logged in to [^ ]*' || echo 'Not authenticated')"
 echo ""
 echo "🎯 Next Steps:"
-echo "  1. Create your first PRD: /ccpm:prd-new <feature-name>"
+echo "  1. Create your first Initiative: /ccpm:initiative-new <feature-name>"
 echo "  2. View help: /ccpm:help"
 echo "  3. Check status: /ccpm:status"
 echo ""

@@ -7,7 +7,7 @@
 #   stats_save_rating <type> <name> <rating_type> <rating> [note]
 #
 # Arguments:
-#   type        - prd, epic, or task
+#   type        - initiative, epic, or task
 #   name        - work item name or issue number
 #   rating_type - immediate or delayed
 #   rating      - 1-5
@@ -28,9 +28,9 @@ stats_save_rating() {
 
   # Validate type
   case "$type" in
-    prd|epic|task) ;;
+    initiative|epic|task) ;;
     *)
-      echo "Invalid type: $type (must be prd, epic, or task)"
+      echo "Invalid type: $type (must be initiative, epic, or task)"
       return 1
       ;;
   esac

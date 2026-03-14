@@ -19,12 +19,12 @@ recent_files=$(find .claude -name "*.md" -mtime -1 2>/dev/null)
 
 if [ -n "$recent_files" ]; then
   # Count by type
-  prd_count=$(echo "$recent_files" | grep -c "/prds/" || echo 0)
+  initiative_count=$(echo "$recent_files" | grep -c "/initiatives/" || echo 0)
   epic_count=$(echo "$recent_files" | grep -c "/epic.md" || echo 0)
   task_count=$(echo "$recent_files" | grep -c "/[0-9]*.md" || echo 0)
   update_count=$(echo "$recent_files" | grep -c "/updates/" || echo 0)
 
-  [ $prd_count -gt 0 ] && echo "  • Modified $prd_count PRD(s)"
+  [ $initiative_count -gt 0 ] && echo "  • Modified $initiative_count Initiative(s)"
   [ $epic_count -gt 0 ] && echo "  • Updated $epic_count epic(s)"
   [ $task_count -gt 0 ] && echo "  • Worked on $task_count task(s)"
   [ $update_count -gt 0 ] && echo "  • Posted $update_count progress update(s)"
