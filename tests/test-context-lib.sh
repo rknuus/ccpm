@@ -44,10 +44,10 @@ assert_eq "history is empty array" "0" "$(jq '.history | length' "$STATS_CONTEXT
 
 echo ""
 echo "Test 2: Open a context"
-"$CCPM_CONTEXT" open "prd" "feature-auth" "prd-new"
-assert_eq "current type is prd" "prd" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
+"$CCPM_CONTEXT" open "initiative" "feature-auth" "initiative-new"
+assert_eq "current type is initiative" "initiative" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
 assert_eq "current name is feature-auth" "feature-auth" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
-assert_eq "current command is prd-new" "prd-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
+assert_eq "current command is initiative-new" "initiative-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
 assert_eq "current has started timestamp" "true" "$(jq -r '.current.started != null' "$STATS_CONTEXT_FILE")"
 assert_eq "history still empty" "0" "$(jq '.history | length' "$STATS_CONTEXT_FILE")"
 
@@ -61,9 +61,9 @@ sleep 1
 assert_eq "current is null after close" "null" "$(jq -r '.current' "$STATS_CONTEXT_FILE")"
 assert_eq "history has 1 entry" "1" "$(jq '.history | length' "$STATS_CONTEXT_FILE")"
 assert_eq "history entry has ended" "true" "$(jq -r '.history[0].ended != null' "$STATS_CONTEXT_FILE")"
-assert_eq "history entry type" "prd" "$(jq -r '.history[0].type' "$STATS_CONTEXT_FILE")"
+assert_eq "history entry type" "initiative" "$(jq -r '.history[0].type' "$STATS_CONTEXT_FILE")"
 assert_eq "history entry name" "feature-auth" "$(jq -r '.history[0].name' "$STATS_CONTEXT_FILE")"
-assert_eq "history entry command" "prd-new" "$(jq -r '.history[0].command' "$STATS_CONTEXT_FILE")"
+assert_eq "history entry command" "initiative-new" "$(jq -r '.history[0].command' "$STATS_CONTEXT_FILE")"
 
 # ─── Test 4: Close when no active context (no-op) ───
 
@@ -93,11 +93,11 @@ assert_eq "auto-closed entry has ended" "true" "$(jq -r '.history[1].ended != nu
 echo ""
 echo "Test 6: History query"
 "$CCPM_CONTEXT" close
-# Now history should have: prd/feature-auth, epic/auth-epic, task/implement-login
+# Now history should have: initiative/feature-auth, epic/auth-epic, task/implement-login
 
-prd_history="$("$CCPM_CONTEXT" history "prd" "feature-auth")"
-assert_eq "prd history has 1 entry" "1" "$(echo "$prd_history" | jq 'length')"
-assert_eq "prd history entry name" "feature-auth" "$(echo "$prd_history" | jq -r '.[0].name')"
+initiative_history="$("$CCPM_CONTEXT" history "initiative" "feature-auth")"
+assert_eq "initiative history has 1 entry" "1" "$(echo "$initiative_history" | jq 'length')"
+assert_eq "initiative history entry name" "feature-auth" "$(echo "$initiative_history" | jq -r '.[0].name')"
 
 epic_history="$("$CCPM_CONTEXT" history "epic" "auth-epic")"
 assert_eq "epic history has 1 entry" "1" "$(echo "$epic_history" | jq 'length')"
@@ -105,7 +105,7 @@ assert_eq "epic history has 1 entry" "1" "$(echo "$epic_history" | jq 'length')"
 task_history="$("$CCPM_CONTEXT" history "task" "implement-login")"
 assert_eq "task history has 1 entry" "1" "$(echo "$task_history" | jq 'length')"
 
-no_history="$("$CCPM_CONTEXT" history "prd" "nonexistent")"
+no_history="$("$CCPM_CONTEXT" history "initiative" "nonexistent")"
 assert_eq "nonexistent item returns empty array" "0" "$(echo "$no_history" | jq 'length')"
 
 # ─── Test 7: Missing arguments are safe ───
@@ -139,11 +139,11 @@ assert_eq "reopened command is followup" "followup" "$(jq -r '.current.command' 
 
 echo ""
 echo "Test 9: Reopen does nothing when context is already open"
-"$CCPM_CONTEXT" open "prd" "active-prd" "prd-new"
+"$CCPM_CONTEXT" open "initiative" "active-initiative" "initiative-new"
 "$CCPM_CONTEXT" reopen 30
-assert_eq "still original type" "prd" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
-assert_eq "still original name" "active-prd" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
-assert_eq "still original command" "prd-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
+assert_eq "still original type" "initiative" "$(jq -r '.current.type' "$STATS_CONTEXT_FILE")"
+assert_eq "still original name" "active-initiative" "$(jq -r '.current.name' "$STATS_CONTEXT_FILE")"
+assert_eq "still original command" "initiative-new" "$(jq -r '.current.command' "$STATS_CONTEXT_FILE")"
 "$CCPM_CONTEXT" close
 
 # ─── Test 10: Reopen does nothing when last context is stale ───
