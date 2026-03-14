@@ -21,20 +21,26 @@ Break epic into concrete, actionable tasks.
 Before proceeding, complete these validation steps.
 Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found. All subsequent references to epic/task paths use the resolved `{epic_dir}`.
+
 1. **Verify epic exists:**
-   - Check if `.pm/epics/$ARGUMENTS/epic.md` exists
+   - Check if `{epic_dir}/epic.md` exists (using resolution above)
    - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:initiative-parse $ARGUMENTS"
    - Stop execution if epic doesn't exist
 
 2. **Check for existing tasks:**
-   - Check if any numbered task files (e.g., 1.md, 2.md) already exist in `.pm/epics/$ARGUMENTS/`
+   - Check if any numbered task files (e.g., 1.md, 2.md) already exist in `{epic_dir}/`
    - If tasks exist, list them and ask: "⚠️ Found {count} existing tasks. Delete and recreate all tasks? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
    - If user says no, suggest: "View existing tasks with: /ccpm:epic-show $ARGUMENTS"
 
 3. **Validate epic frontmatter:**
    - Verify epic has valid frontmatter with: name, status, created, initiative
-   - If invalid, tell user: "❌ Invalid epic frontmatter. Please check: .pm/epics/$ARGUMENTS/epic.md"
+   - If invalid, tell user: "❌ Invalid epic frontmatter. Please check: `{epic_dir}/epic.md`"
 
 4. **Check epic status:**
    - If epic status is already "completed", warn user: "⚠️ Epic is marked as completed. Are you sure you want to decompose it again?"
@@ -47,7 +53,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-de
 You are decomposing an epic into specific, actionable tasks for: **$ARGUMENTS**
 
 ### 1. Read the Epic
-- Load the epic from `.pm/epics/$ARGUMENTS/epic.md`
+- Load the epic from `{epic_dir}/epic.md`
 - Understand the technical approach and requirements
 - Review the task breakdown preview
 
@@ -73,7 +79,7 @@ Task:
     - {list of 3-4 tasks for this batch}
 
     For each task:
-    1. Create file: .pm/epics/$ARGUMENTS/{number}.md
+    1. Create file: {epic_dir}/{number}.md
     2. Use exact format with frontmatter and all sections
     3. Follow task breakdown from epic
     4. Set parallel/depends_on fields appropriately
@@ -130,7 +136,7 @@ Clear, concise description of what needs to be done
 ```
 
 ### 3. Task Naming Convention
-Save tasks as: `.pm/epics/$ARGUMENTS/{task_id}.md`
+Save tasks as: `{epic_dir}/{task_id}.md`
 - Read the next available ID from `.pm/next-id` (create with value `1` if missing)
 - Name each task file with its assigned ID (e.g., 1.md, 2.md, 3.md)
 - After creating all tasks, write the updated counter back to `.pm/next-id`
@@ -216,7 +222,7 @@ Before finalizing tasks, verify:
 
 ### 10. Architect Review (Optional)
 
-Check if architect review is enabled for this epic by using the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extracting the `architect:` field from frontmatter.
+Check if architect review is enabled for this epic by using the Read tool to read `{epic_dir}/epic.md` and extracting the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $ARGUMENTS --checkpoint design`
