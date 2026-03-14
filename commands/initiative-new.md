@@ -155,7 +155,7 @@ After successfully creating the Initiative:
 3. Suggest next steps — three workflows available:
    - **Simple** (all-in-one): `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, start agents in one step
    - **Step-by-step** (single epic): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` → `epic-start` → `initiative-merge`
-   - **Multi-epic** (large initiatives): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` + `epic-start` per epic → `initiative-merge`
+   - **Multi-epic** (large initiatives): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` per epic → `epic-start-all` → `initiative-merge`
    - `/ccpm:initiative-edit $ARGUMENTS` — Edit the Initiative
 
 ## Error Recovery

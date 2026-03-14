@@ -89,14 +89,14 @@ For features that need multiple coordinated epics:
 /ccpm:initiative-new auth-system          # Brainstorm the initiative
 /ccpm:initiative-decompose auth-system    # Break into multiple epics
 
-# Work on each epic (can be done in parallel):
-/ccpm:epic-decompose login-flow           # Break epic into tasks
-/ccpm:epic-start login-flow               # Launch agents
+# Decompose each epic (review and refine between steps):
+/ccpm:epic-decompose login-flow           # Break first epic into tasks
+/ccpm:epic-decompose oauth-providers      # Break second epic into tasks
 
-/ccpm:epic-decompose oauth-providers      # Another epic
-/ccpm:epic-start oauth-providers          # Launch agents
+# Start all epics sequentially — no interaction until done:
+/ccpm:epic-start-all auth-system
 
-/ccpm:initiative-merge auth-system        # Merge all epics to main
+/ccpm:initiative-merge auth-system        # Merge everything to main
 ```
 
 > **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:initiative-new`).
@@ -248,6 +248,7 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 - `/ccpm:epic-edit` - Edit epic details
 - `/ccpm:epic-refresh` - Update epic progress from tasks
 - `/ccpm:epic-start-worktree` - Start epic work in a git worktree
+- `/ccpm:epic-start-all` - Start all epics in an initiative sequentially
 - `/ccpm:epic-merge` - Merge epic branch to initiative branch
 - `/ccpm:epic-status` - Check epic execution status
 
@@ -417,14 +418,11 @@ Teams using this system report:
 ```bash
 /ccpm:initiative-new auth-system          # Brainstorm
 /ccpm:initiative-decompose auth-system    # Create multiple epics
-
-/ccpm:epic-decompose login-flow           # Decompose first epic
-/ccpm:epic-start login-flow               # Start first epic
-/ccpm:epic-decompose oauth-providers      # Decompose second (in parallel)
-/ccpm:epic-start oauth-providers          # Start second
-
-# ... agents work on both epics ...
-/ccpm:initiative-merge auth-system        # Merge all epics to main
+/ccpm:epic-decompose login-flow           # Decompose each epic
+/ccpm:epic-decompose oauth-providers      # (review between steps)
+/ccpm:epic-start-all auth-system          # Start all epics sequentially
+# ... runs autonomously until done ...
+/ccpm:initiative-merge auth-system        # Merge to main
 ```
 
 ## Get Started Now
