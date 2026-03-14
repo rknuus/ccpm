@@ -27,7 +27,7 @@ updated: {ISO datetime}      # Update on any modification
 ```
 
 ### Status Values
-- PRDs: `backlog`, `in-progress`, `complete`
+- Initiatives: `backlog`, `in-progress`, `complete`
 - Epics: `backlog`, `in-progress`, `completed`
 - Tasks: `open`, `in-progress`, `closed`
 

@@ -31,7 +31,7 @@ Follow the pattern in `/rules/datetime.md`: run the datetime command in Bash, re
 Keep them short and actionable:
 ```markdown
 {What failed}: {Exact solution}
-Example: "Epic not found: Run /ccpm:prd-parse feature-name"
+Example: "Epic not found: Run /ccpm:initiative-parse feature-name"
 ```
 
 ## Standard Output Formats
