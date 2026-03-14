@@ -61,7 +61,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 {If has epic}: ⚠️ Epic may need review: {epic_name}
 
-Next: /ccpm:initiative-parse $ARGUMENTS to update epic
+Next: /ccpm:initiative-decompose $ARGUMENTS to update epic
 ```
 
 ## Important Notes

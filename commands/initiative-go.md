@@ -18,7 +18,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS i
 
 ### Phase 1: Parse
 
-Follow the same logic as `/ccpm:initiative-parse $ARGUMENTS`:
+Follow the same logic as `/ccpm:initiative-decompose $ARGUMENTS`:
 
 1. **Validate Initiative exists:**
    ```bash
@@ -46,7 +46,7 @@ Follow the same logic as `/ccpm:initiative-parse $ARGUMENTS`:
    fi
    ```
 
-4. **Create epic** — Read the Initiative, perform technical analysis, create `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` following the format and guidelines from `initiative-parse`.
+4. **Create epic** — Read the Initiative, perform technical analysis, create `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` following the format and guidelines from `initiative-decompose`.
 
 If parse fails, stop with: "❌ Parse failed. Check the Initiative at `.pm/initiatives/$ARGUMENTS.md`"
 

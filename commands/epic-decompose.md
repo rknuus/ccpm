@@ -29,7 +29,7 @@ Use the first path found. All subsequent references to epic/task paths use the r
 
 1. **Verify epic exists:**
    - Check if `{epic_dir}/epic.md` exists (using resolution above)
-   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:initiative-parse $ARGUMENTS"
+   - If not found, tell user: "❌ Epic not found: $ARGUMENTS. First create it with: /ccpm:initiative-decompose $ARGUMENTS"
    - Stop execution if epic doesn't exist
 
 2. **Check for existing tasks:**

@@ -13,7 +13,7 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 
 ### 2. Convert to Technical Plan (Epic)
 ```bash
-/ccpm:initiative-parse user-authentication
+/ccpm:initiative-decompose user-authentication
 ```
 - Creates: `.pm/epics/user-authentication/epic.md`
 - Output: Technical implementation plan
@@ -61,7 +61,7 @@ vim .pm/epics/user-authentication/001.md
 
 ### ✅ Fully Local Commands
 - `/ccpm:initiative-new <name>` - Create requirements
-- `/ccpm:initiative-parse <name>` - Generate technical plan
+- `/ccpm:initiative-decompose <name>` - Generate technical plan
 - `/ccpm:epic-decompose <name>` - Break into tasks
 - `/ccpm:epic-show <name>` - View epic and tasks
 - `/ccpm:status` - Project dashboard

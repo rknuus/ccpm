@@ -21,7 +21,7 @@ Use the first path found.
 
 ```bash
 # Verify epic exists
-test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
 
 # Count task files
 ls {epic_dir}/*.md 2>/dev/null | grep -v epic.md | wc -l

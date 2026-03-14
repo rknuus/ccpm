@@ -24,7 +24,7 @@ Use the first path found.
 Check that epic exists and hasn't been processed:
 ```bash
 # Epic must exist
-test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
 
 # Check for existing tasks
 if ls {epic_dir}/[0-9]*.md 2>/dev/null | grep -q .; then

@@ -22,7 +22,7 @@ Use the first path found. All subsequent references use `{epic_dir}`.
 1. **Verify epic exists:**
    ```bash
    # Check new layout first, then old layout
-   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**

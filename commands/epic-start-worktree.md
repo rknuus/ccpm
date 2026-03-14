@@ -21,7 +21,7 @@ Use the first path found.
 
 1. **Verify epic exists:**
    ```bash
-   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**

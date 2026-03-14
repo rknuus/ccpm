@@ -8,7 +8,7 @@ Resolved 10 of 12 open GitHub issues, modernized command syntax, improved docume
 ### ✨ Added
 - **Local Mode Support** ([#201](https://github.com/automazeio/ccpm/issues/201))
   - Created `LOCAL_MODE.md` with comprehensive offline workflow guide
-  - All core commands (initiative-new, initiative-parse, epic-decompose) work without GitHub
+  - All core commands (initiative-new, initiative-decompose, epic-decompose) work without GitHub
   - Clear distinction between local-only vs GitHub-dependent commands
 
 - **Automatic GitHub Label Creation** ([#544](https://github.com/automazeio/ccpm/issues/544))

@@ -56,7 +56,7 @@ done
 # Suggestions
 echo ""
 echo "Next Actions:"
-[ $backlog -gt 0 ] && echo "  - Parse backlog Initiatives to epics: /ccpm:initiative-parse <name>"
+[ $backlog -gt 0 ] && echo "  - Parse backlog Initiatives to epics: /ccpm:initiative-decompose <name>"
 [ $in_progress -gt 0 ] && echo "  - Check progress on active Initiatives: /ccpm:epic-status <name>"
 [ $total -eq 0 ] && echo "  - Create your first Initiative: /ccpm:initiative-new <name>"
 

@@ -32,7 +32,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Check if `.pm/initiatives/$ARGUMENTS.md` already exists
    - If it exists, ask user: "⚠️ Initiative '$ARGUMENTS' already exists. Do you want to overwrite it? (yes/no)"
    - Only proceed with explicit 'yes' confirmation
-   - If user says no, suggest: "Use a different name or run: /ccpm:initiative-parse $ARGUMENTS to create an epic from the existing Initiative"
+   - If user says no, suggest: "Use a different name or run: /ccpm:initiative-decompose $ARGUMENTS to create an epic from the existing Initiative"
 
 3. **Verify directory structure:**
    - Check if `.pm/initiatives/` directory exists
@@ -154,7 +154,7 @@ After successfully creating the Initiative:
 2. Show brief summary of what was captured
 3. Suggest next steps — three workflows available:
    - **Simple** (all-in-one): `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, start agents in one step
-   - **Step-by-step** (single epic): `/ccpm:initiative-parse $ARGUMENTS` → `epic-decompose` → `epic-start` → `initiative-merge`
+   - **Step-by-step** (single epic): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` → `epic-start` → `initiative-merge`
    - **Multi-epic** (large initiatives): `/ccpm:initiative-decompose $ARGUMENTS` → `epic-decompose` + `epic-start` per epic → `initiative-merge`
    - `/ccpm:initiative-edit $ARGUMENTS` — Edit the Initiative
 

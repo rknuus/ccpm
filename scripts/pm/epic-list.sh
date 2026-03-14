@@ -21,7 +21,7 @@ for d in .pm/epics/*/; do
 done
 
 if [ -z "$epic_dirs" ]; then
-  echo "📁 No epics found. Create your first epic with: /ccpm:initiative-parse <feature-name>"
+  echo "📁 No epics found. Create your first epic with: /ccpm:initiative-decompose <feature-name>"
   exit 0
 fi
 

@@ -75,7 +75,7 @@ Pause between phases to review and refine:
 
 ```bash
 /ccpm:initiative-new memory-system        # Brainstorm and write the initiative
-/ccpm:initiative-parse memory-system      # Convert to technical epic
+/ccpm:initiative-decompose memory-system      # Convert to technical epic
 /ccpm:epic-decompose memory-system        # Break into tasks
 /ccpm:epic-start memory-system            # Launch parallel agents
 /ccpm:initiative-merge memory-system      # Merge everything to main
@@ -193,8 +193,7 @@ Launches comprehensive brainstorming to create an Initiative capturing vision, u
 
 ### 2. Implementation Planning Phase
 
-**Single epic:** `/ccpm:initiative-parse feature-name` — creates one detailed epic.
-**Multiple epics:** `/ccpm:initiative-decompose feature-name` — breaks initiative into up to 10 epics.
+`/ccpm:initiative-decompose feature-name` — breaks the initiative into 1-10 epics.
 
 **Output:** `.pm/initiatives/feature-name/[epic-name]/epic.md`
 
@@ -232,8 +231,7 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 
 ### Initiative Commands
 - `/ccpm:initiative-new` - Launch brainstorming for new initiative
-- `/ccpm:initiative-parse` - Convert initiative to single epic
-- `/ccpm:initiative-decompose` - Break initiative into multiple epics (up to 10)
+- `/ccpm:initiative-decompose` - Break initiative into epics (1-10)
 - `/ccpm:initiative-go` - Parse, decompose, and start agents in one step
 - `/ccpm:initiative-merge` - Merge initiative branch to main (auto-merges pending epic branches)
 - `/ccpm:initiative-list` - List all initiatives
@@ -407,7 +405,7 @@ Teams using this system report:
 ### Step-by-step (single epic)
 ```bash
 /ccpm:initiative-new memory-system        # Brainstorm
-/ccpm:initiative-parse memory-system      # Create epic
+/ccpm:initiative-decompose memory-system      # Create epic
 /ccpm:epic-decompose memory-system        # Break into tasks
 /ccpm:epic-start memory-system            # Launch agents
 # ... agents work ...
