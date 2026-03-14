@@ -4,16 +4,16 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 
 ## Local-Only Workflow
 
-### 1. Create Requirements (PRD)
+### 1. Create Requirements (Initiative)
 ```bash
-/ccpm:prd-new user-authentication
+/ccpm:initiative-new user-authentication
 ```
-- Creates: `.pm/prds/user-authentication.md`
-- Output: Complete PRD with requirements and user stories
+- Creates: `.pm/initiatives/user-authentication.md`
+- Output: Complete Initiative with requirements and user stories
 
 ### 2. Convert to Technical Plan (Epic)
 ```bash
-/ccpm:prd-parse user-authentication
+/ccpm:initiative-parse user-authentication
 ```
 - Creates: `.pm/epics/user-authentication/epic.md`
 - Output: Technical implementation plan
@@ -29,7 +29,7 @@ CCPM works perfectly in local-only mode without any GitHub integration. All mana
 ```bash
 /ccpm:epic-show user-authentication    # View epic and all tasks
 /ccpm:status                           # Project dashboard
-/ccpm:prd-list                         # List all PRDs
+/ccpm:initiative-list                   # List all Initiatives
 ```
 
 ### 5. Work on Tasks
@@ -45,7 +45,7 @@ vim .pm/epics/user-authentication/001.md
 
 ```text
 .pm/
-├── prds/
+├── initiatives/
 │   └── user-authentication.md      # Requirements document
 ├── epics/
 │   └── user-authentication/
@@ -60,12 +60,12 @@ vim .pm/epics/user-authentication/001.md
 ## Commands That Work Locally
 
 ### ✅ Fully Local Commands
-- `/ccpm:prd-new <name>` - Create requirements
-- `/ccpm:prd-parse <name>` - Generate technical plan
+- `/ccpm:initiative-new <name>` - Create requirements
+- `/ccpm:initiative-parse <name>` - Generate technical plan
 - `/ccpm:epic-decompose <name>` - Break into tasks
 - `/ccpm:epic-show <name>` - View epic and tasks
 - `/ccpm:status` - Project dashboard
-- `/ccpm:prd-list` - List PRDs
+- `/ccpm:initiative-list` - List Initiatives
 - `/ccpm:search <term>` - Search content
 - `/ccpm:validate` - Check file integrity
 - `/ccpm:stats` - Token usage and time overview

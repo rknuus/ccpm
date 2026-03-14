@@ -15,7 +15,7 @@
 
 ### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, GitHub issues, Git worktrees, and multiple AI agents running in parallel.
 
-Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns PRDs into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
+Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns Initiatives into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
 
 ![Claude Code PM](screenshot.webp)
 
@@ -53,7 +53,7 @@ This system solves all of that.
 
 ```mermaid
 graph LR
-    A[PRD Creation] --> B[Epic Planning]
+    A[Initiative Creation] --> B[Epic Planning]
     B --> C[Task Decomposition]
     C --> D[GitHub Sync]
     D --> E[Parallel Execution]
@@ -64,8 +64,8 @@ graph LR
 For simple features where you want to go from idea to running agents fast:
 
 ```bash
-/ccpm:prd-new memory-system        # Brainstorm and write the PRD
-/ccpm:prd-go memory-system         # Parse → decompose → start agents
+/ccpm:initiative-new memory-system        # Brainstorm and write the Initiative
+/ccpm:initiative-go memory-system         # Parse → decompose → start agents
 /ccpm:epic-merge memory-system     # Merge to main when done
 ```
 
@@ -76,14 +76,14 @@ No GitHub sync, no extra steps — purely local.
 For larger features with GitHub integration and team visibility:
 
 ```bash
-/ccpm:prd-new memory-system        # Brainstorm and write the PRD
-/ccpm:prd-parse memory-system      # Convert PRD to technical epic
+/ccpm:initiative-new memory-system        # Brainstorm and write the Initiative
+/ccpm:initiative-parse memory-system      # Convert Initiative to technical epic
 /ccpm:epic-oneshot memory-system   # Decompose + sync to GitHub
 /ccpm:epic-start memory-system     # Launch parallel agents
 /ccpm:epic-merge memory-system     # Merge to main when done
 ```
 
-> **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:prd-new`).
+> **Command namespace:** All commands use the `/ccpm:*` namespace (e.g. `/ccpm:initiative-new`).
 
 ## What Makes This Different?
 
@@ -155,7 +155,7 @@ CCPM is installed as a Claude **plugin**. Commands create the directories they n
     │       ├── epic.md
     │       ├── [#].md    # Individual task files
     │       └── updates/  # Work-in-progress updates
-    ├── prds/             # PRD files
+    ├── initiatives/      # Initiative files
     └── stats/            # Usage statistics and satisfaction ratings
 ```
 
@@ -166,18 +166,18 @@ The plugin itself (commands, agents, scripts) lives in its own repository and is
 ### 1. Product Planning Phase
 
 ```bash
-/ccpm:prd-new feature-name
+/ccpm:initiative-new feature-name
 ```
-Launches comprehensive brainstorming to create a Product Requirements Document capturing vision, user stories, success criteria, and constraints.
+Launches comprehensive brainstorming to create an Initiative capturing vision, user stories, success criteria, and constraints.
 
-**Output:** `.pm/prds/feature-name.md`
+**Output:** `.pm/initiatives/feature-name.md`
 
 ### 2. Implementation Planning Phase
 
 ```bash
-/ccpm:prd-parse feature-name
+/ccpm:initiative-parse feature-name
 ```
-Transforms PRD into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
+Transforms Initiative into a technical implementation plan with architectural decisions, technical approach, and dependency mapping.
 
 **Output:** `.pm/epics/feature-name/epic.md`
 
@@ -216,13 +216,13 @@ Specialized agents implement tasks while maintaining progress updates and an aud
 ### Initial Setup (Optional)
 - `/ccpm:init` - Set up GitHub labels, install `gh-sub-issue`, verify `gh` auth, and pre-create directories
 
-### PRD Commands
-- `/ccpm:prd-new` - Launch brainstorming for new product requirement
-- `/ccpm:prd-parse` - Convert PRD to implementation epic
-- `/ccpm:prd-go` - Parse, decompose, and start agents in one step (local-only, no GitHub sync)
-- `/ccpm:prd-list` - List all PRDs
-- `/ccpm:prd-edit` - Edit existing PRD
-- `/ccpm:prd-status` - Show PRD implementation status
+### Initiative Commands
+- `/ccpm:initiative-new` - Launch brainstorming for new product requirement
+- `/ccpm:initiative-parse` - Convert Initiative to implementation epic
+- `/ccpm:initiative-go` - Parse, decompose, and start agents in one step (local-only, no GitHub sync)
+- `/ccpm:initiative-list` - List all Initiatives
+- `/ccpm:initiative-edit` - Edit existing Initiative
+- `/ccpm:initiative-status` - Show Initiative implementation status
 
 ### Epic Commands
 - `/ccpm:epic-decompose` - Break epic into task files
@@ -364,7 +364,7 @@ Works with tools your team already uses. Issues are the source of truth, comment
 Right tool for every job. Different agents for UI, API, and database work. Each reads requirements and posts updates automatically.
 
 ### 📊 **Full Traceability**
-Every decision is documented. PRD → Epic → Task → Issue → Code → Commit. Complete audit trail from idea to production.
+Every decision is documented. Initiative → Epic → Task → Issue → Code → Commit. Complete audit trail from idea to production.
 
 ### 🚀 **Developer Productivity**
 Focus on building, not managing. Intelligent prioritization, automatic context loading, and incremental sync when ready.
@@ -381,12 +381,12 @@ Teams using this system report:
 
 ```bash
 # Start a new feature
-/ccpm:prd-new memory-system
+/ccpm:initiative-new memory-system
 
-# Review and refine the PRD...
+# Review and refine the Initiative...
 
 # Create implementation plan
-/ccpm:prd-parse memory-system
+/ccpm:initiative-parse memory-system
 
 # Review the epic...
 
@@ -432,7 +432,7 @@ Teams using this system report:
 
 3. **Start your first feature**:
    ```bash
-   /ccpm:prd-new your-feature-name
+   /ccpm:initiative-new your-feature-name
    ```
 
 ## Upgrading
@@ -461,18 +461,18 @@ If you previously installed CCPM via the install script (`curl | bash`), follow 
    ```
 
 3. **Update your command usage** -- the namespace changes from `/pm:*` to `/ccpm:*`:
-   - `/pm:prd-new` becomes `/ccpm:prd-new`
+   - `/pm:initiative-new` becomes `/ccpm:initiative-new`
    - `/pm:epic-oneshot` becomes `/ccpm:epic-oneshot`
    - `/pm:issue-start` becomes `/ccpm:issue-start`
    - (all other commands follow the same pattern)
 
-Your `.pm/` directory (PRDs, epics, task files) remains untouched during migration.
+Your `.pm/` directory (Initiatives, epics, task files) remains untouched during migration.
 
 ## Local vs Remote
 
 | Operation | Local | GitHub |
 |-----------|-------|--------|
-| PRD Creation | ✅ | — |
+| Initiative Creation | ✅ | — |
 | Implementation Planning | ✅ | — |
 | Task Breakdown | ✅ | ✅ (sync) |
 | Execution | ✅ | — |
