@@ -16,8 +16,7 @@ Display detailed issue information from local task files.
 You are displaying comprehensive information about a task for: **Issue #$ARGUMENTS**
 
 ### 1. Find Local Task File
-- First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
-- Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+- Check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists
 - If not found: "❌ No local task for #$ARGUMENTS"
 
 ### 2. Issue Overview

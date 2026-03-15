@@ -18,8 +18,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-c
 
 ### 1. Find Local Task File
 
-Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
-Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
+Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists.
 If not found: "❌ No local task for issue #$ARGUMENTS"
 Extract `{epic_dir}` from the found task file's parent directory.
 

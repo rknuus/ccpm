@@ -14,8 +14,7 @@ Begin work on a task with parallel agents based on work stream analysis.
 ## Quick Check
 
 1. **Find local task file:**
-   - Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
-   - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+   - Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists
    - If not found: "❌ No local task for issue #$ARGUMENTS."
    - Extract `{epic_dir}` from the found task file's parent directory.
 
