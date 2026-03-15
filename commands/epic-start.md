@@ -25,23 +25,19 @@ Use the first path found. All subsequent references use `{epic_dir}`.
    test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
-2. **Check GitHub sync:**
-   Look for `github:` field in epic frontmatter.
-   If missing: "❌ Epic not synced. Run: /ccpm:epic-sync $ARGUMENTS first"
-
-3. **Determine parent branch:**
+2. **Determine parent branch:**
    Run:
    ```bash
    git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||'
    ```
    If this produces output, use that value as `PARENT_BRANCH`. Otherwise, use `main`.
 
-4. **Check for branch:**
+3. **Check for branch:**
    ```bash
    git branch -a | grep "epic/$ARGUMENTS"
    ```
 
-5. **Check for uncommitted changes:**
+4. **Check for uncommitted changes:**
    ```bash
    git status --porcelain
    ```
@@ -81,7 +77,6 @@ fi
 
 Read all task files in `{epic_dir}/`:
 - Parse frontmatter for `status`, `depends_on`, `parallel` fields
-- Check GitHub issue status if needed
 - Build dependency graph
 
 Categorize issues:

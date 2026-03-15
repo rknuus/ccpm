@@ -97,7 +97,6 @@ name: [Task Title]
 status: open
 created: [Current ISO date/time]
 updated: [Current ISO date/time]
-github: [Will be updated when synced to GitHub]
 depends_on: []  # List of task IDs this depends on, e.g., [1, 2]
 parallel: true  # Can this run in parallel with other tasks?
 conflicts_with: []  # Tasks that modify same files, e.g., [3, 4]
@@ -147,7 +146,6 @@ Save tasks as: `{epic_dir}/{task_id}.md`
 - **status**: Always start with "open" for new tasks
 - **created**: Get REAL current datetime by running: `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh`
 - **updated**: Use the same real datetime as created for new tasks
-- **github**: Leave placeholder text - will be updated during sync
 - **depends_on**: List task IDs that must complete before this can start (e.g., [1, 2])
 - **parallel**: Set to true if this can run alongside other tasks without conflicts
 - **conflicts_with**: List task IDs that modify the same files (e.g., [3, 4])
@@ -243,10 +241,8 @@ After successfully creating tasks:
    - Parallel vs sequential breakdown
    - Total estimated effort
 3. Suggest next steps:
-   - ➡️ `/ccpm:epic-sync $ARGUMENTS` — Push epic and tasks to GitHub
-   - `/ccpm:epic-start $ARGUMENTS` — Start working on tasks
-   - `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, and start agents (local-only, no GitHub sync)
-   - `/ccpm:epic-oneshot $ARGUMENTS` — Decompose and sync in one step
+   - ➡️ `/ccpm:epic-start $ARGUMENTS` — Start working on tasks
+   - `/ccpm:initiative-go $ARGUMENTS` — Parse, decompose, and start agents
    - `/ccpm:epic-show $ARGUMENTS` — Review the tasks
 
 ## Error Recovery

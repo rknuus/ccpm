@@ -1,10 +1,10 @@
 ---
-allowed-tools: Bash, Read, LS
+allowed-tools: Read, LS
 ---
 
 # Issue Status
 
-Check issue status (open/closed) and current state.
+Check issue status and current state from local task files.
 
 ## Usage
 ```
@@ -13,66 +13,40 @@ Check issue status (open/closed) and current state.
 
 ## Instructions
 
-You are checking the current status of a GitHub issue and providing a quick status report for: **Issue #$ARGUMENTS**
+You are checking the current status of a task from local files for: **Issue #$ARGUMENTS**
 
-### 1. Fetch Issue Status
-Use GitHub CLI to get current status:
-```bash
-gh issue view #$ARGUMENTS --json state,title,labels,assignees,updatedAt
-```
+### 1. Find Local Task File
+- First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
+- Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+- If not found: "❌ No local task for #$ARGUMENTS"
 
 ### 2. Status Display
-Show concise status information:
+Read the task file frontmatter and show concise status:
 ```
-🎫 Issue #$ARGUMENTS: {Title}
+Issue #$ARGUMENTS: {name from frontmatter}
 
-📊 Status: {OPEN/CLOSED}
-   Last update: {timestamp}
-   Assignee: {assignee or "Unassigned"}
-
-🏷️ Labels: {label1}, {label2}, {label3}
+Status: {status from frontmatter}
+Created: {created from frontmatter}
+Updated: {updated from frontmatter}
+Dependencies: {depends_on from frontmatter}
+Parallel: {parallel from frontmatter}
 ```
 
 ### 3. Epic Context
-If issue is part of an epic:
+Determine the epic from the task file's parent directory. Read the epic.md file:
 ```
-📚 Epic Context:
-   Epic: {epic_name}
-   Epic progress: {completed_tasks}/{total_tasks} tasks complete
-   This task: {task_position} of {total_tasks}
-```
-
-### 4. Local Sync Status
-Check if local files are in sync:
-```
-💾 Local Sync:
-   Local file: {exists/missing}
-   Last local update: {timestamp}
-   Sync status: {in_sync/needs_sync/local_ahead/remote_ahead}
+Epic Context:
+  Epic: {epic_name}
+  Epic progress: {completed_tasks}/{total_tasks} tasks complete
 ```
 
-### 5. Quick Status Indicators
-Use clear visual indicators:
-- 🟢 Open and ready
-- 🟡 Open with blockers
-- 🔴 Open and overdue
-- ✅ Closed and complete
-- ❌ Closed without completion
-
-### 6. Actionable Next Steps
+### 4. Actionable Next Steps
 Based on status, suggest actions:
 ```
-🚀 Suggested Actions:
-   - Start work: /ccpm:issue-start $ARGUMENTS
-   - Sync updates: /ccpm:issue-sync $ARGUMENTS
-   - Close issue: gh issue close #$ARGUMENTS
-   - Reopen issue: gh issue reopen #$ARGUMENTS
+Suggested Actions:
+  - Start work: /ccpm:issue-start $ARGUMENTS
+  - Close issue: /ccpm:issue-close $ARGUMENTS
+  - Reopen issue: /ccpm:issue-reopen $ARGUMENTS
 ```
 
-### 7. Batch Status
-If checking multiple issues, support comma-separated list:
-```
-/ccpm:issue-status 123,124,125
-```
-
-Keep the output concise but informative, perfect for quick status checks during development of Issue #$ARGUMENTS.
+Keep the output concise but informative for quick status checks.

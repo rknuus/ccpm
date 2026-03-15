@@ -4,8 +4,7 @@ Complete reference of all commands available in the Claude Code PM system.
 
 > **Note**: Project Management commands (`/ccpm:*`) are documented in the main [README.md](README.md#command-reference).
 >
-> **Epic Commands**: `/ccpm:epic-oneshot` (decompose + sync) is documented in the README.
-> **Initiative Commands**: `/ccpm:initiative-go` (parse + decompose + start agents locally, no GitHub sync) is documented in the README.
+> **Initiative Commands**: `/ccpm:initiative-go` (parse + decompose + start agents) is documented in the README.
 
 ## Table of Contents
 

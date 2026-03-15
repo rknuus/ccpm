@@ -1,10 +1,10 @@
 ---
-allowed-tools: Bash, Read, LS
+allowed-tools: Read, LS
 ---
 
 # Issue Show
 
-Display issue and sub-issues with detailed information.
+Display detailed issue information from local task files.
 
 ## Usage
 ```
@@ -13,80 +13,54 @@ Display issue and sub-issues with detailed information.
 
 ## Instructions
 
-You are displaying comprehensive information about a GitHub issue and related sub-issues for: **Issue #$ARGUMENTS**
+You are displaying comprehensive information about a task for: **Issue #$ARGUMENTS**
 
-### 1. Fetch Issue Data
-- Use `gh issue view #$ARGUMENTS` to get GitHub issue details
-- Look for local task file: first check `.pm/initiatives/*/*/$ARGUMENTS.md` (new layout)
+### 1. Find Local Task File
+- First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
 - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
-- If not found, search for file with `github:.*issues/$ARGUMENTS` in frontmatter in `.pm/initiatives/` and `.pm/epics/`
-- Check for related issues and sub-tasks
+- If not found: "❌ No local task for #$ARGUMENTS"
 
 ### 2. Issue Overview
-Display issue header:
+Read the task file and display:
 ```
-🎫 Issue #$ARGUMENTS: {Issue Title}
-   Status: {open/closed}
-   Labels: {labels}
-   Assignee: {assignee}
-   Created: {creation_date}
-   Updated: {last_update}
-
-📝 Description:
-{issue_description}
+Issue #$ARGUMENTS: {name from frontmatter}
+  Status: {status}
+  Created: {created}
+  Updated: {updated}
+  Dependencies: {depends_on}
+  Parallel: {parallel}
+  Conflicts with: {conflicts_with}
 ```
 
-### 3. Local File Mapping
-If local task file exists:
+Then display the full task body (everything after frontmatter).
+
+### 3. Local Files
+Show related files:
 ```
-📁 Local Files:
-   Task file: {epic_dir}/{task_file}
-   Updates: {epic_dir}/updates/$ARGUMENTS/
-   Last local update: {timestamp}
+Local Files:
+  Task file: {path to task file}
+  Epic: {path to parent epic.md}
+  Updates: {epic_dir}/updates/$ARGUMENTS/ (if exists)
 ```
 
-### 4. Sub-Issues and Dependencies
-Show related issues:
+### 4. Dependencies
+Show dependency information from frontmatter:
 ```
-🔗 Related Issues:
-   Parent Epic: #{epic_issue_number}
-   Dependencies: #{dep1}, #{dep2}
-   Blocking: #{blocked1}, #{blocked2}
-   Sub-tasks: #{sub1}, #{sub2}
+Dependencies:
+  Depends on: {list of task IDs}
+  Conflicts with: {list of task IDs}
 ```
 
-### 5. Recent Activity
-Display recent comments and updates:
+### 5. Quick Actions
 ```
-💬 Recent Activity:
-   {timestamp} - {author}: {comment_preview}
-   {timestamp} - {author}: {comment_preview}
-
-   View full thread: gh issue view #$ARGUMENTS --comments
+Quick Actions:
+  Start work: /ccpm:issue-start $ARGUMENTS
+  Edit: /ccpm:issue-edit $ARGUMENTS
+  Close: /ccpm:issue-close $ARGUMENTS
 ```
 
-### 6. Progress Tracking
-If task file exists, show progress:
-```
-✅ Acceptance Criteria:
-   ✅ Criterion 1 (completed)
-   🔄 Criterion 2 (in progress)
-   ⏸️ Criterion 3 (blocked)
-   □ Criterion 4 (not started)
-```
+### 6. Error Handling
+- Handle invalid task numbers gracefully
+- Provide helpful alternatives if task not found
 
-### 7. Quick Actions
-```
-🚀 Quick Actions:
-   Start work: /ccpm:issue-start $ARGUMENTS
-   Sync updates: /ccpm:issue-sync $ARGUMENTS
-   Add comment: gh issue comment #$ARGUMENTS --body "your comment"
-   View in browser: gh issue view #$ARGUMENTS --web
-```
-
-### 8. Error Handling
-- Handle invalid issue numbers gracefully
-- Check for network/authentication issues
-- Provide helpful error messages and alternatives
-
-Provide comprehensive issue information to help developers understand context and current status for Issue #$ARGUMENTS.
+Provide comprehensive task information to help developers understand context and current status for Issue #$ARGUMENTS.

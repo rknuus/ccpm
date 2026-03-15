@@ -1,10 +1,10 @@
 ---
-allowed-tools: Bash, Read, Write, LS
+allowed-tools: Read, Write, LS
 ---
 
 # Issue Edit
 
-Edit issue details locally and on GitHub.
+Edit issue details locally.
 
 ## Usage
 ```
@@ -13,24 +13,19 @@ Edit issue details locally and on GitHub.
 
 ## Instructions
 
-### 1. Get Current Issue State
+### 1. Find Local Task File
 
-```bash
-# Get from GitHub
-gh issue view $ARGUMENTS --json title,body,labels
-
-# Find local task file
-# Search for file with github:.*issues/$ARGUMENTS
-```
+Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
+Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
+If not found: "❌ No local task for issue #$ARGUMENTS"
 
 ### 2. Interactive Edit
 
 Ask user what to edit:
 - Title
 - Description/Body
-- Labels
-- Acceptance criteria (local only)
-- Priority/Size (local only)
+- Acceptance criteria
+- Priority/Size
 
 ### 3. Update Local File
 
@@ -41,36 +36,15 @@ Update task file with changes:
 - Update body content if description changed
 - Update `updated` field with current datetime
 
-### 4. Update GitHub
-
-If title changed:
-```bash
-gh issue edit $ARGUMENTS --title "{new_title}"
-```
-
-If body changed:
-```bash
-gh issue edit $ARGUMENTS --body-file {updated_task_file}
-```
-
-If labels changed:
-```bash
-gh issue edit $ARGUMENTS --add-label "{new_labels}"
-gh issue edit $ARGUMENTS --remove-label "{removed_labels}"
-```
-
-### 5. Output
+### 4. Output
 
 ```
 ✅ Updated issue #$ARGUMENTS
   Changes:
     {list_of_changes_made}
-
-Synced to GitHub: ✅
 ```
 
 ## Important Notes
 
-Always update local first, then GitHub.
 Preserve frontmatter fields not being edited.
 Follow `/rules/frontmatter-operations.md`.

@@ -1,8 +1,8 @@
 # CCPM Local Mode
 
-CCPM works perfectly in local-only mode without any GitHub integration. All management is done through local markdown files.
+CCPM manages all project data through local markdown files in the `.pm/` directory.
 
-## Local-Only Workflow
+## Workflow
 
 ### 1. Create Requirements (Initiative)
 ```bash
@@ -57,9 +57,8 @@ vim .pm/epics/user-authentication/001.md
     └── active-context.json         # Usage statistics
 ```
 
-## Commands That Work Locally
+## Available Commands
 
-### ✅ Fully Local Commands
 - `/ccpm:initiative-new <name>` - Create requirements
 - `/ccpm:initiative-decompose <name>` - Generate technical plan
 - `/ccpm:epic-decompose <name>` - Break into tasks
@@ -76,20 +75,14 @@ vim .pm/epics/user-authentication/001.md
 - `/ccpm:context-prime` - Load context into current conversation
 - `/ccpm:config` - Configure CCPM settings
 
-### 🚫 GitHub-Only Commands (Skip These)
-- `/ccpm:epic-sync <name>` - Push to GitHub Issues
-- `/ccpm:issue-sync <id>` - Update GitHub Issue
-- `/ccpm:issue-start <id>` - Requires GitHub Issue ID
-- `/ccpm:epic-oneshot <name>` - Includes GitHub sync
+## Benefits
 
-## Benefits of Local Mode
-
-- **✅ No external dependencies** - Works without GitHub account/internet
-- **✅ Full privacy** - All data stays local
-- **✅ Version control friendly** - All files are markdown
-- **✅ Team collaboration** - Share `.claude/` directory via git
-- **✅ Customizable** - Edit templates and workflows freely
-- **✅ Fast** - No API calls or network delays
+- **No external dependencies** - Works without internet
+- **Full privacy** - All data stays local
+- **Version control friendly** - All files are markdown
+- **Team collaboration** - Share `.claude/` directory via git
+- **Customizable** - Edit templates and workflows freely
+- **Fast** - No API calls or network delays
 
 ## Manual Task Management
 

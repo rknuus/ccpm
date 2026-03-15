@@ -79,18 +79,6 @@ normalize_paths() {
 }
 ```
 
-## PM Command Integration
-
-### issue-sync Command Updates
-- Automatically clean path formats before sync
-- Use relative path templates for generating comments
-- Record deliverables using standardized paths
-
-### epic-sync Command Updates
-- Standardize task file paths
-- Clean GitHub issue body paths
-- Use relative paths in mapping files
-
 ## Validation Checks
 
 ### Automated Check Script

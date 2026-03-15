@@ -54,14 +54,7 @@ Before closing, ask the user to rate their satisfaction:
   ```
 - If user says 'skip', proceed without saving
 
-### 5. Close Epic on GitHub
-
-If epic has GitHub issue:
-```bash
-gh issue close {epic_issue_number} --comment "✅ Epic completed - all tasks done"
-```
-
-### 6. Archive Option
+### 5. Archive Option
 
 Ask user: "Archive completed epic? (yes/no)"
 
@@ -72,7 +65,7 @@ If yes:
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
-### 7. Output
+### 6. Output
 
 ```
 ✅ Epic closed: $ARGUMENTS

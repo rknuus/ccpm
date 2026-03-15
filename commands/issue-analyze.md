@@ -16,8 +16,7 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
 1. **Find local task file:**
    - First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
    - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
-   - If not found, search for file containing `github:.*issues/$ARGUMENTS` in frontmatter in `.pm/initiatives/` and `.pm/epics/`
-   - If not found: "❌ No local task for issue #$ARGUMENTS. Run: /ccpm:import first"
+   - If not found: "❌ No local task for issue #$ARGUMENTS"
    - Extract `{epic_dir}` from the found task file's parent directory.
 
 2. **Check for existing analysis:**
@@ -31,11 +30,6 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-a
 ## Instructions
 
 ### 1. Read Issue Context
-
-Get issue details from GitHub:
-```bash
-gh issue view $ARGUMENTS --json title,body,labels
-```
 
 Read local task file to understand:
 - Technical requirements

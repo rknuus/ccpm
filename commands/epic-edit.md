@@ -47,32 +47,20 @@ Update epic.md:
 - Apply user's edits to content
 - Update `updated` field with current datetime
 
-### 4. Option to Update GitHub
-
-If epic has GitHub URL in frontmatter:
-Ask: "Update GitHub issue? (yes/no)"
-
-If yes:
-```bash
-gh issue edit {issue_number} --body-file {epic_dir}/epic.md
-```
-
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
-### 5. Output
+### 4. Output
 
 ```
 ✅ Updated epic: $ARGUMENTS
   Changes made to: {sections_edited}
-
-{If GitHub updated}: GitHub issue updated ✅
 
 View epic: /ccpm:epic-show $ARGUMENTS
 ```
 
 ## Important Notes
 
-Preserve frontmatter history (created, github URL, etc.).
+Preserve frontmatter history (created, etc.).
 Don't change task files when editing epic.
 Follow `/rules/frontmatter-operations.md`.

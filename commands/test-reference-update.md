@@ -4,7 +4,7 @@ allowed-tools: Bash, Read, Write
 
 # Test Reference Update
 
-Test the task reference update logic used in epic-sync.
+Test the task reference update logic used in epic-decompose.
 
 ## Usage
 ```

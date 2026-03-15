@@ -24,11 +24,7 @@ Use the first path found.
    test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
-2. **Check GitHub sync:**
-   Look for `github:` field in epic frontmatter.
-   If missing: "❌ Epic not synced. Run: /ccpm:epic-sync $ARGUMENTS first"
-
-3. **Check for worktree:**
+2. **Check for worktree:**
    ```bash
    git worktree list | grep "epic-$ARGUMENTS"
    ```
