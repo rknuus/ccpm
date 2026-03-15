@@ -137,7 +137,6 @@ CCPM is installed as a Claude **plugin**. Commands create the directories they n
     │           ├── epic.md       # Epic document
     │           ├── [#].md        # Task files
     │           └── updates/      # Work-in-progress updates
-    ├── stats/                    # Usage statistics and satisfaction ratings
     └── next-id                   # Global task ID counter
 ```
 
@@ -225,11 +224,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 - `/ccpm:blocked` - Show blocked tasks
 - `/ccpm:in-progress` - List work in progress
 
-### Stats & Analytics
-- `/ccpm:stats` - Show token usage and working/waiting time overview
-- `/ccpm:stats-show` - Display detailed stats for a specific work item
-- `/ccpm:stats-rate` - Rate satisfaction with a completed work item
-
 ### Context Management
 - `/ccpm:context-create` - Generate baseline project context documentation
 - `/ccpm:context-update` - Refresh context with recent changes
@@ -239,8 +233,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 - `/ccpm:validate` - Check system integrity
 - `/ccpm:clean` - Archive completed work
 - `/ccpm:search` - Search across all content
-- `/ccpm:config` - View or update CCPM settings
-
 ## The Parallel Execution System
 
 ### Issues Aren't Atomic

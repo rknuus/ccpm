@@ -34,9 +34,6 @@ Do not bother the user with preflight checks progress. Just do them and move on.
    ```
    If there are uncommitted changes, warn: "❌ Uncommitted changes detected. Commit or stash changes before merging."
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-merge || true`
-
 ## Instructions
 
 ### 1. Merge Pending Epic Branches
@@ -206,9 +203,6 @@ git commit -m "Archive initiative: $ARGUMENTS"
 git push origin main
 ```
 If the command succeeds (exit 0), `.pm/` is gitignored — skip the commit and note: "ℹ️ .pm/ is gitignored — archive is local only"
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 8. Final Output
 

@@ -11,9 +11,6 @@ Mark an epic as complete when all tasks are done.
 /ccpm:epic-close <epic_name>
 ```
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-close || true`
-
 ## Instructions
 
 ### Resolve Epic Path
@@ -58,9 +55,6 @@ Ask user: "Archive completed epic? (yes/no)"
 If yes:
 - Move epic directory to `.pm/.archived/{epic_name}/`
 - Create archive summary with completion date
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 6. Output
 

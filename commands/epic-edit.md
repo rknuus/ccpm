@@ -11,9 +11,6 @@ Edit epic details after creation.
 /ccpm:epic-edit <epic_name>
 ```
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-edit || true`
-
 ## Instructions
 
 ### Resolve Epic Path
@@ -43,9 +40,6 @@ Update epic.md:
 - Preserve all frontmatter except `updated`
 - Apply user's edits to content
 - Update `updated` field with current datetime
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 4. Output
 

@@ -13,9 +13,6 @@ Parse Initiative into epic, decompose into tasks, and start agents — no GitHub
 
 ## Instructions
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-go || true`
-
 ### Phase 1: Parse
 
 Follow the same logic as `/ccpm:initiative-decompose $ARGUMENTS`:
@@ -84,9 +81,6 @@ Steps:
 
 If start fails after earlier phases succeeded, bail out with:
 "❌ Start failed. Epic and task files are intact in `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/`. Fix the issue and run: /ccpm:epic-start $ARGUMENTS"
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ## Output
 
