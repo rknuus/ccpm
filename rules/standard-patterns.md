@@ -71,20 +71,6 @@ Prefer Claude Code built-in tools over shell commands for file I/O:
 
 Using built-in tools avoids shell approval prompts and is preferred for all file operations.
 
-## GitHub Operations
-
-### Trust gh CLI
-```markdown
-# Don't pre-check auth, just try the operation
-gh {command} || echo "GitHub CLI failed. Run: gh auth login"
-```
-
-### Simple Issue Operations
-```markdown
-# Get what you need in one call
-gh issue view {number} --json state,title,body
-```
-
 ## Common Patterns to Avoid
 
 ### DON'T: Over-validate

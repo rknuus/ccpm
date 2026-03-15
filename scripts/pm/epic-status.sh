@@ -45,8 +45,6 @@ else
   # Extract metadata
   status=$(grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//')
   progress=$(grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//')
-  github=$(grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//')
-
   # Count tasks
   total=0
   open=0
@@ -91,8 +89,6 @@ else
   echo "  🔄 Available: $open"
   echo "  ⏸️ Blocked: $blocked"
 
-  [ -n "$github" ] && echo ""
-  [ -n "$github" ] && echo "🔗 GitHub: $github"
 fi
 
 exit 0

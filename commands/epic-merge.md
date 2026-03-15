@@ -109,16 +109,12 @@ git pull origin $MERGE_TARGET 2>/dev/null || true
 Before merging, build the commit message:
 1. Use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md`
 2. Use the Read tool to extract the `name:` field from each task file's frontmatter to build the feature list
-3. Use the Read tool to read `{epic_dir}/epic.md` and extract the `github:` field to get the epic issue number (if present)
-
 Then perform the merge:
 ```bash
 git merge epic/$ARGUMENTS --no-ff -m "Merge epic: $ARGUMENTS
 
 Completed features:
-{feature_list built from task names}
-
-{If epic issue number found: Closes epic #{epic_issue}}"
+{feature_list built from task names}"
 ```
 
 ### 5. Handle Merge Conflicts
