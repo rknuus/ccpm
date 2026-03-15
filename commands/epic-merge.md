@@ -20,14 +20,11 @@ Determine the epic directory (`{epic_dir}`):
 Use the first path found.
 
 ### Determine Merge Target
+Run:
 ```bash
-# If an initiative branch exists, merge into it (new two-level model)
-# Otherwise merge into main (backward compat)
-MERGE_TARGET="main"
-if git branch -a | grep -q "initiative/"; then
-  MERGE_TARGET=$(git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||')
-fi
+git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||'
 ```
+If this produces output, use that value as `MERGE_TARGET` (new two-level model). Otherwise, use `main` (backward compat).
 
 1. **Verify worktree or branch exists:**
    ```bash
@@ -44,13 +41,13 @@ fi
 
 Check status in the epic worktree or branch:
 ```bash
-# If worktree exists, navigate to it
+# If worktree exists, check status there; otherwise checkout the branch
 if git worktree list | grep -q "epic-$ARGUMENTS"; then
-  cd ../epic-$ARGUMENTS
+  git -C ../epic-$ARGUMENTS status --porcelain
 else
   git checkout epic/$ARGUMENTS
+  git status --porcelain
 fi
-git status --porcelain
 ```
 
 If there are uncommitted changes, warn: "Uncommitted changes detected. Commit or stash changes before merging."
@@ -104,9 +101,6 @@ Update `{epic_dir}/epic.md`:
 ### 4. Attempt Merge
 
 ```bash
-# Return to main repository (if in worktree)
-cd {main-repo-path}
-
 # Ensure merge target is up to date
 git checkout $MERGE_TARGET
 git pull origin $MERGE_TARGET 2>/dev/null || true
@@ -182,9 +176,9 @@ git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 # New layout: archive within initiative directory
 # Old layout: archive under .pm/epics/archived/
 if [[ "{epic_dir}" == .pm/initiatives/* ]]; then
-  initiative_dir=$(dirname "{epic_dir}")
-  mkdir -p "$initiative_dir/archived/"
-  mv "{epic_dir}" "$initiative_dir/archived/"
+  # Determine the initiative directory (the parent of `{epic_dir}`)
+  mkdir -p "{initiative_dir}/archived/"
+  mv "{epic_dir}" "{initiative_dir}/archived/"
   echo "✅ Epic archived within initiative directory"
 else
   mkdir -p .pm/epics/archived/

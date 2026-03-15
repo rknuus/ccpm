@@ -18,10 +18,9 @@ Test the task reference update logic used in epic-sync.
 Create test task files with references:
 ```bash
 mkdir -p /tmp/test-refs
-cd /tmp/test-refs
 
 # Create task 001
-cat > 001.md << 'EOF'
+cat > /tmp/test-refs/001.md << 'EOF'
 ---
 name: Task One
 status: open
@@ -34,7 +33,7 @@ This is task 001.
 EOF
 
 # Create task 002
-cat > 002.md << 'EOF'
+cat > /tmp/test-refs/002.md << 'EOF'
 ---
 name: Task Two
 status: open
@@ -47,7 +46,7 @@ This is task 002, depends on 001.
 EOF
 
 # Create task 003
-cat > 003.md << 'EOF'
+cat > /tmp/test-refs/003.md << 'EOF'
 ---
 name: Task Three
 status: open
@@ -62,50 +61,23 @@ EOF
 
 ### 2. Create Mappings
 
-Simulate the issue creation mappings:
+Create the mapping file:
 ```bash
-# Simulate task -> issue number mapping
 cat > /tmp/task-mapping.txt << 'EOF'
 001.md:42
 002.md:43
 003.md:44
 EOF
-
-# Create old -> new ID mapping
-> /tmp/id-mapping.txt
-while IFS=: read -r task_file task_number; do
-  old_num=$(basename "$task_file" .md)
-  echo "$old_num:$task_number" >> /tmp/id-mapping.txt
-done < /tmp/task-mapping.txt
-
-echo "ID Mapping:"
-cat /tmp/id-mapping.txt
 ```
+
+Then build the ID mapping: for each line in `/tmp/task-mapping.txt`, extract the number before `.md` as the old ID and the number after `:` as the new ID. Write these mappings to `/tmp/id-mapping.txt` in `old:new` format (e.g., `001:42`).
 
 ### 3. Update References
 
-Process each file and update references:
-```bash
-while IFS=: read -r task_file task_number; do
-  echo "Processing: $task_file -> $task_number.md"
-
-  # Read the file content
-  content=$(cat "$task_file")
-
-  # Update references
-  while IFS=: read -r old_num new_num; do
-    content=$(echo "$content" | sed "s/\b$old_num\b/$new_num/g")
-  done < /tmp/id-mapping.txt
-
-  # Write to new file
-  new_name="${task_number}.md"
-  echo "$content" > "$new_name"
-
-  echo "Updated content preview:"
-  grep -E "depends_on:|conflicts_with:" "$new_name"
-  echo "---"
-done < /tmp/task-mapping.txt
-```
+For each entry in `/tmp/task-mapping.txt`:
+1. Use the Read tool to read the task file from `/tmp/test-refs/{task_file}`
+2. In the content, replace all references to old IDs with new IDs using the mapping from `/tmp/id-mapping.txt`
+3. Use the Write tool to write the updated content to `/tmp/test-refs/{new_number}.md`
 
 ### 4. Verify Results
 
@@ -113,8 +85,8 @@ Check that references were updated correctly:
 ```bash
 echo "=== Final Results ==="
 for file in 42.md 43.md 44.md; do
-  echo "File: $file"
-  grep -E "name:|depends_on:|conflicts_with:" "$file"
+  echo "File: /tmp/test-refs/$file"
+  grep -E "name:|depends_on:|conflicts_with:" "/tmp/test-refs/$file"
   echo ""
 done
 ```
@@ -127,7 +99,6 @@ Expected output:
 ### 5. Cleanup Padded Test
 
 ```bash
-cd -
 rm -rf /tmp/test-refs
 rm -f /tmp/task-mapping.txt /tmp/id-mapping.txt
 echo "✅ Padded ID test complete and cleaned up"
@@ -138,10 +109,9 @@ echo "✅ Padded ID test complete and cleaned up"
 Create test files with non-padded IDs (as used by the global counter):
 ```bash
 mkdir -p /tmp/test-refs-v2
-cd /tmp/test-refs-v2
 
 # Create task 1
-cat > 1.md << 'EOF'
+cat > /tmp/test-refs-v2/1.md << 'EOF'
 ---
 name: Task One
 status: open
@@ -154,7 +124,7 @@ This is task 1.
 EOF
 
 # Create task 2
-cat > 2.md << 'EOF'
+cat > /tmp/test-refs-v2/2.md << 'EOF'
 ---
 name: Task Two
 status: open
@@ -167,7 +137,7 @@ This is task 2, depends on 1.
 EOF
 
 # Create task 3
-cat > 3.md << 'EOF'
+cat > /tmp/test-refs-v2/3.md << 'EOF'
 ---
 name: Task Three
 status: open
@@ -182,56 +152,31 @@ EOF
 
 ### 7. Create Non-Padded Mappings
 
+Create the mapping file:
 ```bash
-# Simulate task -> issue number mapping for non-padded IDs
 cat > /tmp/task-mapping.txt << 'EOF'
 1.md:101
 2.md:102
 3.md:103
 EOF
-
-# Create old -> new ID mapping
-> /tmp/id-mapping.txt
-while IFS=: read -r task_file task_number; do
-  old_num=$(basename "$task_file" .md)
-  echo "$old_num:$task_number" >> /tmp/id-mapping.txt
-done < /tmp/task-mapping.txt
-
-echo "ID Mapping:"
-cat /tmp/id-mapping.txt
 ```
+
+Then build the ID mapping: for each line in `/tmp/task-mapping.txt`, extract the number before `.md` as the old ID and the number after `:` as the new ID. Write these mappings to `/tmp/id-mapping.txt` in `old:new` format (e.g., `1:101`).
 
 ### 8. Update Non-Padded References
 
-```bash
-while IFS=: read -r task_file task_number; do
-  echo "Processing: $task_file -> $task_number.md"
-
-  # Read the file content
-  content=$(cat "$task_file")
-
-  # Update references
-  while IFS=: read -r old_num new_num; do
-    content=$(echo "$content" | sed "s/\b$old_num\b/$new_num/g")
-  done < /tmp/id-mapping.txt
-
-  # Write to new file
-  new_name="${task_number}.md"
-  echo "$content" > "$new_name"
-
-  echo "Updated content preview:"
-  grep -E "depends_on:|conflicts_with:" "$new_name"
-  echo "---"
-done < /tmp/task-mapping.txt
-```
+For each entry in `/tmp/task-mapping.txt`:
+1. Use the Read tool to read the task file from `/tmp/test-refs-v2/{task_file}`
+2. In the content, replace all references to old IDs with new IDs using the mapping from `/tmp/id-mapping.txt`
+3. Use the Write tool to write the updated content to `/tmp/test-refs-v2/{new_number}.md`
 
 ### 9. Verify Non-Padded Results
 
 ```bash
 echo "=== Non-Padded ID Results ==="
 for file in 101.md 102.md 103.md; do
-  echo "File: $file"
-  grep -E "name:|depends_on:|conflicts_with:" "$file"
+  echo "File: /tmp/test-refs-v2/$file"
+  grep -E "name:|depends_on:|conflicts_with:" "/tmp/test-refs-v2/$file"
   echo ""
 done
 ```
@@ -244,7 +189,6 @@ Expected output:
 ### 10. Final Cleanup
 
 ```bash
-cd -
 rm -rf /tmp/test-refs-v2
 rm -f /tmp/task-mapping.txt /tmp/id-mapping.txt
 echo "✅ All tests complete and cleaned up"

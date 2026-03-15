@@ -154,7 +154,7 @@ Monitor progress:
   /ccpm:epic-status $ARGUMENTS
 
 View worktree changes:
-  cd ../epic-$ARGUMENTS && git status
+  git -C ../epic-$ARGUMENTS status
 
 Stop all agents:
   /ccpm:epic-stop $ARGUMENTS

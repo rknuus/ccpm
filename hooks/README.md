@@ -123,8 +123,12 @@ npm run build
 
 ```bash
 cd /path/to/my/project/epic-feature && npm install
-cd /path/to/my/project/epic-feature && git status
+git -C /path/to/my/project/epic-feature status
 cd /path/to/my/project/epic-feature && npm run build
 ```
 
 **Without the agent knowing or caring about the worktree context!**
+
+> **Note:** Git commands use `git -C <dir>` instead of `cd <dir> && git` because the
+> compound `cd && git` pattern triggers Claude Code's strict safety check (Yes/No only),
+> while `git -C` triggers the standard approval prompt (with "always allow in this project").

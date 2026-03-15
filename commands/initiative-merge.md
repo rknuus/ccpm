@@ -43,15 +43,20 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS i
 
 Check for unmerged epic branches belonging to this initiative:
 ```bash
-# Find epic branches that haven't been merged into the initiative branch
 git checkout initiative/$ARGUMENTS
-for branch in $(git branch --list "epic/*" 2>/dev/null | sed 's/^[* ]*//'); do
-  # Check if this branch has commits not in the initiative branch
-  if [ "$(git log initiative/$ARGUMENTS..$branch --oneline 2>/dev/null | wc -l)" -gt 0 ]; then
-    echo "Unmerged epic branch: $branch"
-  fi
-done
 ```
+
+List epic branches:
+```bash
+git branch --list "epic/*" 2>/dev/null | sed 's/^[* ]*//'
+```
+
+For each branch in the output, check if it has unmerged commits by running:
+```bash
+git log initiative/$ARGUMENTS..{branch} --oneline 2>/dev/null
+```
+
+If any output is produced, that branch has unmerged commits.
 
 For each unmerged epic branch found:
 1. Attempt merge into the initiative branch:
