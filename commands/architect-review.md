@@ -14,10 +14,7 @@ Run an architectural review at a specific workflow checkpoint.
 ## Quick Check
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$epic_name/epic.md` (new layout)
-2. Fall back to `{epic_dir}/epic.md` (old layout)
-Use the first path found.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$epic_name/epic.md`.
 
 1. **Verify epic exists:**
    ```bash

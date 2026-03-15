@@ -33,9 +33,9 @@ if [ -d ".pm/initiatives" ]; then
 fi
 
 # Search in Epics
-if [ -d ".pm/epics" ]; then
+if [ -d ".pm/initiatives" ]; then
   echo "📚 Epics:"
-  results=$(find .pm/epics -name "epic.md" -exec grep -l -i "$query" {} \; 2>/dev/null)
+  results=$(find .pm/initiatives -name "epic.md" -exec grep -l -i "$query" {} \; 2>/dev/null)
   if [ -n "$results" ]; then
     for file in $results; do
       epic_name=$(basename $(dirname "$file"))
@@ -49,9 +49,9 @@ if [ -d ".pm/epics" ]; then
 fi
 
 # Search in Tasks
-if [ -d ".pm/epics" ]; then
+if [ -d ".pm/initiatives" ]; then
   echo "📝 Tasks:"
-  results=$(find .pm/epics -name "[0-9]*.md" -exec grep -l -i "$query" {} \; 2>/dev/null | head -10)
+  results=$(find .pm/initiatives -name "[0-9]*.md" -exec grep -l -i "$query" {} \; 2>/dev/null | head -10)
   if [ -n "$results" ]; then
     for file in $results; do
       epic_name=$(basename $(dirname "$file"))

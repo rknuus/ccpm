@@ -22,10 +22,7 @@ Before proceeding, complete these validation steps.
 Do not bother the user with preflight checks progress ("I'm not going to ..."). Just do them and move on.
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
-2. Fall back to `{epic_dir}/epic.md` (old layout)
-Use the first path found. All subsequent references to epic/task paths use the resolved `{epic_dir}`.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUMENTS/epic.md`. All subsequent references to epic/task paths use the resolved `{epic_dir}`.
 
 1. **Verify epic exists:**
    - Check if `{epic_dir}/epic.md` exists (using resolution above)

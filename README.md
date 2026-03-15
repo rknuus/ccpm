@@ -137,7 +137,6 @@ CCPM is installed as a Claude **plugin**. Commands create the directories they n
     │           ├── epic.md       # Epic document
     │           ├── [#].md        # Task files
     │           └── updates/      # Work-in-progress updates
-    ├── epics/                    # Legacy layout (backward compat)
     ├── stats/                    # Usage statistics and satisfaction ratings
     └── next-id                   # Global task ID counter
 ```

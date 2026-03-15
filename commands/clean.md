@@ -61,7 +61,7 @@ If user confirms:
 mkdir -p .pm/.archived
 mv {epic_dir} .pm/.archived/{completed_epic}/
 ```
-Note: Determine `{epic_dir}` for each completed epic by checking `.pm/initiatives/*/{completed_epic}/epic.md` (new layout), falling back to `.pm/epics/{completed_epic}/` (old layout).
+Note: Determine `{epic_dir}` for each completed epic by checking `.pm/initiatives/*/{completed_epic}/epic.md`.
 
 **Remove Stale Files:**
 - Delete progress files for closed issues > 30 days

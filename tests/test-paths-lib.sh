@@ -50,16 +50,16 @@ echo "---" > .pm/initiatives/auth/login-flow/epic.md
 result="$(pm_find_epic "login-flow")"
 assert_eq "new-layout epic found" ".pm/initiatives/auth/login-flow/" "$result"
 
-# ─── Test 3: pm_find_epic falls back to old layout ───
+# ─── Test 3: pm_find_epic ignores old layout ───
 
 echo ""
-echo "Test 3: pm_find_epic falls back to old layout"
+echo "Test 3: pm_find_epic does not fall back to old .pm/epics/ layout"
 cd "$TEST_DIR"
 rm -rf .pm
 mkdir -p .pm/epics/legacy-epic
 
 result="$(pm_find_epic "legacy-epic")"
-assert_eq "old-layout epic found" ".pm/epics/legacy-epic/" "$result"
+assert_eq "old-layout ignored" ".pm/initiatives/legacy-epic/legacy-epic/" "$result"
 
 # ─── Test 4: pm_find_epic returns default new-layout path when epic not found ───
 
@@ -72,10 +72,10 @@ mkdir -p .pm/initiatives/my-project
 result="$(pm_find_epic "new-epic")"
 assert_eq "default new-layout path" ".pm/initiatives/my-project/new-epic/" "$result"
 
-# ─── Test 5: pm_find_epic prefers new layout over old ───
+# ─── Test 5: pm_find_epic finds epic in new layout ignoring old layout dir ───
 
 echo ""
-echo "Test 5: pm_find_epic prefers new layout when both exist"
+echo "Test 5: pm_find_epic finds new layout even when old layout dir exists"
 cd "$TEST_DIR"
 rm -rf .pm
 mkdir -p .pm/initiatives/auth/shared-epic
@@ -83,7 +83,7 @@ echo "---" > .pm/initiatives/auth/shared-epic/epic.md
 mkdir -p .pm/epics/shared-epic
 
 result="$(pm_find_epic "shared-epic")"
-assert_eq "new layout preferred" ".pm/initiatives/auth/shared-epic/" "$result"
+assert_eq "new layout found" ".pm/initiatives/auth/shared-epic/" "$result"
 
 # ─── Test 6: pm_find_epic with no initiatives defaults to epic/epic ───
 

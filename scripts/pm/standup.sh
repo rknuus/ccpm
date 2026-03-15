@@ -38,7 +38,7 @@ fi
 echo ""
 echo "🔄 Currently In Progress:"
 # Show active work items — search both layouts
-for updates_dir in .pm/initiatives/*/*/updates/*/ .pm/epics/*/updates/*/; do
+for updates_dir in .pm/initiatives/*/*/updates/*/; do
   [ -d "$updates_dir" ] || continue
   if [ -f "$updates_dir/progress.md" ]; then
     issue_num=$(basename "$updates_dir")
@@ -52,7 +52,7 @@ echo ""
 echo "⏭️ Next Available Tasks:"
 # Show top 3 available tasks — search both layouts
 count=0
-for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
+for epic_dir in .pm/initiatives/*/*/; do
   [ -d "$epic_dir" ] || continue
   [ -f "$epic_dir/epic.md" ] || continue
   for task_file in "$epic_dir"/[0-9]*.md; do
@@ -85,9 +85,9 @@ done
 
 echo ""
 echo "📊 Quick Stats:"
-total_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
-open_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
-closed_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
+total_tasks=$(find .pm/initiatives -name "[0-9]*.md" 2>/dev/null | wc -l)
+open_tasks=$(find .pm/initiatives -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
+closed_tasks=$(find .pm/initiatives -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
 echo "  Tasks: $open_tasks open, $closed_tasks closed, $total_tasks total"
 
 exit 0

@@ -15,14 +15,14 @@ CCPM manages all project data through local markdown files in the `.pm/` directo
 ```bash
 /ccpm:initiative-decompose user-authentication
 ```
-- Creates: `.pm/epics/user-authentication/epic.md`
+- Creates: `.pm/initiatives/user-authentication/user-authentication/epic.md`
 - Output: Technical implementation plan
 
 ### 3. Break Down Into Tasks
 ```bash
 /ccpm:epic-decompose user-authentication
 ```
-- Creates: `.pm/epics/user-authentication/001.md`, `002.md`, etc.
+- Creates: `.pm/initiatives/user-authentication/user-authentication/1.md`, `2.md`, etc.
 - Output: Individual task files with acceptance criteria
 
 ### 4. View Your Work
@@ -35,10 +35,10 @@ CCPM manages all project data through local markdown files in the `.pm/` directo
 ### 5. Work on Tasks
 ```bash
 # View specific task details
-cat .pm/epics/user-authentication/001.md
+cat .pm/initiatives/user-authentication/user-authentication/1.md
 
 # Update task status manually
-vim .pm/epics/user-authentication/001.md
+vim .pm/initiatives/user-authentication/user-authentication/1.md
 ```
 
 ## What Gets Created Locally
