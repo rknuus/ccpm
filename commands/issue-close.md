@@ -4,7 +4,7 @@ allowed-tools: Bash, Read, Write, LS
 
 # Issue Close
 
-Mark an issue as complete and close it on GitHub.
+Mark an issue as complete.
 
 ## Usage
 ```
@@ -20,7 +20,6 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-c
 
 Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
 Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
-If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/initiatives/` and `.pm/epics/`.
 If not found: "❌ No local task for issue #$ARGUMENTS"
 Extract `{epic_dir}` from the found task file's parent directory.
 
@@ -62,40 +61,7 @@ Before closing, ask the user to rate their satisfaction:
   ```
 - If user says 'skip', proceed without saving
 
-### 6. Close on GitHub
-
-Add completion comment and close:
-```bash
-# Add final comment
-echo "✅ Task completed
-
-$ARGUMENTS
-
----
-Closed at: {timestamp}" | gh issue comment $ARGUMENTS --body-file -
-
-# Close the issue
-gh issue close $ARGUMENTS
-```
-
-### 7. Update Epic Task List on GitHub
-
-Extract the epic name from the local task file path. Use the Read tool to read `{epic_dir}/epic.md` and extract the GitHub issue number from the `github:` frontmatter field.
-
-If an epic issue number is found:
-```bash
-# Get current epic body
-gh issue view $epic_issue --json body -q .body > /tmp/epic-body.md
-```
-
-Use the Edit tool on `/tmp/epic-body.md` to check off this task by replacing `- [ ] #$ARGUMENTS` with `- [x] #$ARGUMENTS`.
-
-Then update the epic issue:
-```bash
-gh issue edit $epic_issue --body-file /tmp/epic-body.md
-```
-
-### 8. Update Epic Progress
+### 6. Update Epic Progress
 
 - Use the Glob tool to find all task files in the epic directory
 - Use the Read tool to count total tasks and closed tasks (by checking `status:` in frontmatter)
@@ -105,12 +71,11 @@ gh issue edit $epic_issue --body-file /tmp/epic-body.md
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
-### 9. Output
+### 7. Output
 
 ```
 ✅ Closed issue #$ARGUMENTS
   Local: Task marked complete
-  GitHub: Issue closed & epic updated
   Epic progress: {new_progress}% ({closed}/{total} tasks complete)
 
 Next: Run /ccpm:next for next priority task
@@ -119,5 +84,4 @@ Next: Run /ccpm:next for next priority task
 ## Important Notes
 
 Follow `/rules/frontmatter-operations.md` for updates.
-Follow `/rules/github-operations.md` for GitHub commands.
-Always sync local state before GitHub.
+Always update local state.

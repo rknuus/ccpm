@@ -4,7 +4,7 @@ allowed-tools: Bash, Read, Write, LS, Task
 
 # Issue Start
 
-Begin work on a GitHub issue with parallel agents based on work stream analysis.
+Begin work on a task with parallel agents based on work stream analysis.
 
 ## Usage
 ```
@@ -13,20 +13,13 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
 
 ## Quick Check
 
-1. **Get issue details:**
-   ```bash
-   gh issue view $ARGUMENTS --json state,title,labels,body
-   ```
-   If it fails: "❌ Cannot access issue #$ARGUMENTS. Check number or run: gh auth login"
-
-2. **Find local task file:**
+1. **Find local task file:**
    - Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
    - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
-   - If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/initiatives/` and `.pm/epics/` (old naming)
-   - If not found: "❌ No local task for issue #$ARGUMENTS. This issue may have been created outside the PM system."
+   - If not found: "❌ No local task for issue #$ARGUMENTS."
    - Extract `{epic_dir}` from the found task file's parent directory.
 
-3. **Check for analysis:**
+2. **Check for analysis:**
    - Use the Glob tool to check if `{epic_dir}/$ARGUMENTS-analysis.md` exists
    - If no analysis exists and no --analyze flag, stop execution with:
      "❌ No analysis found for issue #$ARGUMENTS. Run: /ccpm:issue-analyze $ARGUMENTS first. Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
@@ -130,17 +123,10 @@ Task:
     Complete your stream's work and mark as completed when done.
 ```
 
-### 6. GitHub Assignment
-
-```bash
-# Assign to self and mark in-progress
-gh issue edit $ARGUMENTS --add-assignee @me --add-label "in-progress"
-```
-
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
-### 7. Output
+### 6. Output
 
 ```
 ✅ Started parallel work on issue #$ARGUMENTS
@@ -157,7 +143,6 @@ Progress tracking:
   {epic_dir}/updates/$ARGUMENTS/
 
 Monitor with: /ccpm:epic-status {epic_name}
-Sync updates: /ccpm:issue-sync $ARGUMENTS
 ```
 
 ## Error Handling
@@ -170,4 +155,3 @@ If any step fails, report clearly:
 ## Important Notes
 
 Follow `/rules/datetime.md` for timestamps.
-Keep it simple - trust that GitHub and file system work.

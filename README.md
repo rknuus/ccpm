@@ -3,8 +3,6 @@
 [![Automaze](https://img.shields.io/badge/By-automaze.io-4b3baf)](https://automaze.io)
 &nbsp;
 [![Claude Code](https://img.shields.io/badge/+-Claude%20Code-d97757)](https://github.com/automazeio/ccpm/blob/main/README.md)
-[![GitHub Issues](https://img.shields.io/badge/+-GitHub%20Issues-1f2328)](https://github.com/automazeio/ccpm)
-&nbsp;
 [![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code?tab=readme-ov-file#general-)
 &nbsp;
 [![MIT License](https://img.shields.io/badge/License-MIT-28a745)](https://github.com/automazeio/ccpm/blob/main/LICENSE)
@@ -13,9 +11,9 @@
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
-### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, GitHub issues, Git worktrees, and multiple AI agents running in parallel.
+### Claude Code workflow to ship ~~faster~~ _better_ using spec-driven development, Git worktrees, and multiple AI agents running in parallel.
 
-Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns Initiatives into epics, epics into GitHub issues, and issues into production code – with full traceability at every step.
+Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tested system turns Initiatives into epics, epics into tasks, and tasks into production code – with full traceability at every step.
 
 ![Claude Code PM](screenshot.webp)
 
@@ -24,7 +22,6 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tes
 - [Background](#background)
 - [The Workflow](#the-workflow)
 - [What Makes This Different?](#what-makes-this-different)
-- [Why GitHub Issues?](#why-github-issues)
 - [Core Principle: No Vibe Coding](#core-principle-no-vibe-coding)
 - [System Architecture](#system-architecture)
 - [Workflow Phases](#workflow-phases)
@@ -35,7 +32,6 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. This battle-tes
 - [Example Flow](#example-flow)
 - [Get Started Now](#get-started-now)
 - [Upgrading](#upgrading)
-- [Local vs Remote](#local-vs-remote)
 - [Technical Notes](#technical-notes)
 - [Support This Project](#support-this-project)
 
@@ -108,40 +104,8 @@ For features that need multiple coordinated epics:
 | Context lost between sessions | **Persistent context** across all work |
 | Serial task execution | **Parallel agents** on independent tasks |
 | "Vibe coding" from memory | **Spec-driven** with full traceability |
-| Progress hidden in branches | **Transparent audit trail** in GitHub |
+| Progress hidden in branches | **Transparent audit trail** in local files |
 | Manual task coordination | **Intelligent prioritization** with `/ccpm:next` |
-
-## Why GitHub Issues?
-
-Most Claude Code workflows operate in isolation – a single developer working with AI in their local environment. This creates a fundamental problem: **AI-assisted development becomes a silo**.
-
-By using GitHub Issues as our database, we unlock something powerful:
-
-### 🤝 **True Team Collaboration**
-- Multiple Claude instances can work on the same project simultaneously
-- Human developers see AI progress in real-time through issue comments
-- Team members can jump in anywhere – the context is always visible
-- Managers get transparency without interrupting flow
-
-### 🔄 **Seamless Human-AI Handoffs**
-- AI can start a task, human can finish it (or vice versa)
-- Progress updates are visible to everyone, not trapped in chat logs
-- Code reviews happen naturally through PR comments
-- No "what did the AI do?" meetings
-
-### 📈 **Scalable Beyond Solo Work**
-- Add team members without onboarding friction
-- Multiple AI agents working in parallel on different issues
-- Distributed teams stay synchronized automatically
-- Works with existing GitHub workflows and tools
-
-### 🎯 **Single Source of Truth**
-- No separate databases or project management tools
-- Issue state is the project state
-- Comments are the audit trail
-- Labels provide organization
-
-This isn't just a project management system – it's a **collaboration protocol** that lets humans and AI agents work together at scale, using infrastructure your team already trusts.
 
 ## Core Principle: No Vibe Coding
 
@@ -226,9 +190,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 > [!TIP]
 > Type `/ccpm:help` for a concise command summary.
 
-### Initial Setup (Optional)
-- `/ccpm:init` - Set up GitHub labels, install `gh-sub-issue`, verify `gh` auth, and pre-create directories
-
 ### Initiative Commands
 - `/ccpm:initiative-new` - Launch brainstorming for new initiative
 - `/ccpm:initiative-decompose` - Break initiative into epics (1-10)
@@ -240,8 +201,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 
 ### Epic Commands
 - `/ccpm:epic-decompose` - Break epic into task files
-- `/ccpm:epic-sync` - Push epic and tasks to GitHub
-- `/ccpm:epic-oneshot` - Decompose and sync in one command
 - `/ccpm:epic-list` - List all epics
 - `/ccpm:epic-show` - Display epic and its tasks
 - `/ccpm:epic-close` - Mark epic as complete
@@ -256,7 +215,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 - `/ccpm:issue-show` - Display issue and sub-issues
 - `/ccpm:issue-status` - Check issue status
 - `/ccpm:issue-start` - Begin work with specialized agent
-- `/ccpm:issue-sync` - Push updates to GitHub
 - `/ccpm:issue-close` - Mark issue as complete
 - `/ccpm:issue-reopen` - Reopen closed issue
 - `/ccpm:issue-edit` - Edit issue details
@@ -277,10 +235,6 @@ Merges all epic branches into the initiative branch, then merges the initiative 
 - `/ccpm:context-create` - Generate baseline project context documentation
 - `/ccpm:context-update` - Refresh context with recent changes
 - `/ccpm:context-prime` - Load project context into current conversation
-
-### Sync Commands
-- `/ccpm:sync` - Full bidirectional sync with GitHub
-- `/ccpm:import` - Import existing GitHub issues
 
 ### Maintenance Commands
 - `/ccpm:validate` - Check system integrity
@@ -334,20 +288,6 @@ We're not assigning agents to issues. We're **leveraging multiple agents** to sh
 
 Your main conversation becomes the conductor, not the orchestra.
 
-### GitHub vs Local: Perfect Separation
-
-**What GitHub Sees:**
-- Clean, simple issues
-- Progress updates
-- Completion status
-
-**What Actually Happens Locally:**
-- Issue #1234 explodes into 5 parallel agents
-- Agents coordinate through Git commits
-- Complex orchestration hidden from view
-
-GitHub doesn't need to know HOW the work got done – just that it IS done.
-
 ### The Command Flow
 
 ```bash
@@ -368,22 +308,19 @@ GitHub doesn't need to know HOW the work got done – just that it IS done.
 ## Key Features & Benefits
 
 ### 🧠 **Context Preservation**
-Never lose project state again. Each epic maintains its own context, agents read from `.claude/context/`, and updates locally before syncing.
+Never lose project state again. Each epic maintains its own context, agents read from `.claude/context/`, and updates are tracked locally in `.pm/`.
 
 ### ⚡ **Parallel Execution**
 Ship faster with multiple agents working simultaneously. Tasks marked `parallel: true` enable conflict-free concurrent development.
-
-### 🔗 **GitHub Native**
-Works with tools your team already uses. Issues are the source of truth, comments provide history, and there is no dependency on the Projects API.
 
 ### 🤖 **Agent Specialization**
 Right tool for every job. Different agents for UI, API, and database work. Each reads requirements and posts updates automatically.
 
 ### 📊 **Full Traceability**
-Every decision is documented. Initiative → Epic → Task → Issue → Code → Commit. Complete audit trail from idea to production.
+Every decision is documented. Initiative → Epic → Task → Code → Commit. Complete audit trail from idea to production.
 
 ### 🚀 **Developer Productivity**
-Focus on building, not managing. Intelligent prioritization, automatic context loading, and incremental sync when ready.
+Focus on building, not managing. Intelligent prioritization and automatic context loading.
 
 ## Proven Results
 
@@ -443,13 +380,7 @@ Teams using this system report:
 
    This loads the plugin for the current session only. Commands are available under the same `/ccpm:*` namespace.
 
-2. **(Optional) Initialize the PM system** — recommended if you plan to sync with GitHub:
-   ```bash
-   /ccpm:init
-   ```
-   This sets up GitHub labels (`epic`, `task`), installs the [gh-sub-issue extension](https://github.com/yahsan2/gh-sub-issue), verifies `gh` authentication, and pre-creates the `.pm/` directory structure. You can skip this step — commands create the directories they need automatically.
-
-3. **Start your first feature**:
+2. **Start your first feature**:
    ```bash
    /ccpm:initiative-new your-feature-name
    ```
@@ -481,40 +412,19 @@ If you previously installed CCPM via the install script (`curl | bash`), follow 
 
 3. **Update your command usage** -- the namespace changes from `/pm:*` to `/ccpm:*`:
    - `/pm:initiative-new` becomes `/ccpm:initiative-new`
-   - `/pm:epic-oneshot` becomes `/ccpm:epic-oneshot`
    - `/pm:issue-start` becomes `/ccpm:issue-start`
    - (all other commands follow the same pattern)
 
 Your `.pm/` directory (Initiatives, epics, task files) remains untouched during migration.
 
-## Local vs Remote
-
-| Operation | Local | GitHub |
-|-----------|-------|--------|
-| Initiative Creation | ✅ | — |
-| Implementation Planning | ✅ | — |
-| Task Breakdown | ✅ | ✅ (sync) |
-| Execution | ✅ | — |
-| Status Updates | ✅ | ✅ (sync) |
-| Final Deliverables | — | ✅ |
-
 ## Technical Notes
 
-### GitHub Integration
-- Uses **gh-sub-issue extension** for proper parent-child relationships
-- Falls back to task lists if extension not installed
-- Epic issues track sub-task completion automatically
-- Labels provide additional organization (`epic:feature`, `task:feature`)
-
 ### File Naming Convention
-- Tasks start as `001.md`, `002.md` during decomposition
-- After GitHub sync, renamed to `{issue-id}.md` (e.g., `1234.md`)
-- Makes it easy to navigate: issue #1234 = file `1234.md`
+- Tasks are named `001.md`, `002.md` during decomposition
+- Sequential numbering makes ordering clear
 
 ### Design Decisions
-- Intentionally avoids GitHub Projects API complexity
-- All commands operate on local files first for speed
-- Synchronization with GitHub is explicit and controlled
+- All commands operate on local files for speed
 - Two-level git branching: `main` → `initiative/{name}` → `epic/{epic-name}`
 - Worktrees provide clean git isolation for parallel work
 - Initiatives support 1-10 epics, each with up to 10 tasks

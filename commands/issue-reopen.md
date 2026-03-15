@@ -15,7 +15,8 @@ Reopen a closed issue.
 
 ### 1. Find Local Task File
 
-Search for task file with `github:.*issues/$ARGUMENTS` in frontmatter.
+Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
+Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
 If not found: "❌ No local task for issue #$ARGUMENTS"
 
 ### 2. Update Local Status
@@ -35,26 +36,11 @@ If progress file exists:
 - Reset completion to previous value or 0%
 - Add note about reopening with reason
 
-### 4. Reopen on GitHub
-
-```bash
-# Reopen with comment
-echo "🔄 Reopening issue
-
-Reason: $ARGUMENTS
-
----
-Reopened at: {timestamp}" | gh issue comment $ARGUMENTS --body-file -
-
-# Reopen the issue
-gh issue reopen $ARGUMENTS
-```
-
-### 5. Update Epic Progress
+### 4. Update Epic Progress
 
 Recalculate epic progress with this task now open again.
 
-### 6. Output
+### 5. Output
 
 ```
 🔄 Reopened issue #$ARGUMENTS

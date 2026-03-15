@@ -68,8 +68,7 @@ If decompose fails, stop with: "❌ Decompose failed. Task files may be partiall
 
 Follow the same logic as `/ccpm:epic-start $ARGUMENTS` with these modifications:
 
-- **Skip GitHub sync check** — do not require `github:` field in epic frontmatter
-- **Skip GitHub issue status checks** — use local task frontmatter (`status`, `depends_on`, `parallel`) only
+- **Use local task frontmatter** (`status`, `depends_on`, `parallel`) only
 - **Branch from initiative branch:**
   ```bash
   git checkout initiative/$ARGUMENTS
