@@ -4,7 +4,7 @@ allowed-tools: Bash, Read, Write
 
 # Epic Merge
 
-Merge completed epic from worktree back to main branch.
+Merge completed epic branch back to its parent branch (initiative branch or main).
 
 ## Usage
 ```
@@ -13,30 +13,51 @@ Merge completed epic from worktree back to main branch.
 
 ## Quick Check
 
-1. **Verify worktree exists:**
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
+Use the first path found.
+
+### Determine Merge Target
+```bash
+# If an initiative branch exists, merge into it (new two-level model)
+# Otherwise merge into main (backward compat)
+MERGE_TARGET="main"
+if git branch -a | grep -q "initiative/"; then
+  MERGE_TARGET=$(git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||')
+fi
+```
+
+1. **Verify worktree or branch exists:**
    ```bash
-   git worktree list | grep "epic-$ARGUMENTS" || echo "❌ No worktree for epic: $ARGUMENTS"
+   git worktree list | grep "epic-$ARGUMENTS" || git branch -a | grep "epic/$ARGUMENTS" || echo "❌ No worktree/branch for epic: $ARGUMENTS"
    ```
 
 2. **Check for active agents:**
-   Read `.pm/epics/$ARGUMENTS/execution-status.md`
+   Read `{epic_dir}/execution-status.md`
    If active agents exist: "⚠️ Active agents detected. Stop them first with: /ccpm:epic-stop $ARGUMENTS"
 
 ## Instructions
 
 ### 1. Pre-Merge Validation
 
-Navigate to worktree and check status:
+Check status in the epic worktree or branch:
 ```bash
-cd ../epic-$ARGUMENTS
+# If worktree exists, navigate to it
+if git worktree list | grep -q "epic-$ARGUMENTS"; then
+  cd ../epic-$ARGUMENTS
+else
+  git checkout epic/$ARGUMENTS
+fi
 git status --porcelain
 ```
 
-If there are uncommitted changes, warn: "Uncommitted changes in worktree. Commit or stash changes before merging."
+If there are uncommitted changes, warn: "Uncommitted changes detected. Commit or stash changes before merging."
 
 Then fetch and check branch status:
 ```bash
-git fetch origin
+git fetch origin 2>/dev/null || true
 git status -sb
 ```
 
@@ -75,7 +96,7 @@ fi
 
 Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current datetime.
 
-Update `.pm/epics/$ARGUMENTS/epic.md`:
+Update `{epic_dir}/epic.md`:
 - Set status to "completed"
 - Update completion date
 - Add final summary
@@ -83,18 +104,18 @@ Update `.pm/epics/$ARGUMENTS/epic.md`:
 ### 4. Attempt Merge
 
 ```bash
-# Return to main repository
+# Return to main repository (if in worktree)
 cd {main-repo-path}
 
-# Ensure main is up to date
-git checkout main
-git pull origin main
+# Ensure merge target is up to date
+git checkout $MERGE_TARGET
+git pull origin $MERGE_TARGET 2>/dev/null || true
 ```
 
 Before merging, build the commit message:
-1. Use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md`
+1. Use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md`
 2. Use the Read tool to extract the `name:` field from each task file's frontmatter to build the feature list
-3. Use the Read tool to read `.pm/epics/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number
+3. Use the Read tool to read `{epic_dir}/epic.md` and extract the `github:` field to get the epic issue number (if present)
 
 Then perform the merge:
 ```bash
@@ -133,68 +154,63 @@ Options:
 3. Get help:
    /ccpm:epic-resolve $ARGUMENTS
 
-Worktree preserved at: ../epic-$ARGUMENTS
+Worktree preserved at: ../epic-$ARGUMENTS (if applicable)
 ```
 
 ### 6. Post-Merge Cleanup
 
+Before archiving, use the Glob tool to find all task files matching `{epic_dir}/[0-9]*.md` and use the Edit tool to change `status: open` to `status: closed` in each task file's frontmatter.
+
 If merge succeeds:
 ```bash
-# Push to remote
-git push origin main
+# Push merge target to remote (only if merging to main)
+if [ "$MERGE_TARGET" = "main" ]; then
+  git push origin main
+fi
 
-# Clean up worktree
-git worktree remove ../epic-$ARGUMENTS
-echo "✅ Worktree removed: ../epic-$ARGUMENTS"
+# Clean up worktree if it exists
+if git worktree list | grep -q "epic-$ARGUMENTS"; then
+  git worktree remove ../epic-$ARGUMENTS
+  echo "✅ Worktree removed: ../epic-$ARGUMENTS"
+fi
 
-# Delete branch
+# Delete epic branch
 git branch -d epic/$ARGUMENTS
 git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 
 # Archive epic locally
-mkdir -p .pm/epics/archived/
-mv .pm/epics/$ARGUMENTS .pm/epics/archived/
-echo "✅ Epic archived: .pm/epics/archived/$ARGUMENTS"
+# New layout: archive within initiative directory
+# Old layout: archive under .pm/epics/archived/
+if [[ "{epic_dir}" == .pm/initiatives/* ]]; then
+  initiative_dir=$(dirname "{epic_dir}")
+  mkdir -p "$initiative_dir/archived/"
+  mv "{epic_dir}" "$initiative_dir/archived/"
+  echo "✅ Epic archived within initiative directory"
+else
+  mkdir -p .pm/epics/archived/
+  mv .pm/epics/$ARGUMENTS .pm/epics/archived/
+  echo "✅ Epic archived: .pm/epics/archived/$ARGUMENTS"
+fi
 ```
 
-Before archiving, use the Glob tool to find all task files matching `.pm/epics/$ARGUMENTS/[0-9]*.md` and use the Edit tool to change `status: open` to `status: closed` in each task file's frontmatter.
-
-### 7. Update GitHub Issues
-
-Close related issues:
-
-1. Use the Read tool to read `.pm/epics/archived/$ARGUMENTS/epic.md` and extract the `github:` field to get the epic issue number.
-2. Close the epic issue:
-   ```bash
-   gh issue close $epic_issue -c "Epic completed and merged to main"
-   ```
-3. Use the Glob tool to find all task files matching `.pm/epics/archived/$ARGUMENTS/[0-9]*.md`.
-4. For each task file, use the Read tool to extract the `github:` field and get the issue number.
-5. Close each task issue:
-   ```bash
-   gh issue close $issue_num -c "Completed in epic merge"
-   ```
-
-### 8. Final Output
+### 7. Final Output
 
 ```
 ✅ Epic Merged Successfully: $ARGUMENTS
 
 Summary:
-  Branch: epic/$ARGUMENTS → main
+  Branch: epic/$ARGUMENTS → $MERGE_TARGET
   Commits merged: {count}
   Files changed: {count}
-  Issues closed: {count}
 
 Cleanup completed:
-  ✓ Worktree removed
+  ✓ Worktree removed (if applicable)
   ✓ Branch deleted
   ✓ Epic archived
-  ✓ GitHub issues closed
 
 Next steps:
-  - Deploy changes if needed
-  - Start new epic: /ccpm:initiative-new {feature}
+  - If merging to initiative branch: start next epic or run /ccpm:initiative-merge {initiative}
+  - If merging to main: deploy changes if needed
   - View completed work: git log --oneline -20
 ```
 
@@ -202,10 +218,10 @@ Next steps:
 
 If conflicts need resolution:
 ```
-The epic branch has conflicts with main.
+The epic branch has conflicts with the merge target.
 
 This typically happens when:
-- Main has changed since epic started
+- The parent branch has changed since epic started
 - Multiple epics modified same files
 - Dependencies were updated
 
@@ -228,4 +244,4 @@ Or abort and try later:
 - Run tests before merging when possible
 - Use --no-ff to preserve epic history
 - Archive epic data instead of deleting
-- Close GitHub issues to maintain sync
+- When merging to an initiative branch, do NOT push to remote or delete the initiative branch — that's `initiative-merge`'s job

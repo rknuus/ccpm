@@ -16,9 +16,15 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-cl
 
 ## Instructions
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
+Use the first path found.
+
 ### 1. Verify All Tasks Complete
 
-Check all task files in `.pm/epics/$ARGUMENTS/`:
+Check all task files in `{epic_dir}/`:
 - Verify all have `status: closed` in frontmatter
 - If any open tasks found: "❌ Cannot close epic. Open tasks remain: {list}"
 
@@ -60,7 +66,7 @@ gh issue close {epic_issue_number} --comment "✅ Epic completed - all tasks don
 Ask user: "Archive completed epic? (yes/no)"
 
 If yes:
-- Move epic directory to `.pm/epics/.archived/{epic_name}/`
+- Move epic directory to `.pm/.archived/{epic_name}/`
 - Create archive summary with completion date
 
 ### Close Context
@@ -73,7 +79,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
   Tasks completed: {count}
   Duration: {days_from_created_to_completed}
 
-{If archived}: Archived to .pm/epics/.archived/
+{If archived}: Archived to .pm/.archived/
 
 Next epic: Run /ccpm:next to see priority work
 ```

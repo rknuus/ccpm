@@ -1,15 +1,27 @@
 #!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/paths-lib.sh"
+
 echo "Getting epics..."
 echo ""
 echo ""
 
-if [ ! -d ".pm/epics" ]; then
-  echo "📁 No epics directory found. Create your first epic with: /ccpm:initiative-parse <feature-name>"
-  exit 0
-fi
-epic_dirs=$(ls -d .pm/epics/*/ 2>/dev/null || true)
+# Collect epic directories from both layouts
+epic_dirs=""
+# New layout: .pm/initiatives/*/<epic>/epic.md
+for f in .pm/initiatives/*/*/epic.md; do
+  [ -f "$f" ] && epic_dirs="${epic_dirs}$(dirname "$f")/
+"
+done
+# Old layout: .pm/epics/<epic>/
+for d in .pm/epics/*/; do
+  [ -d "$d" ] && [ -f "$d/epic.md" ] && epic_dirs="${epic_dirs}${d}
+"
+done
+
 if [ -z "$epic_dirs" ]; then
-  echo "📁 No epics found. Create your first epic with: /ccpm:initiative-parse <feature-name>"
+  echo "📁 No epics found. Create your first epic with: /ccpm:initiative-decompose <feature-name>"
   exit 0
 fi
 
@@ -23,7 +35,8 @@ in_progress_epics=""
 completed_epics=""
 
 # Process all epics
-for dir in .pm/epics/*/; do
+echo "$epic_dirs" | while IFS= read -r dir; do
+  [ -z "$dir" ] && continue
   [ -d "$dir" ] || continue
   [ -f "$dir/epic.md" ] || continue
 
@@ -51,50 +64,68 @@ for dir in .pm/epics/*/; do
   # Categorize by status (handle various status values)
   case "$s" in
     planning|draft|"")
-      planning_epics="${planning_epics}${entry}\n"
+      echo "PLANNING:${entry}"
       ;;
     in-progress|in_progress|active|started)
-      in_progress_epics="${in_progress_epics}${entry}\n"
+      echo "INPROGRESS:${entry}"
       ;;
     completed|complete|done|closed|finished)
-      completed_epics="${completed_epics}${entry}\n"
+      echo "COMPLETED:${entry}"
       ;;
     *)
-      # Default to planning for unknown statuses
-      planning_epics="${planning_epics}${entry}\n"
+      echo "PLANNING:${entry}"
       ;;
   esac
-done
+done | {
+  planning_epics=""
+  in_progress_epics=""
+  completed_epics=""
 
-# Display categorized epics
-echo "📝 Planning:"
-if [ -n "$planning_epics" ]; then
-  echo -e "$planning_epics" | sed '/^$/d'
-else
-  echo "   (none)"
-fi
+  while IFS= read -r line; do
+    case "$line" in
+      PLANNING:*)   planning_epics="${planning_epics}${line#PLANNING:}\n" ;;
+      INPROGRESS:*) in_progress_epics="${in_progress_epics}${line#INPROGRESS:}\n" ;;
+      COMPLETED:*)  completed_epics="${completed_epics}${line#COMPLETED:}\n" ;;
+    esac
+  done
 
-echo ""
-echo "🚀 In Progress:"
-if [ -n "$in_progress_epics" ]; then
-  echo -e "$in_progress_epics" | sed '/^$/d'
-else
-  echo "   (none)"
-fi
+  # Display categorized epics
+  echo "📝 Planning:"
+  if [ -n "$planning_epics" ]; then
+    echo -e "$planning_epics" | sed '/^$/d'
+  else
+    echo "   (none)"
+  fi
 
-echo ""
-echo "✅ Completed:"
-if [ -n "$completed_epics" ]; then
-  echo -e "$completed_epics" | sed '/^$/d'
-else
-  echo "   (none)"
-fi
+  echo ""
+  echo "🚀 In Progress:"
+  if [ -n "$in_progress_epics" ]; then
+    echo -e "$in_progress_epics" | sed '/^$/d'
+  else
+    echo "   (none)"
+  fi
+
+  echo ""
+  echo "✅ Completed:"
+  if [ -n "$completed_epics" ]; then
+    echo -e "$completed_epics" | sed '/^$/d'
+  else
+    echo "   (none)"
+  fi
+}
 
 # Summary
 echo ""
 echo "📊 Summary"
-total=$(ls -d .pm/epics/*/ 2>/dev/null | wc -l)
-tasks=$(find .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total=0
+tasks=0
+for f in .pm/initiatives/*/*/epic.md; do
+  [ -f "$f" ] && ((total++)) || true
+done
+for d in .pm/epics/*/; do
+  [ -d "$d" ] && [ -f "$d/epic.md" ] && ((total++)) || true
+done
+tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 

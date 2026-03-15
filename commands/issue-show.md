@@ -17,8 +17,9 @@ You are displaying comprehensive information about a GitHub issue and related su
 
 ### 1. Fetch Issue Data
 - Use `gh issue view #$ARGUMENTS` to get GitHub issue details
-- Look for local task file: first check `.pm/epics/*/$ARGUMENTS.md` (new naming)
-- If not found, search for file with `github:.*issues/$ARGUMENTS` in frontmatter (old naming)
+- Look for local task file: first check `.pm/initiatives/*/*/$ARGUMENTS.md` (new layout)
+- Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+- If not found, search for file with `github:.*issues/$ARGUMENTS` in frontmatter in `.pm/initiatives/` and `.pm/epics/`
 - Check for related issues and sub-tasks
 
 ### 2. Issue Overview
@@ -39,8 +40,8 @@ Display issue header:
 If local task file exists:
 ```
 📁 Local Files:
-   Task file: .pm/epics/{epic_name}/{task_file}
-   Updates: .pm/epics/{epic_name}/updates/$ARGUMENTS/
+   Task file: {epic_dir}/{task_file}
+   Updates: {epic_dir}/updates/$ARGUMENTS/
    Last local update: {timestamp}
 ```
 

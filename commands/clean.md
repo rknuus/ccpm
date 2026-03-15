@@ -58,9 +58,10 @@ If user confirms:
 
 **Archive Epics:**
 ```bash
-mkdir -p .pm/epics/.archived
-mv .pm/epics/{completed_epic} .pm/epics/.archived/
+mkdir -p .pm/.archived
+mv {epic_dir} .pm/.archived/{completed_epic}/
 ```
+Note: Determine `{epic_dir}` for each completed epic by checking `.pm/initiatives/*/{completed_epic}/epic.md` (new layout), falling back to `.pm/epics/{completed_epic}/` (old layout).
 
 **Remove Stale Files:**
 - Delete progress files for closed issues > 30 days
@@ -68,7 +69,7 @@ mv .pm/epics/{completed_epic} .pm/epics/.archived/
 - Clean up orphaned files
 
 **Create Archive Log:**
-Create `.pm/epics/.archived/archive-log.md`:
+Create `.pm/.archived/archive-log.md`:
 ```markdown
 # Archive Log
 

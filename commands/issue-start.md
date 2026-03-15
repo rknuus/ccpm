@@ -20,12 +20,14 @@ Begin work on a GitHub issue with parallel agents based on work stream analysis.
    If it fails: "❌ Cannot access issue #$ARGUMENTS. Check number or run: gh auth login"
 
 2. **Find local task file:**
-   - Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS.md` exists (new naming)
-   - If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/epics/` (old naming)
+   - Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
+   - Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+   - If not found, use the Grep tool to search for `github:.*issues/$ARGUMENTS` in `.pm/initiatives/` and `.pm/epics/` (old naming)
    - If not found: "❌ No local task for issue #$ARGUMENTS. This issue may have been created outside the PM system."
+   - Extract `{epic_dir}` from the found task file's parent directory.
 
 3. **Check for analysis:**
-   - Use the Glob tool to check if `.pm/epics/*/$ARGUMENTS-analysis.md` exists
+   - Use the Glob tool to check if `{epic_dir}/$ARGUMENTS-analysis.md` exists
    - If no analysis exists and no --analyze flag, stop execution with:
      "❌ No analysis found for issue #$ARGUMENTS. Run: /ccpm:issue-analyze $ARGUMENTS first. Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
 
@@ -45,14 +47,14 @@ If not found: "❌ No worktree for epic. Run: /ccpm:epic-start $epic_name"
 
 ### 2. Read Analysis
 
-Use the Read tool to read `.pm/epics/{epic_name}/$ARGUMENTS-analysis.md`:
+Use the Read tool to read `{epic_dir}/$ARGUMENTS-analysis.md`:
 - Parse parallel streams
 - Identify which can start immediately
 - Note dependencies between streams
 
 ### 3. Architect Review (Optional)
 
-Use the Read tool to read `.pm/epics/$epic_name/epic.md` and extract the `architect:` field from frontmatter.
+Use the Read tool to read `{epic_dir}/epic.md` and extract the `architect:` field from frontmatter.
 
 If `architect_mode` is `gate` or `advisory`:
 - Run: `/ccpm:architect-review $epic_name --checkpoint plan --task $ARGUMENTS`
@@ -67,7 +69,7 @@ Run `bash ${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-datetime.sh` to get the current 
 
 Create workspace structure:
 ```bash
-mkdir -p .pm/epics/{epic_name}/updates/$ARGUMENTS
+mkdir -p {epic_dir}/updates/$ARGUMENTS
 ```
 
 Use the Edit tool to update the task file frontmatter `updated` field with the current datetime.
@@ -76,7 +78,7 @@ Use the Edit tool to update the task file frontmatter `updated` field with the c
 
 For each stream that can start immediately:
 
-Use the Write tool to create `.pm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md`:
+Use the Write tool to create `{epic_dir}/updates/$ARGUMENTS/stream-{X}.md`:
 ```markdown
 ---
 issue: $ARGUMENTS
@@ -114,10 +116,10 @@ Task:
     - Work to complete: {stream_description}
 
     Requirements:
-    1. Use the Read tool to read the full task from: .pm/epics/{epic_name}/{task_file}
+    1. Use the Read tool to read the full task from: {epic_dir}/{task_file}
     2. Work ONLY in your assigned files
     3. Commit frequently with format: "Issue #$ARGUMENTS: {specific change}"
-    4. Update progress in: .pm/epics/{epic_name}/updates/$ARGUMENTS/stream-{X}.md
+    4. Update progress in: {epic_dir}/updates/$ARGUMENTS/stream-{X}.md
     5. Follow coordination rules in /rules/agent-coordination.md
 
     If you need to modify files outside your scope:
@@ -152,7 +154,7 @@ Launching {count} parallel agents:
   Stream C: {name} - Waiting (depends on A)
 
 Progress tracking:
-  .pm/epics/{epic_name}/updates/$ARGUMENTS/
+  {epic_dir}/updates/$ARGUMENTS/
 
 Monitor with: /ccpm:epic-status {epic_name}
 Sync updates: /ccpm:issue-sync $ARGUMENTS

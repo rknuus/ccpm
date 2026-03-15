@@ -2,6 +2,61 @@
 
 Git branches enable parallel development by allowing multiple developers to work on the same repository with isolated changes.
 
+## Initiative-Level Branching
+
+For initiatives with multiple epics, CCPM uses a two-level branch model:
+
+```
+main → initiative/{name} → epic/{epic-name}
+```
+
+### Branch Hierarchy
+
+| Level | Branch | Created by | Merges into |
+|-------|--------|------------|-------------|
+| Initiative | `initiative/{name}` | `initiative-decompose` or `initiative-go` | `main` (via `initiative-merge`) |
+| Epic | `epic/{epic-name}` | `epic-start` (from initiative branch) | `initiative/{name}` (via `epic-merge`) |
+
+### Full Flow Example
+
+```bash
+# 1. Create initiative branch from main
+git checkout main && git pull origin main
+git checkout -b initiative/user-auth
+git push -u origin initiative/user-auth
+
+# 2. Create epic branches from the initiative branch
+git checkout initiative/user-auth
+git checkout -b epic/login-flow
+git push -u origin epic/login-flow
+
+# 3. Work on the epic, then merge back to initiative
+git checkout initiative/user-auth
+git merge epic/login-flow
+git branch -d epic/login-flow
+
+# 4. Repeat for other epics...
+git checkout initiative/user-auth
+git checkout -b epic/oauth-providers
+# ... work ... merge back to initiative/user-auth ...
+
+# 5. When all epics are done, merge initiative to main
+git checkout main
+git merge initiative/user-auth
+git branch -d initiative/user-auth
+```
+
+### Key Rules
+
+- Epic branches are created **from the initiative branch**, not from main
+- `epic-merge` merges into the **initiative branch**
+- `initiative-merge` merges the initiative branch into **main**
+- Cross-epic coordination is safe: different epics use different branches
+
+## Epic-Level Branching (Simple Workflow)
+
+For standalone epics without a parent initiative, use the simpler single-level model below.
+
 ## Creating Branches
 
 Always create branches from a clean main branch:

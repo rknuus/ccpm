@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/paths-lib.sh"
 
 echo "Validating PM System..."
 echo ""
@@ -15,15 +18,15 @@ warnings=0
 echo "📁 Directory Structure:"
 [ -d ".claude" ] && echo "  ✅ .claude directory exists" || { echo "  ❌ .claude directory missing"; ((errors++)); }
 [ -d ".pm/initiatives" ] && echo "  ✅ Initiatives directory exists" || echo "  ⚠️ Initiatives directory missing"
-[ -d ".pm/epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
+[ -d ".pm/epics" ] && echo "  ✅ Epics directory (old layout) exists" || echo "  ℹ️ No old .pm/epics directory (ok if using new layout)"
 [ -d ".claude/rules" ] && echo "  ✅ Rules directory exists" || echo "  ⚠️ Rules directory missing"
 echo ""
 
 # Check for orphaned files
 echo "🗂️ Data Integrity:"
 
-# Check epics have epic.md files
-for epic_dir in .pm/epics/*/; do
+# Check epics have epic.md files — both layouts
+for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
   [ -d "$epic_dir" ] || continue
   if [ ! -f "$epic_dir/epic.md" ]; then
     echo "  ⚠️ Missing epic.md in $(basename "$epic_dir")"
@@ -32,14 +35,14 @@ for epic_dir in .pm/epics/*/; do
 done
 
 # Check for tasks without epics
-orphaned=$(find .claude -name "[0-9]*.md" -not -path ".pm/epics/*/*" 2>/dev/null | wc -l)
+orphaned=$(find .claude -name "[0-9]*.md" -not -path ".pm/initiatives/*" -not -path ".pm/epics/*" 2>/dev/null | wc -l)
 [ $orphaned -gt 0 ] && echo "  ⚠️ Found $orphaned orphaned task files" && ((warnings++))
 
 # Check for broken references
 echo ""
 echo "🔗 Reference Check:"
 
-for task_file in .pm/epics/*/[0-9]*.md; do
+for task_file in .pm/initiatives/*/*/[0-9]*.md .pm/epics/*/[0-9]*.md; do
   [ -f "$task_file" ] || continue
 
   # Extract dependencies from task file
@@ -74,7 +77,7 @@ echo ""
 echo "📝 Frontmatter Validation:"
 invalid=0
 
-for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/initiatives/*" 2>/dev/null); do
+for file in $(find .pm -name "*.md" -path "*/initiatives/*" 2>/dev/null; find .pm -name "*.md" -path "*/epics/*" 2>/dev/null); do
   if ! grep -q "^---" "$file"; then
     echo "  ⚠️ Missing frontmatter: $(basename "$file")"
     ((invalid++))

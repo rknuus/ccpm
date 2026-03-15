@@ -13,9 +13,15 @@ Launch parallel agents to work on epic tasks in a shared worktree.
 
 ## Quick Check
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found.
+
 1. **Verify epic exists:**
    ```bash
-   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**
@@ -47,7 +53,7 @@ fi
 
 ### 2. Identify Ready Issues
 
-Read all task files in `.pm/epics/$ARGUMENTS/`:
+Read all task files in `{epic_dir}/`:
 - Parse frontmatter for `status`, `depends_on`, `parallel` fields
 - Check GitHub issue status if needed
 - Build dependency graph
@@ -63,7 +69,7 @@ Categorize issues:
 For each ready issue without analysis:
 ```bash
 # Check for analysis
-if ! test -f .pm/epics/$ARGUMENTS/{issue}-analysis.md; then
+if ! test -f {epic_dir}/{issue}-analysis.md; then
   echo "Analyzing issue #{issue}..."
   # Run analysis (inline or via Task tool)
 fi
@@ -99,8 +105,8 @@ Task:
     - Work: {stream_description}
 
     Read full requirements from:
-    - .pm/epics/$ARGUMENTS/{task_file}
-    - .pm/epics/$ARGUMENTS/{issue}-analysis.md
+    - {epic_dir}/{task_file}
+    - {epic_dir}/{issue}-analysis.md
 
     Follow coordination rules in /rules/agent-coordination.md
 
@@ -108,12 +114,12 @@ Task:
     "Issue #{issue}: {specific change}"
 
     Update progress in:
-    .pm/epics/$ARGUMENTS/updates/{issue}/stream-{X}.md
+    {epic_dir}/updates/{issue}/stream-{X}.md
 ```
 
 ### 5. Track Active Agents
 
-Create/update `.pm/epics/$ARGUMENTS/execution-status.md`:
+Create/update `{epic_dir}/execution-status.md`:
 
 ```markdown
 ---

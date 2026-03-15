@@ -16,9 +16,15 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-ed
 
 ## Instructions
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
+Use the first path found.
+
 ### 1. Read Current Epic
 
-Read `.pm/epics/$ARGUMENTS/epic.md`:
+Read `{epic_dir}/epic.md`:
 - Parse frontmatter
 - Read content sections
 
@@ -48,7 +54,7 @@ Ask: "Update GitHub issue? (yes/no)"
 
 If yes:
 ```bash
-gh issue edit {issue_number} --body-file .pm/epics/$ARGUMENTS/epic.md
+gh issue edit {issue_number} --body-file {epic_dir}/epic.md
 ```
 
 ### Close Context

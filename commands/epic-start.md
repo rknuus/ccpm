@@ -13,21 +13,38 @@ Launch parallel agents to work on epic tasks in a shared branch.
 
 ## Quick Check
 
+### Resolve Epic Path
+Determine the epic directory (`{epic_dir}`):
+1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
+2. Fall back to `{epic_dir}/epic.md` (old layout)
+Use the first path found. All subsequent references use `{epic_dir}`.
+
 1. **Verify epic exists:**
    ```bash
-   test -f .pm/epics/$ARGUMENTS/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-parse $ARGUMENTS"
+   # Check new layout first, then old layout
+   test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 
 2. **Check GitHub sync:**
    Look for `github:` field in epic frontmatter.
    If missing: "❌ Epic not synced. Run: /ccpm:epic-sync $ARGUMENTS first"
 
-3. **Check for branch:**
+3. **Determine parent branch:**
+   ```bash
+   # Check if this epic belongs to an initiative with a branch
+   if git branch -a | grep -q "initiative/"; then
+     PARENT_BRANCH=$(git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||')
+   else
+     PARENT_BRANCH="main"
+   fi
+   ```
+
+4. **Check for branch:**
    ```bash
    git branch -a | grep "epic/$ARGUMENTS"
    ```
 
-4. **Check for uncommitted changes:**
+5. **Check for uncommitted changes:**
    ```bash
    git status --porcelain
    ```
@@ -49,23 +66,23 @@ git status --porcelain
 If there is output, stop with: "You have uncommitted changes. Please commit or stash them before starting an epic."
 
 ```bash
-# If branch doesn't exist, create it
+# If branch doesn't exist, create it from the parent branch
 if ! git branch -a | grep -q "epic/$ARGUMENTS"; then
-  git checkout main
-  git pull origin main
+  git checkout $PARENT_BRANCH
+  git pull origin $PARENT_BRANCH 2>/dev/null || true
   git checkout -b epic/$ARGUMENTS
-  git push -u origin epic/$ARGUMENTS
-  echo "✅ Created branch: epic/$ARGUMENTS"
+  git push -u origin epic/$ARGUMENTS 2>/dev/null || echo "ℹ️ No remote configured — continuing with local branch only"
+  echo "✅ Created branch: epic/$ARGUMENTS (from $PARENT_BRANCH)"
 else
   git checkout epic/$ARGUMENTS
-  git pull origin epic/$ARGUMENTS
+  git pull origin epic/$ARGUMENTS 2>/dev/null || true
   echo "✅ Using existing branch: epic/$ARGUMENTS"
 fi
 ```
 
 ### 2. Identify Ready Issues
 
-Read all task files in `.pm/epics/$ARGUMENTS/`:
+Read all task files in `{epic_dir}/`:
 - Parse frontmatter for `status`, `depends_on`, `parallel` fields
 - Check GitHub issue status if needed
 - Build dependency graph
@@ -81,7 +98,7 @@ Categorize issues:
 For each ready issue without analysis:
 ```bash
 # Check for analysis
-if ! test -f .pm/epics/$ARGUMENTS/{issue}-analysis.md; then
+if ! test -f {epic_dir}/{issue}-analysis.md; then
   echo "Analyzing issue #{issue}..."
   # Run analysis (inline or via Task tool)
 fi
@@ -117,8 +134,8 @@ Task:
     - Work: {stream_description}
 
     Read full requirements from:
-    - .pm/epics/$ARGUMENTS/{task_file}
-    - .pm/epics/$ARGUMENTS/{issue}-analysis.md
+    - {epic_dir}/{task_file}
+    - {epic_dir}/{issue}-analysis.md
 
     Follow coordination rules in /rules/agent-coordination.md
 
@@ -126,12 +143,12 @@ Task:
     "Issue #{issue}: {specific change}"
 
     Update progress in:
-    .pm/epics/$ARGUMENTS/updates/{issue}/stream-{X}.md
+    {epic_dir}/updates/{issue}/stream-{X}.md
 ```
 
 ### 5. Track Active Agents
 
-Create/update `.pm/epics/$ARGUMENTS/execution-status.md`:
+Create/update `{epic_dir}/execution-status.md`:
 
 ```markdown
 ---
@@ -188,7 +205,7 @@ After all agents complete, walk through each task's acceptance criteria with evi
 
 **Gather evidence sources:**
 
-1. Read each task file in `.pm/epics/$ARGUMENTS/*.md` and extract the `- [ ]` acceptance criteria
+1. Read each task file in `{epic_dir}/*.md` and extract the `- [ ]` acceptance criteria
 2. Map commits to tasks:
    ```bash
    git log --oneline main..HEAD | grep -oP 'Issue #\d+'

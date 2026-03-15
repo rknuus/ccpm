@@ -1,6 +1,6 @@
 # Agent Coordination
 
-Rules for multiple agents working in parallel within the same epic worktree.
+Rules for multiple agents working in parallel within the same epic branch/worktree.
 
 ## Parallel Execution Principles
 
@@ -8,6 +8,14 @@ Rules for multiple agents working in parallel within the same epic worktree.
 2. **Explicit coordination** - When same file needed, coordinate explicitly
 3. **Fail fast** - Surface conflicts immediately, don't try to be clever
 4. **Human resolution** - Conflicts are resolved by humans, not agents
+
+## Initiative-Level Coordination
+
+When working under an initiative with multiple epics:
+- Agents work within **epic branches** that are children of the **initiative branch**
+- The parent branch for syncing is the initiative branch, not main
+- Cross-epic coordination is inherently safe: different epics use different branches, so there are no file conflicts between epics
+- Use `git pull --rebase origin initiative/{name}` to sync with the initiative branch
 
 ## Work Stream Assignment
 
@@ -68,7 +76,7 @@ git pull origin epic/{name}
 ### Through Progress Files
 Each stream maintains progress:
 ```markdown
-# .pm/epics/{epic}/updates/{issue}/stream-A.md
+# .pm/initiatives/{initiative}/{epic}/updates/{issue}/stream-A.md
 ---
 stream: Database Layer
 agent: backend-specialist

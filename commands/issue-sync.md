@@ -38,7 +38,7 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If issue is closed and completion < 100%, warn: "⚠️ Issue is closed but work incomplete"
 
 3. **Local Updates Check:**
-   - Use the Glob tool to check if `.pm/epics/*/updates/$ARGUMENTS/` directory exists
+   - Use the Glob tool to check if `.pm/initiatives/*/*/updates/$ARGUMENTS/` or `.pm/epics/*/updates/$ARGUMENTS/` directory exists
    - If not found, tell user: "❌ No local updates found for issue #$ARGUMENTS. Run: /ccpm:issue-start $ARGUMENTS"
    - Use the Read tool to check if progress.md exists in that directory
    - If not, tell user: "❌ No progress tracking found. Initialize with: /ccpm:issue-start $ARGUMENTS"
@@ -62,7 +62,7 @@ You are synchronizing local development progress to GitHub as issue comments for
 
 ### 1. Gather Local Updates
 Collect all local updates for the issue:
-- Use the Read tool to read from `.pm/epics/{epic_name}/updates/$ARGUMENTS/`
+- Use the Read tool to read from `{epic_dir}/updates/$ARGUMENTS/` (where `{epic_dir}` is the resolved epic path from the found updates directory)
 - Check for new content in:
   - `progress.md` - Development progress
   - `notes.md` - Technical notes and decisions

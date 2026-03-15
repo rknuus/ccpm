@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/paths-lib.sh"
+
 echo "Getting tasks..."
 echo ""
 echo ""
@@ -9,8 +13,9 @@ echo ""
 
 found=0
 
-for epic_dir in .pm/epics/*/; do
+for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
   [ -d "$epic_dir" ] || continue
+  [ -f "$epic_dir/epic.md" ] || continue
   epic_name=$(basename "$epic_dir")
 
   for task_file in "$epic_dir"/[0-9]*.md; do

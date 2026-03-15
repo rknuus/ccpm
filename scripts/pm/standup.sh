@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/paths-lib.sh"
 
 echo "📅 Daily Standup - $(date '+%Y-%m-%d')"
 echo "================================"
@@ -34,12 +37,12 @@ fi
 
 echo ""
 echo "🔄 Currently In Progress:"
-# Show active work items
-for updates_dir in .pm/epics/*/updates/*/; do
+# Show active work items — search both layouts
+for updates_dir in .pm/initiatives/*/*/updates/*/ .pm/epics/*/updates/*/; do
   [ -d "$updates_dir" ] || continue
   if [ -f "$updates_dir/progress.md" ]; then
     issue_num=$(basename "$updates_dir")
-    epic_name=$(basename $(dirname $(dirname "$updates_dir")))
+    epic_name=$(basename "$(dirname "$(dirname "$updates_dir")")")
     completion=$(grep "^completion:" "$updates_dir/progress.md" | head -1 | sed 's/^completion: *//')
     echo "  • Issue #$issue_num ($epic_name) - ${completion:-0%} complete"
   fi
@@ -47,10 +50,11 @@ done
 
 echo ""
 echo "⏭️ Next Available Tasks:"
-# Show top 3 available tasks
+# Show top 3 available tasks — search both layouts
 count=0
-for epic_dir in .pm/epics/*/; do
+for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
   [ -d "$epic_dir" ] || continue
+  [ -f "$epic_dir/epic.md" ] || continue
   for task_file in "$epic_dir"/[0-9]*.md; do
     [ -f "$task_file" ] || continue
     status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
@@ -81,9 +85,9 @@ done
 
 echo ""
 echo "📊 Quick Stats:"
-total_tasks=$(find .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
-open_tasks=$(find .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
-closed_tasks=$(find .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
+total_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+open_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *open" {} \; 2>/dev/null | wc -l)
+closed_tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" -exec grep -l "^status: *closed" {} \; 2>/dev/null | wc -l)
 echo "  Tasks: $open_tasks open, $closed_tasks closed, $total_tasks total"
 
 exit 0
