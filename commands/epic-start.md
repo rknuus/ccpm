@@ -30,14 +30,11 @@ Use the first path found. All subsequent references use `{epic_dir}`.
    If missing: "❌ Epic not synced. Run: /ccpm:epic-sync $ARGUMENTS first"
 
 3. **Determine parent branch:**
+   Run:
    ```bash
-   # Check if this epic belongs to an initiative with a branch
-   if git branch -a | grep -q "initiative/"; then
-     PARENT_BRANCH=$(git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||')
-   else
-     PARENT_BRANCH="main"
-   fi
+   git branch -a | grep "initiative/" | head -1 | sed 's/^[* ]*//' | sed 's|remotes/origin/||'
    ```
+   If this produces output, use that value as `PARENT_BRANCH`. Otherwise, use `main`.
 
 4. **Check for branch:**
    ```bash
