@@ -4,7 +4,7 @@ allowed-tools: Read, LS
 
 # Epic Oneshot
 
-Decompose epic into tasks and sync to GitHub in one operation.
+Decompose epic into tasks in one operation. This is an alias for `/ccpm:epic-decompose`.
 
 ## Usage
 ```
@@ -29,14 +29,7 @@ test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-de
 # Check for existing tasks
 if ls {epic_dir}/[0-9]*.md 2>/dev/null | grep -q .; then
   echo "⚠️ Tasks already exist. This will create duplicates."
-  echo "Delete existing tasks or use /ccpm:epic-sync instead."
-  exit 1
-fi
-
-# Check if already synced
-if grep -q "github:" {epic_dir}/epic.md; then
-  echo "⚠️ Epic already synced to GitHub."
-  echo "Use /ccpm:epic-sync to update."
+  echo "Delete existing tasks or use /ccpm:epic-decompose to recreate."
   exit 1
 fi
 ```
@@ -53,31 +46,13 @@ This will:
 - Create task files (using parallel agents if appropriate)
 - Update epic with task summary
 
-### 3. Execute Sync
-
-Immediately follow with sync:
-```
-Running: /ccpm:epic-sync $ARGUMENTS
-```
-
-This will:
-- Create epic issue on GitHub
-- Create sub-issues (using parallel agents if appropriate)
-- Rename task files to issue IDs
-- Create worktree
-
-### 4. Output
+### 3. Output
 
 ```
-🚀 Epic Oneshot Complete: $ARGUMENTS
+✅ Epic Oneshot Complete: $ARGUMENTS
 
 Step 1: Decomposition ✓
   - Tasks created: {count}
-
-Step 2: GitHub Sync ✓
-  - Epic: #{number}
-  - Sub-issues created: {count}
-  - Worktree: ../epic-$ARGUMENTS
 
 Ready for development!
   Start work: /ccpm:epic-start $ARGUMENTS
@@ -86,10 +61,6 @@ Ready for development!
 
 ## Important Notes
 
-This is simply a convenience wrapper that runs:
-1. `/ccpm:epic-decompose`
-2. `/ccpm:epic-sync`
+This is simply a convenience wrapper that runs `/ccpm:epic-decompose`.
 
-Both commands handle their own error checking, parallel execution, and validation. This command just orchestrates them in sequence.
-
-Use this when you're confident the epic is ready and want to go from epic to GitHub issues in one step.
+The decompose command handles its own error checking, parallel execution, and validation. This command just orchestrates it.
