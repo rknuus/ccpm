@@ -83,7 +83,7 @@ Task:
     2. Use exact format with frontmatter and all sections
     3. Follow task breakdown from epic
     4. Set parallel/depends_on fields appropriately
-    5. Use globally unique IDs from .pm/next-id counter (read counter, assign IDs, write back updated counter)
+    5. Use globally unique IDs from .pm/next-id counter (read current value, assign IDs, use the Edit tool to update the counter)
 
     Return: List of files created
 ```
@@ -137,9 +137,9 @@ Clear, concise description of what needs to be done
 
 ### 3. Task Naming Convention
 Save tasks as: `{epic_dir}/{task_id}.md`
-- Read the next available ID from `.pm/next-id` (create with value `1` if missing)
+- Read the next available ID from `.pm/next-id` (if missing, create it first: `echo 1 > .pm/next-id`)
 - Name each task file with its assigned ID (e.g., 1.md, 2.md, 3.md)
-- After creating all tasks, write the updated counter back to `.pm/next-id`
+- After creating all tasks, use the Edit tool to update the counter in `.pm/next-id`
 - Keep task titles short but descriptive
 
 ### 4. Frontmatter Guidelines
