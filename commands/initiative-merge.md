@@ -195,12 +195,17 @@ mv .pm/initiatives/$ARGUMENTS .pm/initiatives/archived/$ARGUMENTS
 echo "✅ Initiative archived: .pm/initiatives/archived/$ARGUMENTS/"
 ```
 
-Commit the archive move:
+If `.pm/` is under version control, commit the archive move. Run:
+```bash
+git check-ignore -q .pm/
+```
+If the command fails (exit 1), `.pm/` is tracked — commit the archive:
 ```bash
 git add .pm/initiatives/
 git commit -m "Archive initiative: $ARGUMENTS"
 git push origin main
 ```
+If the command succeeds (exit 0), `.pm/` is gitignored — skip the commit and note: "ℹ️ .pm/ is gitignored — archive is local only"
 
 ### Close Context
 Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
