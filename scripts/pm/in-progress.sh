@@ -14,7 +14,7 @@ echo ""
 # Check for active work in updates directories — search both layouts
 found=0
 
-for updates_dir in .pm/initiatives/*/*/updates/*/ .pm/epics/*/updates/*/; do
+for updates_dir in .pm/initiatives/*/*/updates/*/; do
   [ -d "$updates_dir" ] || continue
 
   issue_num=$(basename "$updates_dir")
@@ -50,7 +50,7 @@ done
 
 # Also check for in-progress epics — search both layouts
 echo "📚 Active Epics:"
-for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
+for epic_dir in .pm/initiatives/*/*/; do
   [ -d "$epic_dir" ] || continue
   [ -f "$epic_dir/epic.md" ] || continue
 

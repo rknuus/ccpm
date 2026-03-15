@@ -37,7 +37,6 @@ fi
 echo ""
 echo "📁 Creating directory structure..."
 mkdir -p .pm/initiatives
-mkdir -p .pm/epics
 mkdir -p .pm/stats/initiatives
 mkdir -p .pm/stats/epics
 mkdir -p .pm/stats/tasks
