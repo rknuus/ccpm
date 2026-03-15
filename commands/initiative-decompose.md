@@ -47,9 +47,6 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - Ensure `.pm/initiatives/$ARGUMENTS/` directory exists or can be created
    - If cannot create, tell user: "❌ Cannot create initiative directory. Please check permissions."
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-decompose || true`
-
 ## Instructions
 
 You are a technical lead decomposing an Initiative into multiple epic outlines for: **$ARGUMENTS**
@@ -152,9 +149,6 @@ Before finalizing, verify:
 - [ ] Each epic has a clear, distinct scope
 - [ ] Total epic count is between 1 and 10
 - [ ] Epic names use kebab-case
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 8. Post-Creation
 

@@ -41,9 +41,6 @@ Do not bother the user with preflight checks progress. Just do them and move on.
    ```
    If not empty: "❌ Uncommitted changes. Commit or stash before starting."
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS epic-start-all || true`
-
 ## Instructions
 
 ### 1. Build Epic Execution Order
@@ -143,9 +140,6 @@ fi
 ```
 
 Report test results.
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 4. Final Output
 

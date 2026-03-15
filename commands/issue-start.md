@@ -23,9 +23,6 @@ Begin work on a task with parallel agents based on work stream analysis.
    - If no analysis exists and no --analyze flag, stop execution with:
      "❌ No analysis found for issue #$ARGUMENTS. Run: /ccpm:issue-analyze $ARGUMENTS first. Or: /ccpm:issue-start $ARGUMENTS --analyze to do both"
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-start || true`
-
 ## Instructions
 
 ### 1. Ensure Worktree Exists
@@ -121,9 +118,6 @@ Task:
 
     Complete your stream's work and mark as completed when done.
 ```
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 6. Output
 

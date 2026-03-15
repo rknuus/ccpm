@@ -11,9 +11,6 @@ Mark an issue as complete.
 /ccpm:issue-close <issue_number> [completion_notes]
 ```
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-close || true`
-
 ## Instructions
 
 ### 1. Find Local Task File
@@ -66,9 +63,6 @@ Before closing, ask the user to rate their satisfaction:
 - Use the Read tool to count total tasks and closed tasks (by checking `status:` in frontmatter)
 - Calculate new progress percentage
 - Use the Edit tool to update epic.md frontmatter progress field
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 7. Output
 

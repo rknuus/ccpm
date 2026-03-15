@@ -39,9 +39,6 @@ Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUM
    ```
    If output is not empty: "❌ You have uncommitted changes. Please commit or stash them before starting an epic"
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-start || true`
-
 ## Instructions
 
 ### 1. Create or Enter Branch
@@ -243,9 +240,6 @@ Demo Summary: N/M acceptance criteria evidenced, K gaps found
 ```
 Gaps found — review above and request fixups if needed before merging.
 ```
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ## Output Format
 
