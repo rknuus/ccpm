@@ -7,19 +7,12 @@ echo "Getting epics..."
 echo ""
 echo ""
 
-# Collect epic directories from both layouts
+# Collect epic directories
 epic_dirs=""
-# New layout: .pm/initiatives/*/<epic>/epic.md
 for f in .pm/initiatives/*/*/epic.md; do
   [ -f "$f" ] && epic_dirs="${epic_dirs}$(dirname "$f")/
 "
 done
-# Old layout: .pm/epics/<epic>/
-for d in .pm/epics/*/; do
-  [ -d "$d" ] && [ -f "$d/epic.md" ] && epic_dirs="${epic_dirs}${d}
-"
-done
-
 if [ -z "$epic_dirs" ]; then
   echo "📁 No epics found. Create your first epic with: /ccpm:initiative-decompose <feature-name>"
   exit 0
@@ -114,10 +107,7 @@ tasks=0
 for f in .pm/initiatives/*/*/epic.md; do
   [ -f "$f" ] && ((total++)) || true
 done
-for d in .pm/epics/*/; do
-  [ -d "$d" ] && [ -f "$d/epic.md" ] && ((total++)) || true
-done
-tasks=$(find .pm/initiatives .pm/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+tasks=$(find .pm/initiatives -name "[0-9]*.md" 2>/dev/null | wc -l)
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 
