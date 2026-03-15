@@ -14,14 +14,10 @@ Launch parallel agents to work on epic tasks in a shared branch.
 ## Quick Check
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
-2. Fall back to `{epic_dir}/epic.md` (old layout)
-Use the first path found. All subsequent references use `{epic_dir}`.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUMENTS/epic.md`. All subsequent references use `{epic_dir}`.
 
 1. **Verify epic exists:**
    ```bash
-   # Check new layout first, then old layout
    test -f {epic_dir}/epic.md || echo "❌ Epic not found. Run: /ccpm:initiative-decompose $ARGUMENTS"
    ```
 

@@ -14,10 +14,7 @@ Update epic progress based on task states.
 ## Instructions
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
-2. Fall back to `{epic_dir}/epic.md` (old layout)
-Use the first path found.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUMENTS/epic.md`.
 
 ### 1. Count Task Status
 

@@ -17,10 +17,7 @@ Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-ed
 ## Instructions
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
-2. Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
-Use the first path found.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUMENTS/epic.md`.
 
 ### 1. Read Current Epic
 

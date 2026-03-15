@@ -16,8 +16,7 @@ Check issue status and current state from local task files.
 You are checking the current status of a task from local files for: **Issue #$ARGUMENTS**
 
 ### 1. Find Local Task File
-- First check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout)
-- Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout)
+- Check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists
 - If not found: "❌ No local task for #$ARGUMENTS"
 
 ### 2. Status Display

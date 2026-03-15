@@ -14,7 +14,7 @@ echo ""
 # Find tasks that are open and have no dependencies or whose dependencies are closed
 found=0
 
-for epic_dir in .pm/initiatives/*/*/ .pm/epics/*/; do
+for epic_dir in .pm/initiatives/*/*/; do
   [ -d "$epic_dir" ] || continue
   [ -f "$epic_dir/epic.md" ] || continue
   epic_name=$(basename "$epic_dir")

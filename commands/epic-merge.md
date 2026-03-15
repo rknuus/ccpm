@@ -14,10 +14,7 @@ Merge completed epic branch back to its parent branch (initiative branch or main
 ## Quick Check
 
 ### Resolve Epic Path
-Determine the epic directory (`{epic_dir}`):
-1. Check `.pm/initiatives/*/$ARGUMENTS/epic.md` (new layout)
-2. Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
-Use the first path found.
+Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUMENTS/epic.md`.
 
 ### Determine Merge Target
 Run:
@@ -168,19 +165,11 @@ fi
 git branch -d epic/$ARGUMENTS
 git push origin --delete epic/$ARGUMENTS 2>/dev/null || true
 
-# Archive epic locally
-# New layout: archive within initiative directory
-# Old layout: archive under .pm/epics/archived/
-if [[ "{epic_dir}" == .pm/initiatives/* ]]; then
-  # Determine the initiative directory (the parent of `{epic_dir}`)
-  mkdir -p "{initiative_dir}/archived/"
-  mv "{epic_dir}" "{initiative_dir}/archived/"
-  echo "✅ Epic archived within initiative directory"
-else
-  mkdir -p .pm/epics/archived/
-  mv .pm/epics/$ARGUMENTS .pm/epics/archived/
-  echo "✅ Epic archived: .pm/epics/archived/$ARGUMENTS"
-fi
+# Archive epic within initiative directory
+# Determine the initiative directory (the parent of `{epic_dir}`)
+mkdir -p "{initiative_dir}/archived/"
+mv "{epic_dir}" "{initiative_dir}/archived/"
+echo "✅ Epic archived within initiative directory"
 ```
 
 ### 7. Final Output

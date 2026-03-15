@@ -67,14 +67,12 @@ pm_task_file() {
 # ---------------------------------------------------------------------------
 # pm_find_epic <epic>
 #
-# Resolves the location of an epic directory by searching both the new
-# nested layout (.pm/initiatives/*/<epic>/) and the old flat layout
-# (.pm/epics/<epic>/). Prefers the new layout when both exist.
+# Resolves the location of an epic directory by searching the nested
+# layout (.pm/initiatives/*/<epic>/).
 #
 # Returns:
-#   - New-layout directory if .pm/initiatives/*/<epic>/epic.md exists
-#   - Old-layout directory if .pm/epics/<epic>/ exists (fallback)
-#   - New-layout default path for creation if neither exists
+#   - Directory if .pm/initiatives/*/<epic>/epic.md exists
+#   - Default path for creation if it does not exist
 # ---------------------------------------------------------------------------
 pm_find_epic() {
   local epic="$1"
@@ -89,13 +87,7 @@ pm_find_epic() {
     fi
   done
 
-  # Fallback: old layout .pm/epics/<epic>/
-  if [ -d ".pm/epics/${epic}" ]; then
-    echo ".pm/epics/${epic}/"
-    return 0
-  fi
-
-  # Neither exists — return new-layout default for creation.
+  # Not found — return default path for creation.
   # Use the first initiative directory found, or fall back to <epic>/<epic>/.
   local first_initiative
   for first_initiative in .pm/initiatives/*/; do

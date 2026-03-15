@@ -25,9 +25,6 @@ if [ ! -f "$epic_file" ]; then
   for f in .pm/initiatives/*/*/epic.md; do
     [ -f "$f" ] && echo "  • $(basename "$(dirname "$f")")"
   done
-  for dir in .pm/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
-  done
   exit 1
 fi
 

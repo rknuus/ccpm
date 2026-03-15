@@ -13,9 +13,6 @@ _list_available_epics() {
   for f in .pm/initiatives/*/*/epic.md; do
     [ -f "$f" ] && echo "  • $(basename "$(dirname "$f")")"
   done
-  for dir in .pm/epics/*/; do
-    [ -d "$dir" ] && echo "  • $(basename "$dir")"
-  done
 }
 
 if [ -z "$epic_name" ]; then

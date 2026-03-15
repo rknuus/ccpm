@@ -26,9 +26,8 @@ Follow the same logic as `/ccpm:initiative-decompose $ARGUMENTS`:
    ```
 
 2. **Check for existing epic:**
-   - Check `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md` first (new layout)
-   - Fall back to `.pm/epics/$ARGUMENTS/epic.md` (old layout)
-   - If found in either location, ask: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
+   - Check `.pm/initiatives/$ARGUMENTS/$ARGUMENTS/epic.md`
+   - If found, ask: "⚠️ Epic '$ARGUMENTS' already exists. Overwrite? (yes/no)"
    - Only proceed with explicit 'yes'
 
 3. **Create initiative branch:**

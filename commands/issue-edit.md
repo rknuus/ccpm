@@ -15,8 +15,7 @@ Edit issue details locally.
 
 ### 1. Find Local Task File
 
-Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists (new layout).
-Fall back to `.pm/epics/*/$ARGUMENTS.md` (old layout).
+Use the Glob tool to check if `.pm/initiatives/*/*/$ARGUMENTS.md` exists.
 If not found: "❌ No local task for issue #$ARGUMENTS"
 
 ### 2. Interactive Edit
