@@ -19,21 +19,18 @@ git worktree add ../initiative-{name} -b initiative/{name}
 
 ### Creating Epic Worktrees from Initiative
 ```bash
-# From initiative worktree, create epic worktree
-cd ../initiative-{name}
-git worktree add ../epic-{epic-name} -b epic/{epic-name}
+# Create epic worktree from initiative worktree
+git -C ../initiative-{name} worktree add ../epic-{epic-name} -b epic/{epic-name}
 ```
 
 ### Merge Flow
 ```bash
 # 1. Merge epic worktree back to initiative
-cd ../initiative-{name}
-git merge epic/{epic-name}
-git worktree remove ../epic-{epic-name}
-git branch -d epic/{epic-name}
+git -C ../initiative-{name} merge epic/{epic-name}
+git -C ../initiative-{name} worktree remove ../epic-{epic-name}
+git -C ../initiative-{name} branch -d epic/{epic-name}
 
 # 2. When all epics done, merge initiative to main
-cd {main-repo}
 git checkout main
 git merge initiative/{name}
 git worktree remove ../initiative-{name}
@@ -68,15 +65,12 @@ The worktree will be created as a sibling directory to maintain clean separation
 
 ### File Operations
 ```bash
-# Working directory is the worktree
-cd ../epic-{name}
-
-# Normal git operations work
-git add {files}
-git commit -m "Issue #{number}: {change}"
+# Git operations in the worktree
+git -C ../epic-{name} add {files}
+git -C ../epic-{name} commit -m "Issue #{number}: {change}"
 
 # View worktree status
-git status
+git -C ../epic-{name} status
 ```
 
 ## Parallel Work in Same Worktree
@@ -96,8 +90,7 @@ git commit -m "Issue #1235: Add dashboard component"
 
 When epic is complete, merge back to main:
 ```bash
-# From main repository (not worktree)
-cd {main-repo}
+# Ensure main is up to date
 git checkout main
 git pull origin main
 
@@ -140,8 +133,7 @@ git worktree remove --force ../epic-{name}
 
 ### Check Worktree Status
 ```bash
-# From main repo
-cd ../epic-{name} && git status && cd -
+git -C ../epic-{name} status
 ```
 
 ## Best Practices
