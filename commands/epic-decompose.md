@@ -42,9 +42,6 @@ Determine the epic directory (`{epic_dir}`) by finding `.pm/initiatives/*/$ARGUM
 4. **Check epic status:**
    - If epic status is already "completed", warn user: "⚠️ Epic is marked as completed. Are you sure you want to decompose it again?"
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open epic $ARGUMENTS epic-decompose || true`
-
 ## Instructions
 
 You are decomposing an epic into specific, actionable tasks for: **$ARGUMENTS**
@@ -225,9 +222,6 @@ If `architect_mode` is `gate` or `advisory`:
 - If advisory mode: log findings and continue
 
 If `architect_mode` is empty or `off`: skip silently.
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 11. Post-Decomposition
 

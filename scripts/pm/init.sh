@@ -22,24 +22,9 @@ echo "🚀 Initializing Claude Code PM System"
 echo "======================================"
 echo ""
 
-# Check for required tools
-echo "🔍 Checking dependencies..."
-
-# Check jq
-if command -v jq &> /dev/null; then
-  echo "  ✅ jq installed"
-else
-  echo "  ❌ jq not found (required for stats collection)"
-  echo "  Install: brew install jq (macOS) or apt install jq (Linux)"
-fi
-
 # Create directory structure
-echo ""
 echo "📁 Creating directory structure..."
 mkdir -p .pm/initiatives
-mkdir -p .pm/stats/initiatives
-mkdir -p .pm/stats/epics
-mkdir -p .pm/stats/tasks
 mkdir -p .claude/rules
 echo "  ✅ Directories created"
 

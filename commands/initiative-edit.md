@@ -11,9 +11,6 @@ Edit an existing Initiative document.
 /ccpm:initiative-edit <feature_name>
 ```
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-edit || true`
-
 ## Instructions
 
 ### 1. Read Current Initiative
@@ -49,9 +46,6 @@ If Initiative has associated epic:
 - Notify user: "This Initiative has epic: {epic_name}"
 - Ask: "Epic may need updating based on Initiative changes. Review epic? (yes/no)"
 - If yes, show: "Review with: /ccpm:epic-edit {epic_name}"
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 5. Output
 

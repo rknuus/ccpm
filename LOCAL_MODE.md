@@ -53,8 +53,6 @@ vim .pm/initiatives/user-authentication/user-authentication/1.md
 │       ├── 001.md                  # Task: Database schema
 │       ├── 002.md                  # Task: API endpoints
 │       └── 003.md                  # Task: UI components
-└── stats/
-    └── active-context.json         # Usage statistics
 ```
 
 ## Available Commands
@@ -67,13 +65,9 @@ vim .pm/initiatives/user-authentication/user-authentication/1.md
 - `/ccpm:initiative-list` - List Initiatives
 - `/ccpm:search <term>` - Search content
 - `/ccpm:validate` - Check file integrity
-- `/ccpm:stats` - Token usage and time overview
-- `/ccpm:stats-show <name>` - Detailed stats for a specific item
-- `/ccpm:stats-rate <name>` - Rate satisfaction with a completed item
 - `/ccpm:context-create` - Generate project context documentation
 - `/ccpm:context-update` - Refresh context with recent changes
 - `/ccpm:context-prime` - Load context into current conversation
-- `/ccpm:config` - Configure CCPM settings
 
 ## Benefits
 

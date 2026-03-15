@@ -23,9 +23,6 @@ Analyze an issue to identify parallel work streams for maximum efficiency.
    test -f {epic_dir}/$ARGUMENTS-analysis.md && echo "⚠️ Analysis already exists. Overwrite? (yes/no)"
    ```
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open task $ARGUMENTS issue-analyze || true`
-
 ## Instructions
 
 ### 1. Read Issue Context
@@ -154,9 +151,6 @@ Ensure:
 - Dependencies are logical
 - Agent types match the work type
 - Time estimates are reasonable
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 5. Output
 

@@ -39,9 +39,6 @@ Do not bother the user with preflight checks progress ("I'm not going to ..."). 
    - If not, create it first
    - If unable to create, tell user: "❌ Cannot create Initiative directory. Please manually create: .pm/initiatives/"
 
-### Context Tracking
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context open initiative $ARGUMENTS initiative-new || true`
-
 ## Instructions
 
 You are a product manager creating a comprehensive Initiative document for: **$ARGUMENTS**
@@ -143,9 +140,6 @@ Before saving the Initiative, verify:
 - [ ] Success criteria are measurable
 - [ ] Dependencies are clearly identified
 - [ ] Out of scope items are explicitly listed
-
-### Close Context
-Run: `${CLAUDE_PLUGIN_ROOT}/scripts/pm/ccpm-context close || true`
 
 ### 6. Post-Creation
 
