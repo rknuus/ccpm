@@ -44,13 +44,13 @@ fi
 
 Check status in the epic worktree or branch:
 ```bash
-# If worktree exists, navigate to it
+# If worktree exists, check status there; otherwise checkout the branch
 if git worktree list | grep -q "epic-$ARGUMENTS"; then
-  cd ../epic-$ARGUMENTS
+  git -C ../epic-$ARGUMENTS status --porcelain
 else
   git checkout epic/$ARGUMENTS
+  git status --porcelain
 fi
-git status --porcelain
 ```
 
 If there are uncommitted changes, warn: "Uncommitted changes detected. Commit or stash changes before merging."
@@ -104,9 +104,6 @@ Update `{epic_dir}/epic.md`:
 ### 4. Attempt Merge
 
 ```bash
-# Return to main repository (if in worktree)
-cd {main-repo-path}
-
 # Ensure merge target is up to date
 git checkout $MERGE_TARGET
 git pull origin $MERGE_TARGET 2>/dev/null || true
